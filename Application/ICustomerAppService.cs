@@ -3,16 +3,19 @@ using Application.Models.Response;
 using Domain.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Application
 {
     public interface ICustomerAppService
     {
-        IEnumerable<CustomerResult> GetAll(Func<Customer, bool> predicate = null);
+        IEnumerable<CustomerResult> GetAll();
 
-        CustomerResult GetBy(Func<Customer, bool> predicate);
+        IEnumerable<CustomerResult> GetAll(Expression<Func<Customer, bool>> predicate = null);
 
-        public int Create(CreateCustomerRequest newCustomerDto);
+        CustomerResult GetBy(Expression<Func<Customer, bool>> predicate);
+
+        public (bool status, string messageResult) Create(CreateCustomerRequest newCustomerDto);
 
         public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
 

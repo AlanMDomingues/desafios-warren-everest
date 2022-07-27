@@ -1,84 +1,126 @@
 ﻿using Domain.Models;
-using Infrastructure.Data.Context;
-using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.UnitOfWork.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 
 namespace Domain.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly DataContext _dataContext;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepositoryFactory _repositoryFactory;
 
-        public CustomerService(DataContext dataContext)
+        public CustomerService(IUnitOfWork unitOfWork, IRepositoryFactory repositoryFactory)
         {
-            _dataContext = dataContext ?? throw new ArgumentNullException(nameof(dataContext));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
-        public IEnumerable<Customer> GetAll(Func<Customer, bool> predicate = null)
+        public IEnumerable<Customer> GetAll()
         {
-            if (predicate is null) return _dataContext.Customers;
+            var repository = _repositoryFactory.Repository<Customer>();
 
-            var customers = _dataContext.Customers.Where(predicate);
+            var query = repository.MultipleResultQuery();
 
-            return customers;
+            var result = repository.Search(query);
+
+            return result;
         }
 
-        public Customer GetBy(Func<Customer, bool> predicate)
+        public IEnumerable<Customer> GetAll(Expression<Func<Customer, bool>> predicate)
         {
-            var customer = _dataContext.Customers.AsNoTracking().FirstOrDefault(predicate);
+            var repository = _repositoryFactory.Repository<Customer>();
 
-            return customer;
+            var queryFiltered = repository.MultipleResultQuery()
+                                          .AndFilter(predicate);
+
+            var resultFiltered = repository.Search(queryFiltered);
+
+            return resultFiltered;
         }
 
-        public int Create(Customer newCustomer)
+        public Customer GetBy(Expression<Func<Customer, bool>> predicate)
         {
-            if (AnyCustomerForCpf(newCustomer) || AnyCustomerForEmail(newCustomer)) return -1;
+            var repository = _repositoryFactory.Repository<Customer>();
 
-            _dataContext.Customers.Add(newCustomer);
-            _dataContext.SaveChanges();
-            return newCustomer.Id;
+            var query = repository.SingleResultQuery()
+                                  .AndFilter(predicate);
+
+            var result = repository.FirstOrDefault(query);
+
+            return result;
+        }
+
+        public (bool exists, string message) Create(Customer newCustomer)
+        {
+            (bool exists, string message) = ValidateEmailAndCpfAlreadyExistsToCreate(newCustomer);
+
+            if (exists)
+            {
+                return (false, message);
+            }
+
+            var repository = _unitOfWork.Repository<Customer>();
+
+            repository.Add(newCustomer);
+            _unitOfWork.SaveChanges();
+
+            return (true, newCustomer.Id.ToString());
         }
 
         public (bool status, string messageResult) Update(Customer customer)
         {
+            var repository = _unitOfWork.Repository<Customer>();
+
             var customerFound = GetBy(x => x.Id == customer.Id);
             if (customerFound is null) return (false, $"Customer not found for Id: {customer.Id}");
 
-            (bool exists, string message) = ValidateEmailAndCpfAlreadyExists(customerFound, customer);
+            (bool exists, string message) = ValidateEmailAlreadyExistsToUpdate(customerFound, customer);
             if (exists) return (false, message);
 
-            _dataContext.Update(customer);
-            _dataContext.SaveChanges();
+            repository.Update(customer);
+            _unitOfWork.SaveChanges();
 
             return (true, $"Customer for ID: {customer.Id} updated successfully");
         }
 
         public bool Delete(int id)
         {
+            var repository = _unitOfWork.Repository<Customer>();
+
             var customerToDelete = GetBy(x => x.Id == id);
             if (customerToDelete is null) return false;
 
-            _dataContext.Remove(customerToDelete);
-            _dataContext.SaveChanges();
+            repository.Remove(customerToDelete);
+            _unitOfWork.SaveChanges();
+
             return true;
         }
 
-        private bool AnyCustomerForEmail(Customer newCustomer) => _dataContext.Customers.Any(x => x.Email == newCustomer.Email);
-
-        private bool AnyCustomerForCpf(Customer newCustomer) => _dataContext.Customers.Any(x => x.Cpf == newCustomer.Cpf);
-
-        private (bool exists, string message) ValidateEmailAndCpfAlreadyExists(Customer oldCustomer, Customer newCustomer)
+        private (bool exists, string message) ValidateEmailAndCpfAlreadyExistsToCreate(Customer newCustomer)
         {
-            if (newCustomer.Email != oldCustomer.Email)
+            var repository = _repositoryFactory.Repository<Customer>();
+
+            if (repository.Any(x => x.Email == newCustomer.Email)
+                || repository.Any(x => x.Cpf == newCustomer.Cpf))
             {
-                if (AnyCustomerForEmail(newCustomer)) return (true, "'Email' already exists, please insert a new 'Email'");
+                return (true, "Customer already exists, please insert a new customer");
             }
 
-            if (newCustomer.Cpf != oldCustomer.Cpf)
+            return (false, newCustomer.Id.ToString());
+        }
+
+        private (bool exists, string message) ValidateEmailAlreadyExistsToUpdate(Customer oldCustomer, Customer newCustomer)
+        {
+            var repository = _repositoryFactory.Repository<Customer>();
+
+            if (newCustomer.Email != oldCustomer.Email)
             {
-                if (AnyCustomerForCpf(newCustomer)) return (true, "'Cpf' already exists, please insert a new 'Cpf'");
+                if (repository.Any(x => x.Email == newCustomer.Email))
+                {
+                    return (true, "'Email' already exists, please insert a new 'Email'");
+                }
             }
 
             return (false, "");
