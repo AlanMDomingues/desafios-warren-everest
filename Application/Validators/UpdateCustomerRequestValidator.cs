@@ -3,7 +3,6 @@ using FluentValidation;
 using FluentValidation.Validators;
 using Infrastructure.Extensions;
 using System;
-using System.Linq;
 
 namespace Application.Validators
 {

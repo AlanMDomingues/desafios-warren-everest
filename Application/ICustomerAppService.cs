@@ -19,6 +19,6 @@ namespace Application
 
         public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
 
-        public bool Delete(int id);
+        public void Delete(int id);
     }
 }

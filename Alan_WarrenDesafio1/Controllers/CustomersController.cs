@@ -9,7 +9,7 @@ namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomersController : Controller
     {
         private readonly ICustomerAppService _customersAppService;
 
@@ -103,9 +103,8 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_customersAppService.Delete(id)
-                    ? NotFound()
-                    : NoContent();
+                _customersAppService.Delete(id);
+                return NoContent();
             });
         }
 

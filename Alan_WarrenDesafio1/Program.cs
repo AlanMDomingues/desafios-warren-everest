@@ -1,8 +1,8 @@
+using Alan_WarrenDesafio1.Configurations;
 using Application;
-using Domain.Services;
-using EntityFrameworkCore.UnitOfWork.Extensions;
+using Domain.Services.Interfaces;
+using Domain.Services.Services;
 using FluentValidation.AspNetCore;
-using Infrastructure.Data.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +13,6 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 var assembly = Assembly.Load("Application");
 builder.Services.AddControllers()
     .AddFluentValidation(options =>
@@ -21,21 +20,16 @@ builder.Services.AddControllers()
         options.RegisterValidatorsFromAssembly(assembly);
     });
 
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseMySql(builder.Configuration.GetConnectionString("Default"),
-                    ServerVersion.Parse("8.0.29-mysql"),
-                    config => config.MigrationsAssembly("Infrastructure.Data"));
-});
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<ICustomerService, CustomerService>()
-                .AddTransient<DbContext, DataContext>();
+
+builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddTransient<ICustomerAppService, CustomerAppService>();
+
 builder.Services.AddAutoMapper(mapperConfiguration => mapperConfiguration.AddMaps(assembly), assembly);
-builder.Services.AddUnitOfWork(ServiceLifetime.Transient);
+
+builder.Services.AddDataConfiguration(builder.Configuration.GetConnectionString("Default"), ServiceLifetime.Transient);
 
 var app = builder.Build();
 

@@ -41,7 +41,7 @@ namespace Infrastructure.Data.Mappings
 
             builder.Property(x => x.Whatsapp)
                 .IsRequired();
-            
+
             builder.Property(x => x.Country)
                 .HasColumnType("varchar(58)")
                 .IsRequired();

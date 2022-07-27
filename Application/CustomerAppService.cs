@@ -4,8 +4,8 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using Domain.Models;
-using Domain.Services;
 using System.Linq.Expressions;
+using Domain.Services.Interfaces;
 
 namespace Application
 {
@@ -54,6 +54,6 @@ namespace Application
             return _customerServices.Update(customerToUpdate);
         }
 
-        public bool Delete(int id) => _customerServices.Delete(id);
+        public void Delete(int id) => _customerServices.Delete(id);
     }
 }
