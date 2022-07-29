@@ -48,5 +48,6 @@ namespace Domain.Models
         public string PostalCode { get; set; }
         public string Adress { get; set; }
         public int Number { get; set; }
+        public CustomerBankInfo CustomerBankInfo { get; set; }
     }
 }
