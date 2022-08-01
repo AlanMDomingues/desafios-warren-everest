@@ -10,6 +10,7 @@ namespace Domain.Models
         public decimal UnitPrice { get; set; } // preço de cada cota de um ativo
         public decimal NetValue { get; set; } // valor liquido total multiplicando Quotes pelo UnitPrice
         public DateTime ConvertedAt { get; set; } // data da compra
+        public int PortfolioId { get; set; }
         public Portfolio Portfolio { get; set; }
     }
 }
