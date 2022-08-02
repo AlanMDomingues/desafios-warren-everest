@@ -4,10 +4,11 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using Domain.Models;
-using Domain.Services;
 using System.Linq.Expressions;
+using Domain.Services.Interfaces;
+using Application.Interfaces;
 
-namespace Application
+namespace Application.Services
 {
     public class CustomerAppService : ICustomerAppService
     {

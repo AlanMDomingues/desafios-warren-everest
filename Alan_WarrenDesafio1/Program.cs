@@ -1,5 +1,7 @@
-using Application;
-using Domain.Services;
+using Application.Interfaces;
+using Application.Services;
+using Domain.Services.Interfaces;
+using Domain.Services.Services;
 using EntityFrameworkCore.UnitOfWork.Extensions;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data.Context;

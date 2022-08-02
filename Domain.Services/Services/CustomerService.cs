@@ -1,10 +1,11 @@
 ﻿using Domain.Models;
+using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Domain.Services
+namespace Domain.Services.Services
 {
     public class CustomerService : ICustomerService
     {
