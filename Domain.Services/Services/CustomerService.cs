@@ -62,12 +62,8 @@ namespace Domain.Services.Services
 
         public (bool exists, string message) Create(Customer newCustomer)
         {
-            (bool exists, string message) = ValidateEmailAndCpfAlreadyExistsToCreate(newCustomer);
-
-            if (exists)
-            {
-                return (false, message);
-            }
+            (bool exists, string message) = ValidateAlreadyExists(newCustomer);
+            if (exists) return (false, message);
 
             var repository = _unitOfWork.Repository<Customer>();
 
@@ -79,14 +75,10 @@ namespace Domain.Services.Services
 
         public (bool status, string messageResult) Update(Customer customer)
         {
-            var repository = _unitOfWork.Repository<Customer>();
-
-            var customerFound = GetBy(x => x.Id == customer.Id);
-            if (customerFound is null) return (false, $"Customer not found for Id: {customer.Id}");
-
-            (bool exists, string message) = ValidateEmailAlreadyExistsToUpdate(customerFound, customer);
+            (bool exists, string message) = ValidateAlreadyExists(customer);
             if (exists) return (false, message);
 
+            var repository = _unitOfWork.Repository<Customer>();
             repository.Update(customer);
             _unitOfWork.SaveChanges();
 
@@ -106,32 +98,16 @@ namespace Domain.Services.Services
             return true;
         }
 
-        private (bool exists, string message) ValidateEmailAndCpfAlreadyExistsToCreate(Customer newCustomer)
+        private (bool exists, string message) ValidateAlreadyExists(Customer customer)
         {
             var repository = _repositoryFactory.Repository<Customer>();
 
-            if (repository.Any(x => x.Email == newCustomer.Email)
-                || repository.Any(x => x.Cpf == newCustomer.Cpf))
+            if (repository.Any(x => x.Id != customer.Id && (x.Email.Equals(customer.Email) || x.Cpf.Equals(customer.Cpf))))
             {
                 return (true, "Customer already exists, please insert a new customer");
             }
 
-            return (false, newCustomer.Id.ToString());
-        }
-
-        private (bool exists, string message) ValidateEmailAlreadyExistsToUpdate(Customer oldCustomer, Customer newCustomer)
-        {
-            var repository = _repositoryFactory.Repository<Customer>();
-
-            if (newCustomer.Email != oldCustomer.Email)
-            {
-                if (repository.Any(x => x.Email == newCustomer.Email))
-                {
-                    return (true, "'Email' already exists, please insert a new 'Email'");
-                }
-            }
-
-            return (false, "");
+            return (default, customer.Id.ToString());
         }
     }
 }
