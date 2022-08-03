@@ -9,9 +9,9 @@ namespace Domain.Services.Interfaces
     {
         IEnumerable<Customer> GetAll();
 
-        IEnumerable<Customer> GetAll(Expression<Func<Customer, bool>> predicate);
+        IEnumerable<Customer> GetAll(params Expression<Func<Customer, bool>>[] predicate);
 
-        Customer GetBy(Expression<Func<Customer, bool>> predicate);
+        Customer GetBy(params Expression<Func<Customer, bool>>[] predicate);
 
         public (bool exists, string message) Create(Customer newCustomer);
 

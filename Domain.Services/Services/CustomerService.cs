@@ -29,24 +29,31 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public IEnumerable<Customer> GetAll(Expression<Func<Customer, bool>> predicate)
+        public IEnumerable<Customer> GetAll(params Expression<Func<Customer, bool>>[] predicates)
         {
             var repository = _repositoryFactory.Repository<Customer>();
 
-            var queryFiltered = repository.MultipleResultQuery()
-                                          .AndFilter(predicate);
+            var query = repository.MultipleResultQuery();
+            foreach (var item in predicates)
+            {
+                query.AndFilter(item);
+            }
 
-            var resultFiltered = repository.Search(queryFiltered);
+            var result = repository.Search(query);
 
-            return resultFiltered;
+            return result;
         }
 
-        public Customer GetBy(Expression<Func<Customer, bool>> predicate)
+
+        public Customer GetBy(params Expression<Func<Customer, bool>>[] predicates)
         {
             var repository = _repositoryFactory.Repository<Customer>();
 
-            var query = repository.SingleResultQuery()
-                                  .AndFilter(predicate);
+            var query = repository.SingleResultQuery();
+            foreach (var item in predicates)
+            {
+                query.AndFilter(item);
+            }
 
             var result = repository.FirstOrDefault(query);
 
