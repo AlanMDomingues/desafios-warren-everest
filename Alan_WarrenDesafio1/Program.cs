@@ -33,9 +33,13 @@ builder.Services.AddDbContext<DataContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<ICustomerAppService, CustomerAppService>();
+
 builder.Services.AddTransient<ICustomerService, CustomerService>()
                 .AddTransient<DbContext, DataContext>();
-builder.Services.AddTransient<ICustomerAppService, CustomerAppService>();
+builder.Services.AddTransient<ICustomerBankInfoService, CustomerBankInfoService>();
+
 builder.Services.AddAutoMapper(mapperConfiguration => mapperConfiguration.AddMaps(assembly), assembly);
 builder.Services.AddUnitOfWork(ServiceLifetime.Transient);
 
