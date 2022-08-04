@@ -9,7 +9,7 @@ namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomersController : Controller
     {
         private readonly ICustomerAppService _customersAppService;
 
@@ -33,9 +33,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Id == id) is null
+                return _customersAppService.GetBy(c => c.Id.Equals(id)) is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Id == id));
+                    : Ok(_customersAppService.GetBy(c => c.Id.Equals(id)));
             });
         }
 
@@ -55,9 +55,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Email == email) is null
+                return _customersAppService.GetBy(c => c.Email.Equals(email)) is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Email == email));
+                    : Ok(_customersAppService.GetBy(c => c.Email.Equals(email)));
             });
         }
 
@@ -66,9 +66,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Cpf == cpf) is null
+                return _customersAppService.GetBy(c => c.Cpf.Equals(cpf)) is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Cpf == cpf));
+                    : Ok(_customersAppService.GetBy(c => c.Cpf.Equals(cpf)));
             });
         }
 
@@ -103,9 +103,8 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_customersAppService.Delete(id)
-                    ? NotFound()
-                    : NoContent();
+                _customersAppService.Delete(id);
+                return NoContent();
             });
         }
 
