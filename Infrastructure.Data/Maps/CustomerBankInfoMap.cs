@@ -20,7 +20,6 @@ namespace Infrastructure.Data.Maps
                 .WithOne(x => x.CustomerBankInfo)
                 .HasForeignKey<CustomerBankInfo>(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }
