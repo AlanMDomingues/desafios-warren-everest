@@ -11,14 +11,14 @@ namespace Application.Interfaces
     {
         IEnumerable<CustomerResult> GetAll();
 
-        IEnumerable<CustomerResult> GetAll(Expression<Func<Customer, bool>> predicate = null);
+        IEnumerable<CustomerResult> GetAll(params Expression<Func<Customer, bool>>[] predicate);
 
-        CustomerResult GetBy(Expression<Func<Customer, bool>> predicate);
+        CustomerResult GetBy(params Expression<Func<Customer, bool>>[] predicate);
 
         public (bool status, string messageResult) Create(CreateCustomerRequest newCustomerDto);
 
         public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
 
-        public bool Delete(int id);
+        public void Delete(int id);
     }
 }

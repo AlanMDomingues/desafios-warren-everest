@@ -28,14 +28,14 @@ namespace Application.Services
             return result;
         }
 
-        public IEnumerable<CustomerResult> GetAll(Expression<Func<Customer, bool>> predicate = null)
+        public IEnumerable<CustomerResult> GetAll(params Expression<Func<Customer, bool>>[] predicate)
         {
             var customers = _customerServices.GetAll(predicate);
             var result = _mapper.Map<IEnumerable<CustomerResult>>(customers);
             return result;
         }
 
-        public CustomerResult GetBy(Expression<Func<Customer, bool>> predicate)
+        public CustomerResult GetBy(params Expression<Func<Customer, bool>>[] predicate)
         {
             var customer = _customerServices.GetBy(predicate);
             var result = _mapper.Map<CustomerResult>(customer);
@@ -55,6 +55,6 @@ namespace Application.Services
             return _customerServices.Update(customerToUpdate);
         }
 
-        public bool Delete(int id) => _customerServices.Delete(id);
+        public void Delete(int id) => _customerServices.Delete(id);
     }
 }
