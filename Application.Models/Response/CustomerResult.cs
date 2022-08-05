@@ -16,5 +16,6 @@ namespace Application.Models.Response
         public string PostalCode { get; set; }
         public string Adress { get; set; }
         public int Number { get; set; }
+        public CustomerBankInfoResult CustomerBankInfo { get; set; }
     }
 }

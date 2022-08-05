@@ -14,6 +14,8 @@ namespace Application.Profiles
             CreateMap<CreateCustomerRequest, Customer>();
 
             CreateMap<UpdateCustomerRequest, Customer>();
+
+            CreateMap<CustomerBankInfo, CustomerBankInfoResult>();
         }
     }
 }
