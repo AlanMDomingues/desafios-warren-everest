@@ -1,28 +1,29 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Domain.Services.Services
 {
-    public class CustomerService : ICustomerService
+    public class CustomerService : ServiceBase, ICustomerService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly ICustomerBankInfoService _customerBankInfoService;
 
-        public CustomerService(IUnitOfWork unitOfWork, IRepositoryFactory repositoryFactory)
+        public CustomerService(ICustomerBankInfoService customerBankInfoService, IUnitOfWork unitOfWork, IRepositoryFactory repositoryFactory
+        ) : base(repositoryFactory, unitOfWork)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _customerBankInfoService = customerBankInfoService;
         }
 
         public IEnumerable<Customer> GetAll()
         {
-            var repository = _repositoryFactory.Repository<Customer>();
+            var repository = RepositoryFactory.Repository<Customer>();
 
-            var query = repository.MultipleResultQuery();
+            var query = repository.MultipleResultQuery()
+                                  .Include(source => source.Include(x => x.CustomerBankInfo));
 
             var result = repository.Search(query);
 
@@ -31,9 +32,10 @@ namespace Domain.Services.Services
 
         public IEnumerable<Customer> GetAll(params Expression<Func<Customer, bool>>[] predicates)
         {
-            var repository = _repositoryFactory.Repository<Customer>();
+            var repository = RepositoryFactory.Repository<Customer>();
 
-            var query = repository.MultipleResultQuery();
+            var query = repository.MultipleResultQuery()
+                                  .Include(source => source.Include(x => x.CustomerBankInfo));
             foreach (var item in predicates)
             {
                 query.AndFilter(item);
@@ -47,9 +49,10 @@ namespace Domain.Services.Services
 
         public Customer GetBy(params Expression<Func<Customer, bool>>[] predicates)
         {
-            var repository = _repositoryFactory.Repository<Customer>();
+            var repository = RepositoryFactory.Repository<Customer>();
 
-            var query = repository.SingleResultQuery();
+            var query = repository.SingleResultQuery()
+                                  .Include(source => source.Include(x => x.CustomerBankInfo));
             foreach (var item in predicates)
             {
                 query.AndFilter(item);
@@ -65,10 +68,11 @@ namespace Domain.Services.Services
             (bool exists, string message) = ValidateAlreadyExists(newCustomer);
             if (exists) return (false, message);
 
-            var repository = _unitOfWork.Repository<Customer>();
+            var repository = UnitOfWork.Repository<Customer>();
+            _customerBankInfoService.Create(newCustomer);
 
             repository.Add(newCustomer);
-            _unitOfWork.SaveChanges();
+            UnitOfWork.SaveChanges();
 
             return (true, newCustomer.Id.ToString());
         }
@@ -78,29 +82,22 @@ namespace Domain.Services.Services
             (bool exists, string message) = ValidateAlreadyExists(customer);
             if (exists) return (false, message);
 
-            var repository = _unitOfWork.Repository<Customer>();
+            var repository = UnitOfWork.Repository<Customer>();
             repository.Update(customer);
-            _unitOfWork.SaveChanges();
+            UnitOfWork.SaveChanges();
 
             return (true, $"Customer for ID: {customer.Id} updated successfully");
         }
 
-        public bool Delete(int id)
+        public void Delete(int id)
         {
-            var repository = _unitOfWork.Repository<Customer>();
-
-            var customerToDelete = GetBy(x => x.Id == id);
-            if (customerToDelete is null) return false;
-
-            repository.Remove(customerToDelete);
-            _unitOfWork.SaveChanges();
-
-            return true;
+            var repository = UnitOfWork.Repository<Customer>();
+            repository.Remove(x => x.Id.Equals(id));
         }
 
         private (bool exists, string message) ValidateAlreadyExists(Customer customer)
         {
-            var repository = _repositoryFactory.Repository<Customer>();
+            var repository = RepositoryFactory.Repository<Customer>();
 
             if (repository.Any(x => x.Id != customer.Id && (x.Email.Equals(customer.Email) || x.Cpf.Equals(customer.Cpf))))
             {

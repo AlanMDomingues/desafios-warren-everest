@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Domain.Services.Interfaces
 {
-    public interface ICustomerService
+    public interface ICustomerService : IServiceBase
     {
         IEnumerable<Customer> GetAll();
 
@@ -17,6 +17,6 @@ namespace Domain.Services.Interfaces
 
         public (bool status, string messageResult) Update(Customer newCustomer);
 
-        public bool Delete(int id);
+        public void Delete(int id);
     }
 }
