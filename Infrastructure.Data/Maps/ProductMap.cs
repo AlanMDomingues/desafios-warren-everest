@@ -10,24 +10,21 @@ namespace Infrastructure.Data.Maps
         {
             builder.ToTable("Product");
 
-            builder.HasKey(x => x.ProductId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.ProductId);
+            builder.Property(x => x.Id)
+                .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Symbol);
 
-            builder.Property(x => x.Quotes);
-
             builder.Property(x => x.UnitPrice);
 
-            builder.Property(x => x.NetValue);
+            builder.HasMany(x => x.Portfolios)
+                .WithMany(x => x.Products);
 
-            builder.Property(x => x.ConvertedAt);
-
-            builder.HasOne(x => x.Portfolio)
-                .WithMany(x => x.Products)
-                .HasForeignKey(x => x.PortfolioId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(x => x.Order)
+                .WithOne(x => x.Product)
+                .HasForeignKey<Product>(x => x.OrderId);
         }
     }
 }

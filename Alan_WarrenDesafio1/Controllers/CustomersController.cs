@@ -28,14 +28,16 @@ namespace Alan_WarrenDesafio1.Controllers
             });
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Id.Equals(id)) is null
+                var result = _customersAppService.Get(c => c.Id.Equals(id));
+
+                return result is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Id.Equals(id)));
+                    : Ok(result);
             });
         }
 
@@ -55,9 +57,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Email.Equals(email)) is null
+                return _customersAppService.Get(c => c.Email.Equals(email)) is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Email.Equals(email)));
+                    : Ok(_customersAppService.Get(c => c.Email.Equals(email)));
             });
         }
 
@@ -66,9 +68,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Cpf.Equals(cpf)) is null
+                return _customersAppService.Get(c => c.Cpf.Equals(cpf)) is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Cpf.Equals(cpf)));
+                    : Ok(_customersAppService.Get(c => c.Cpf.Equals(cpf)));
             });
         }
 
@@ -77,7 +79,7 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, messageResult) = _customersAppService.Create(newCustomerDto);
+                var (status, messageResult) = _customersAppService.Add(newCustomerDto);
 
                 return !status
                     ? BadRequest(messageResult)
@@ -103,8 +105,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                _customersAppService.Delete(id);
-                return NoContent();
+                return !_customersAppService.Delete(id)
+                    ? NotFound()
+                    : NoContent();
             });
         }
 

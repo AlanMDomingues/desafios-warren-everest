@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Data.Mappings
+namespace Infrastructure.Data.Maps
 {
     public class CustomerMap : IEntityTypeConfiguration<Customer>
     {
@@ -61,6 +61,15 @@ namespace Infrastructure.Data.Mappings
             builder.Property(x => x.Number)
                 .HasColumnType("int")
                 .IsRequired();
+
+            builder.HasOne(x => x.CustomerBankInfo)
+               .WithOne(x => x.Customer)
+               .HasForeignKey<CustomerBankInfo>(x => x.CustomerId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(x => x.Portfolios)
+                .WithOne(x => x.Customer)
+                .HasForeignKey(x => x.CustomerId);
         }
     }
 }

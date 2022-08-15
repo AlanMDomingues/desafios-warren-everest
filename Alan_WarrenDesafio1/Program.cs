@@ -5,6 +5,7 @@ using Domain.Services.Services;
 using EntityFrameworkCore.UnitOfWork.Extensions;
 using FluentValidation.AspNetCore;
 using Infrastructure.Data.Context;
+using Infrastructure.Data.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,11 +35,22 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<ICustomerAppService, CustomerAppService>();
+builder.Services.AddTransient<DbContext, DataContext>();
 
-builder.Services.AddTransient<ICustomerService, CustomerService>()
-                .AddTransient<DbContext, DataContext>();
+builder.Services.AddTransient<ICustomerAppService, CustomerAppService>();
+builder.Services.AddTransient<ICustomerService, CustomerService>();
+
+builder.Services.AddTransient<ICustomerBankInfoAppService, CustomerBankInfoAppService>();
 builder.Services.AddTransient<ICustomerBankInfoService, CustomerBankInfoService>();
+
+builder.Services.AddTransient<IPortfolioAppService, PortfolioAppService>();
+builder.Services.AddTransient<IPortfolioService, PortfolioService>();
+
+builder.Services.AddTransient<IProductAppService, ProductAppService>();
+builder.Services.AddTransient<IProductService, ProductService>();
+
+builder.Services.AddTransient<IOrderAppService, OrderAppService>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 
 builder.Services.AddAutoMapper(mapperConfiguration => mapperConfiguration.AddMaps(assembly), assembly);
 builder.Services.AddUnitOfWork(ServiceLifetime.Transient);
@@ -64,5 +76,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+builder.Services.ApplyMigrations();
 
 app.Run();

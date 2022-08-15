@@ -4,20 +4,20 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Maps
 {
-    public class CustomerBankInfoMap : IEntityTypeConfiguration<CustomerBankInfo>
+    public class OrderMap : IEntityTypeConfiguration<Order>
     {
-        public void Configure(EntityTypeBuilder<CustomerBankInfo> builder)
+        public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.ToTable("CustomerBankInfo");
-
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Account);
+            builder.Property(x => x.Quotes);
 
-            builder.Property(x => x.AccountBalance);
+            builder.Property(x => x.NetValue);
+
+            builder.Property(x => x.ConvertedAt);
         }
     }
 }

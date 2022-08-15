@@ -2,9 +2,11 @@
 {
     public class CustomerBankInfo
     {
-        public int CustomerId { get; set; }
+        public int Id { get; set; }
         public string Account { get; set; } // código da conta
         public decimal AccountBalance { get; set; } // saldo da conta
-        public Customer Customer { get; set; }
+
+        public int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
     }
 }

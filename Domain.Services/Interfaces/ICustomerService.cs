@@ -11,12 +11,12 @@ namespace Domain.Services.Interfaces
 
         IEnumerable<Customer> GetAll(params Expression<Func<Customer, bool>>[] predicate);
 
-        Customer GetBy(params Expression<Func<Customer, bool>>[] predicate);
+        Customer Get(params Expression<Func<Customer, bool>>[] predicate);
 
-        public (bool exists, string message) Create(Customer newCustomer);
+        public (bool exists, string message) Add(Customer newCustomer);
 
         public (bool status, string messageResult) Update(Customer newCustomer);
 
-        public void Delete(int id);
+        public bool Delete(int id);
     }
 }

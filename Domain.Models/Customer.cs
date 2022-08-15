@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Extensions;
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Models
 {
@@ -48,6 +49,9 @@ namespace Domain.Models
         public string PostalCode { get; set; }
         public string Adress { get; set; }
         public int Number { get; set; }
-        public CustomerBankInfo CustomerBankInfo { get; set; }
+
+        public virtual CustomerBankInfo CustomerBankInfo { get; set; }
+
+        public virtual ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
     }
 }

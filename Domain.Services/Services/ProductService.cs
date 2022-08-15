@@ -1,20 +1,18 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Domain.Services.Services
 {
     public class ProductService : ServiceBase, IProductService
     {
-        public ProductService(IRepositoryFactory repositoryFactory, IUnitOfWork unitOfWork
-        ) : base(repositoryFactory, unitOfWork)
-        { }
+        public ProductService(
+            IRepositoryFactory repositoryFactory,
+            IUnitOfWork unitOfWork)
+            : base(repositoryFactory, unitOfWork) { }
 
-        public IEnumerable<Product> GetAllProducts()
+        public IEnumerable<Product> GetAll()
         {
             var repository = RepositoryFactory.Repository<Product>();
 
@@ -25,52 +23,61 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public Product GetProduct(Expression<Func<Product, bool>> predicate)
+        public Product Get(int id)
         {
             var repository = RepositoryFactory.Repository<Product>();
 
-            var query = repository.MultipleResultQuery()
-                                  .AndFilter(predicate);
+            var query = repository.SingleResultQuery()
+                                  .AndFilter(x => x.Id.Equals(id));
 
             var result = repository.FirstOrDefault(query);
 
             return result;
         }
 
-        public void Create(Product product)
+        public (bool status, string message) Add(Product product)
         {
             var repository = UnitOfWork.Repository<Product>();
+
+            var (status, message) = ValidateAlreadyExists(product);
+            if (status) return (false, message);
 
             repository.Add(product);
             UnitOfWork.SaveChanges();
+
+            return (true, default);
         }
 
-        public bool Update(Product product)
+        public (bool status, string message) Update(Product product)
         {
             var repository = UnitOfWork.Repository<Product>();
 
-            if (repository.Any(x => x.ProductId == product.ProductId)) return false;
+            var (status, message) = ValidateAlreadyExists(product);
+            if (!status) return (false, message);
 
             repository.Update(product);
             UnitOfWork.SaveChanges();
 
-            return true;
+            return (true, default);
         }
 
         public void Delete(int id)
         {
             var repository = UnitOfWork.Repository<Product>();
 
-            repository.Remove(x => x.ProductId.Equals(id));
+            repository.Remove(x => x.Id.Equals(id));
         }
 
-        private void CalculateNetValue(Product product)
+        private (bool status, string message) ValidateAlreadyExists(Product product)
         {
-            var repository = UnitOfWork.Repository<Product>();
+            var repository = RepositoryFactory.Repository<Product>();
 
-            product.NetValue = product.Quotes * product.UnitPrice;
-            repository.Update(product);
-            UnitOfWork.SaveChanges();
+            if (repository.Any(x => x.Id.Equals(product.Id)))
+            {
+                return (true, "Product already exists");
+            }
+
+            return (false, "Product does not exists");
         }
     }
 }

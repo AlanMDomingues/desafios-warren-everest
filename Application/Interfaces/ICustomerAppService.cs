@@ -13,12 +13,12 @@ namespace Application.Interfaces
 
         IEnumerable<CustomerResult> GetAll(params Expression<Func<Customer, bool>>[] predicate);
 
-        CustomerResult GetBy(params Expression<Func<Customer, bool>>[] predicate);
+        CustomerResult Get(params Expression<Func<Customer, bool>>[] predicate);
 
-        public (bool status, string messageResult) Create(CreateCustomerRequest newCustomerDto);
+        public (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto);
 
         public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
 
-        public void Delete(int id);
+        public bool Delete(int id);
     }
 }

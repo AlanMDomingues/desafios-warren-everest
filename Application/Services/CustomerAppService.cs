@@ -1,12 +1,12 @@
-﻿using Application.Models.Requests;
+﻿using Application.Interfaces;
+using Application.Models.Requests;
 using Application.Models.Response;
 using AutoMapper;
+using Domain.Models;
+using Domain.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using Domain.Models;
 using System.Linq.Expressions;
-using Domain.Services.Interfaces;
-using Application.Interfaces;
 
 namespace Application.Services
 {
@@ -35,17 +35,17 @@ namespace Application.Services
             return result;
         }
 
-        public CustomerResult GetBy(params Expression<Func<Customer, bool>>[] predicate)
+        public CustomerResult Get(params Expression<Func<Customer, bool>>[] predicate)
         {
-            var customer = _customerServices.GetBy(predicate);
+            var customer = _customerServices.Get(predicate);
             var result = _mapper.Map<CustomerResult>(customer);
             return result;
         }
 
-        public (bool status, string messageResult) Create(CreateCustomerRequest newCustomerDto)
+        public (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto)
         {
             var customer = _mapper.Map<Customer>(newCustomerDto);
-            return _customerServices.Create(customer);
+            return _customerServices.Add(customer);
         }
 
         public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto)
@@ -55,6 +55,6 @@ namespace Application.Services
             return _customerServices.Update(customerToUpdate);
         }
 
-        public void Delete(int id) => _customerServices.Delete(id);
+        public bool Delete(int id) => _customerServices.Delete(id);
     }
 }

@@ -12,18 +12,18 @@ namespace Domain.Services.Services
     {
         private readonly ICustomerBankInfoService _customerBankInfoService;
 
-        public CustomerService(ICustomerBankInfoService customerBankInfoService, IUnitOfWork unitOfWork, IRepositoryFactory repositoryFactory
-        ) : base(repositoryFactory, unitOfWork)
-        {
-            _customerBankInfoService = customerBankInfoService;
-        }
+        public CustomerService(
+            ICustomerBankInfoService customerBankInfoService,
+            IUnitOfWork unitOfWork,
+            IRepositoryFactory repositoryFactory)
+            : base(repositoryFactory, unitOfWork) 
+            => _customerBankInfoService = customerBankInfoService ?? throw new ArgumentNullException(nameof(customerBankInfoService));
 
         public IEnumerable<Customer> GetAll()
         {
             var repository = RepositoryFactory.Repository<Customer>();
 
-            var query = repository.MultipleResultQuery()
-                                  .Include(source => source.Include(x => x.CustomerBankInfo));
+            var query = repository.MultipleResultQuery();
 
             var result = repository.Search(query);
 
@@ -34,8 +34,8 @@ namespace Domain.Services.Services
         {
             var repository = RepositoryFactory.Repository<Customer>();
 
-            var query = repository.MultipleResultQuery()
-                                  .Include(source => source.Include(x => x.CustomerBankInfo));
+            var query = repository.MultipleResultQuery();
+
             foreach (var item in predicates)
             {
                 query.AndFilter(item);
@@ -46,13 +46,11 @@ namespace Domain.Services.Services
             return result;
         }
 
-
-        public Customer GetBy(params Expression<Func<Customer, bool>>[] predicates)
+        public Customer Get(params Expression<Func<Customer, bool>>[] predicates)
         {
             var repository = RepositoryFactory.Repository<Customer>();
 
-            var query = repository.SingleResultQuery()
-                                  .Include(source => source.Include(x => x.CustomerBankInfo));
+            var query = repository.SingleResultQuery();
             foreach (var item in predicates)
             {
                 query.AndFilter(item);
@@ -63,13 +61,13 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public (bool exists, string message) Create(Customer newCustomer)
+        public (bool exists, string message) Add(Customer newCustomer)
         {
             (bool exists, string message) = ValidateAlreadyExists(newCustomer);
             if (exists) return (false, message);
 
             var repository = UnitOfWork.Repository<Customer>();
-            _customerBankInfoService.Create(newCustomer);
+            _customerBankInfoService.Add(newCustomer);
 
             repository.Add(newCustomer);
             UnitOfWork.SaveChanges();
@@ -89,10 +87,14 @@ namespace Domain.Services.Services
             return (true, $"Customer for ID: {customer.Id} updated successfully");
         }
 
-        public void Delete(int id)
+        public bool Delete(int id)
         {
             var repository = UnitOfWork.Repository<Customer>();
+
+            if (!repository.Any(x => x.Id.Equals(id))) return false;
+
             repository.Remove(x => x.Id.Equals(id));
+            return true;
         }
 
         private (bool exists, string message) ValidateAlreadyExists(Customer customer)

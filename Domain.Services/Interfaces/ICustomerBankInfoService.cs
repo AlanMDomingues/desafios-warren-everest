@@ -4,6 +4,7 @@ namespace Domain.Services.Interfaces
 {
     public interface ICustomerBankInfoService : IServiceBase
     {
-        public void Create(Customer customer);
+        public CustomerBankInfo Get(int id);
+        public void Add(Customer customer);
     }
 }
