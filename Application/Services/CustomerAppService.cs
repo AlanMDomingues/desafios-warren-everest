@@ -10,51 +10,127 @@ using System.Linq.Expressions;
 
 namespace Application.Services
 {
-    public class CustomerAppService : ICustomerAppService
+    public class CustomerAppService : AppServicesBase, ICustomerAppService
     {
         private readonly ICustomerService _customerServices;
-        private readonly IMapper _mapper;
+        private readonly ICustomerBankInfoAppService _customerBankInfoAppService;
+        private readonly IPortfolioAppService _portfolioAppService;
 
-        public CustomerAppService(ICustomerService customerServices, IMapper mapper)
+        public CustomerAppService(
+            IMapper mapper,
+            ICustomerService customerServices,
+            ICustomerBankInfoAppService customerBankInfoAppService,
+            IPortfolioAppService portfolioAppService)
+            : base(mapper)
         {
             _customerServices = customerServices ?? throw new ArgumentNullException(nameof(customerServices));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _customerBankInfoAppService = customerBankInfoAppService ?? throw new ArgumentNullException(nameof(customerBankInfoAppService));
+            _portfolioAppService = portfolioAppService ?? throw new ArgumentNullException(nameof(portfolioAppService));
         }
 
         public IEnumerable<CustomerResult> GetAll()
         {
             var customers = _customerServices.GetAll();
-            var result = _mapper.Map<IEnumerable<CustomerResult>>(customers);
+            var result = Mapper.Map<IEnumerable<CustomerResult>>(customers);
             return result;
         }
 
         public IEnumerable<CustomerResult> GetAll(params Expression<Func<Customer, bool>>[] predicate)
         {
             var customers = _customerServices.GetAll(predicate);
-            var result = _mapper.Map<IEnumerable<CustomerResult>>(customers);
+            var result = Mapper.Map<IEnumerable<CustomerResult>>(customers);
             return result;
         }
 
         public CustomerResult Get(params Expression<Func<Customer, bool>>[] predicate)
         {
             var customer = _customerServices.Get(predicate);
-            var result = _mapper.Map<CustomerResult>(customer);
+            var result = Mapper.Map<CustomerResult>(customer);
             return result;
         }
 
-        public (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto)
+        public Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate)
         {
-            var customer = _mapper.Map<Customer>(newCustomerDto);
-            return _customerServices.Add(customer);
+            var customer = _customerServices.Get(predicate);
+            return customer;
         }
 
-        public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto)
+        public (bool status, string messageResult) Add(CreateCustomerRequest customerRequest)
         {
-            var customerToUpdate = _mapper.Map<Customer>(customerToUpdateDto);
-            customerToUpdate.Id = id;
-            return _customerServices.Update(customerToUpdate);
+            var customer = Mapper.Map<Customer>(customerRequest);
+            var (status, message) = ValidateAlreadyExists(customer);
+            if (status) return (false, message);
+
+            _customerServices.Add(customer);
+            _customerBankInfoAppService.Add(customer.Id);
+
+            return (true, customer.Id.ToString());
         }
 
-        public bool Delete(int id) => _customerServices.Delete(id);
+        public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerRequest)
+        {
+            var customer = Mapper.Map<Customer>(customerRequest);
+            (bool exists, string message) = ValidateAlreadyExists(customer);
+            if (exists) return (false, message);
+
+            customer.Id = id;
+            _customerServices.Update(customer);
+            return (true, default);
+        }
+
+        public (bool status, string message) Delete(int id)
+        {
+            var customer = GetWithoutMap(x => x.Id.Equals(id));
+            var (status, message) = CustomerExists(customer);
+            if (!status) return (status, message);
+
+            var customerBankInfo = _customerBankInfoAppService.Get(id);
+            (status, message) = ValidateWithdrawMoneyBeforeDelete(customerBankInfo.AccountBalance);
+            if (!status) return (status, message);
+
+            var portfolios = _portfolioAppService.GetAllPortfoliosByCustomer(id);
+
+            (status, message) = ValidateWithdrawMoneyBeforeDelete(portfolios);
+            if (!status) return (status, message);
+
+            _customerServices.Delete(id);
+            return (true, default);
+        }
+
+        private (bool status, string message) ValidateAlreadyExists(Customer customer)
+        {
+            var status = _customerServices.ValidateAlreadyExists(customer);
+
+            return status
+                ? (true, "Customer already exists, please insert a new customer")
+                : (false, default);
+        }
+
+        private static (bool status, string message) CustomerExists(Customer customer)
+        {
+            return customer is null
+                ? (false, "'Customer' not found")
+                : (true, default);
+        }
+
+        private static (bool status, string message) ValidateWithdrawMoneyBeforeDelete(decimal totalBalance)
+        {
+            return totalBalance > 0
+                ? (false, "You must withdraw money from your account before deleting it")
+                : (true, default);
+        }
+
+        private static (bool status, string message) ValidateWithdrawMoneyBeforeDelete(IEnumerable<Portfolio> portfolios)
+        {
+            foreach (var item in portfolios)
+            {
+                if (item.TotalBalance > 0)
+                {
+                    return (false, "You must withdraw money from your portfolios before deleting it");
+                }
+            }
+
+            return (true, default);
+        }
     }
 }
