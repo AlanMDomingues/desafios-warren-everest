@@ -1,17 +1,20 @@
 ﻿using Application.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersBankInfoController : Controller
+    public class CustomersBankInfoController : ControllersBase<CustomersBankInfoController>
     {
         private readonly ICustomerBankInfoAppService _customerBankInfoAppService;
 
-        public CustomersBankInfoController(ICustomerBankInfoAppService customerBankInfoAppService) 
+        public CustomersBankInfoController(
+            ICustomerBankInfoAppService customerBankInfoAppService,
+            ILogger<CustomersBankInfoController> logger)
+            : base(logger)
             => _customerBankInfoAppService = customerBankInfoAppService ?? throw new ArgumentNullException(nameof(customerBankInfoAppService));
 
         [HttpGet("{id}")]
@@ -19,27 +22,38 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customerBankInfoAppService.Get(id) is null
-                ? BadRequest()
-                : Ok(_customerBankInfoAppService.Get(id));
+                var result = _customerBankInfoAppService.Get(id);
+
+                return result is null
+                    ? BadRequest()
+                    : Ok(result);
             });
         }
 
-        private IActionResult SafeAction(Func<IActionResult> action)
+        [HttpPut("money-deposit/{id}")]
+        public IActionResult MoneyDeposit(int id, decimal cash)
         {
-            try
+            return SafeAction(() =>
             {
-                return action?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException);
-                }
+                var (status, message) = _customerBankInfoAppService.MoneyDeposit(id, cash);
 
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+                return !status
+                    ? NotFound(message)
+                    : Ok();
+            });
+        }
+
+        [HttpPut("withdraw-money/{id}")]
+        public IActionResult WithdrawMoney(int id, decimal cash)
+        {
+            return SafeAction(() =>
+            {
+                var (status, message) = _customerBankInfoAppService.WithdrawMoney(id, cash);
+
+                return !status
+                    ? NotFound(message)
+                    : Ok();
+            });
         }
     }
 }
