@@ -5,16 +5,16 @@ namespace Application.Interfaces
 {
     public interface ICustomerBankInfoAppService : IAppServicesBase
     {
-        public CustomerBankInfoResult Get(int id);
+        CustomerBankInfoResult Get(int id);
 
-        public CustomerBankInfo GetWithoutMap(int id);
+        CustomerBankInfo GetWithoutMap(int id);
 
-        public void Add(int customerId);
+        void Add(int customerId);
 
-        public void Update(CustomerBankInfo customerBankInfo);
+        void Update(CustomerBankInfo customerBankInfo);
 
-        public (bool status, string message) MoneyDeposit(int id, decimal cash);
+        void MoneyDeposit(int id, decimal cash);
 
-        public (bool status, string message) WithdrawMoney(int id, decimal cash);
+        (bool status, string message) WithdrawMoney(int id, decimal cash);
     }
 }

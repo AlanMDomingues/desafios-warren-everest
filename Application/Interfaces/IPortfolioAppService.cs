@@ -7,24 +7,24 @@ namespace Application.Interfaces
 {
     public interface IPortfolioAppService : IAppServicesBase
     {
-        public IEnumerable<PortfolioResult> GetAll(int id);
+        IEnumerable<PortfolioResult> GetAll(int id);
 
-        public PortfolioResult Get(int id);
+        PortfolioResult Get(int id);
 
-        public Portfolio GetWithoutMap(int id);
+        Portfolio GetWithoutMap(int id);
 
-        public Portfolio GetPortfolioByCustomer(int customerId, int id);
+        Portfolio GetPortfolioByCustomer(int customerId, int id);
 
-        public IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId);
+        IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId);
 
-        public (bool status, string message) Add(CreatePortfolioRequest portfolio);
+        void Add(CreatePortfolioRequest portfolio);
 
-        public (bool status, string message) Update(int id, UpdatePortfolioRequest portfolio);
+        void Update(int id, UpdatePortfolioRequest portfolio);
 
-        public (bool status, string message) Delete(int id);
+        (bool status, string message) Delete(int id);
 
-        public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash);
+        (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash);
 
-        public (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash);
+        (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash);
     }
 }
