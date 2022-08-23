@@ -51,21 +51,15 @@ namespace Application.Services
 
         public (bool status, string message) Add(int customerBankInfoId, CreateOrderRequest orderRequest)
         {
-            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId);
-            var portfolio = _portfolioAppService.GetPortfolioByCustomer(customerBankInfoId, orderRequest.PortfolioId);
-
-            var (status, message) = ValidateAlreadyExists(customerBankInfo, portfolio);
-            if (!status) return (false, message);
-
-            var product = _productAppService.Get(orderRequest.ProductId);
-            (status, message) = ValidateAlreadyExists(product);
-            if (!status) return (false, message);
-
+            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId) ?? throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}"); 
+            _ = _portfolioAppService.GetPortfolioByCustomer(customerBankInfoId, orderRequest.PortfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {orderRequest.PortfolioId}");
+            var product = _productAppService.Get(orderRequest.ProductId) ?? throw new ArgumentException($"'Product' not found for ID: {orderRequest.ProductId}");
+            
             var order = Mapper.Map<Order>(orderRequest);
             order.UnitPrice = product.UnitPrice;
             order.SetNetValue();
 
-            (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, order.NetValue);
+            var (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, order.NetValue);
             if (!status) return (status, message);
 
             customerBankInfo.AccountBalance -= order.NetValue;
@@ -75,20 +69,6 @@ namespace Application.Services
             _customerBankInfoAppService.Update(customerBankInfo);
 
             return (true, default);
-        }
-
-        private static (bool status, string message) ValidateAlreadyExists(CustomerBankInfo customerBankInfo, Portfolio portfolio)
-        {
-            return customerBankInfo is null || portfolio is null
-                ? (false, "'Customer' or/and 'Portfolio' not found")
-                : (true, default);
-        }
-
-        private static (bool status, string message) ValidateAlreadyExists(ProductResult product)
-        {
-            return product is null
-                ? (false, "'Product' not found")
-                : (true, default);
         }
 
         private static (bool status, string message) ValidateTransaction(decimal totalBalance, decimal cash)
