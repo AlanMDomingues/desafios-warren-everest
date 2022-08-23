@@ -13,10 +13,12 @@ namespace Domain.Services.Interfaces
 
         Customer Get(params Expression<Func<Customer, bool>>[] predicate);
 
-        public (bool exists, string message) Add(Customer newCustomer);
+        public void Add(Customer newCustomer);
 
-        public (bool status, string messageResult) Update(Customer newCustomer);
+        public void Update(Customer newCustomer);
 
-        public bool Delete(int id);
+        public void Delete(int id);
+
+        public bool ValidateAlreadyExists(Customer customer);
     }
 }
