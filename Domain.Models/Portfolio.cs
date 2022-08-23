@@ -9,11 +9,11 @@ namespace Domain.Models
         public string Description { get; set; }
         public decimal TotalBalance { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<PortfolioProduct> PortfoliosProducts { get; set; } = new List<PortfolioProduct>();
 
-        public int? CustomerId { get; set; }
-        public virtual Customer Customer { get; set; }
+        public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
 
-        public virtual ICollection<Order> Orders { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
