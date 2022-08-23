@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Domain.Models
 {
     public class Product
     {
         public int Id { get; set; }
-        public string Symbol { get; set; } // nome do ativo
-        public decimal UnitPrice { get; set; } // preço de cada cota de um ativo
+        public string Symbol { get; set; }
+        public decimal UnitPrice { get; set; }
 
-        public virtual ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
+        public ICollection<PortfolioProduct> PortfoliosProducts { get; set; } = new List<PortfolioProduct>();
 
-        public int? OrderId { get; set; }
-        public virtual Order Order { get; set; }
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
