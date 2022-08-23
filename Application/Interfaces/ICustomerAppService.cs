@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Application.Interfaces
 {
-    public interface ICustomerAppService
+    public interface ICustomerAppService : IAppServicesBase
     {
         IEnumerable<CustomerResult> GetAll();
 
@@ -15,10 +15,12 @@ namespace Application.Interfaces
 
         CustomerResult Get(params Expression<Func<Customer, bool>>[] predicate);
 
+        public Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate);
+
         public (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto);
 
         public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
 
-        public bool Delete(int id);
+        public (bool status, string message) Delete(int id);
     }
 }
