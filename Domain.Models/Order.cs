@@ -4,43 +4,28 @@ namespace Domain.Models;
 
 public class Order
 {
-    public Order(int quotes, int portfolioId, decimal unitPrice)
+    public Order(int quotes, int portfolioId, int productId)
     {
         Quotes = quotes;
         PortfolioId = portfolioId;
-        SetNetValue(unitPrice);
+        ProductId = productId;
     }
 
     public int Id { get; set; }
-    public int Quotes { get; private set; } // quantidade de cotas
-    public decimal NetValue { get; private set; } // valor liquido total multiplicando Quotes pelo UnitPrice
-    public DateTime ConvertedAt { get; set; } = DateTime.UtcNow; // data da compra
+    public int Quotes { get; private set; }
+    public decimal UnitPrice { get; set; }
+    public decimal NetValue { get; private set; }
+    public DateTime ConvertedAt { get; set; } = DateTime.UtcNow;
 
     public int PortfolioId { get; set; }
     public virtual Portfolio Portfolio { get; set; }
 
-    public virtual Product Product { get; set; }
+    public int ProductId { get; set; }
+    public Product Product { get; set; }
 
-    public void SetQuotes(int quotes)
+    public void SetNetValue()
     {
-        Quotes = quotes;
-        SetNetValue();
+        NetValue = UnitPrice * Quotes;
     }
 
-    //private void SetNetValue(decimal? unitPrice = null)
-    //{
-    //    unitPrice ??= NetValue / Quotes;
-    //    NetValue = unitPrice * Quotes;
-    //}
-
-    private void SetNetValue()
-    {
-        var unitPrice = NetValue / Quotes;
-        NetValue = unitPrice * Quotes;
-    }
-
-    private void SetNetValue(decimal unitPrice)
-    {
-        NetValue = unitPrice * Quotes;
-    }
 }
