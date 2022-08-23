@@ -92,7 +92,7 @@ namespace Application.Services
             var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId);
 
             var (status, message) = ValidateAlreadyExists(customerBankInfo, portfolio);
-            if (status) return (status, message);
+            if (!status) return (status, message);
 
             (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, cash);
             if (!status) return (status, message);
