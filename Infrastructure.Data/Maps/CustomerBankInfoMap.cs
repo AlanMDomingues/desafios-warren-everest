@@ -15,7 +15,8 @@ namespace Infrastructure.Data.Maps
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Account);
+            builder.Property(x => x.Account)
+                .IsRequired();
 
             builder.Property(x => x.AccountBalance);
         }

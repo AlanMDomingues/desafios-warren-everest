@@ -15,16 +15,16 @@ namespace Infrastructure.Data.Maps
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Symbol);
+            builder.Property(x => x.Symbol)
+                .IsRequired();
 
-            builder.Property(x => x.UnitPrice);
+            builder.Property(x => x.UnitPrice)
+                .IsRequired();
 
-            builder.HasMany(x => x.Portfolios)
-                .WithMany(x => x.Products);
-
-            builder.HasOne(x => x.Order)
+            builder.HasMany(x => x.Orders)
                 .WithOne(x => x.Product)
-                .HasForeignKey<Product>(x => x.OrderId);
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

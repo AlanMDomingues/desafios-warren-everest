@@ -24,7 +24,8 @@ namespace Infrastructure.Data.Maps
 
             builder.HasMany(x => x.Orders)
                 .WithOne(x => x.Portfolio)
-                .HasForeignKey(x => x.PortfolioId);
+                .HasForeignKey(x => x.PortfolioId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

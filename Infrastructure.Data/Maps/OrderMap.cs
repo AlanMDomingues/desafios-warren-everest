@@ -13,11 +13,17 @@ namespace Infrastructure.Data.Maps
             builder.Property(x => x.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.Quotes);
+            builder.Property(x => x.Quotes)
+                .IsRequired();
 
-            builder.Property(x => x.NetValue);
+            builder.Property(x => x.UnitPrice)
+                .IsRequired();
 
-            builder.Property(x => x.ConvertedAt);
+            builder.Property(x => x.NetValue)
+                .IsRequired();
+
+            builder.Property(x => x.ConvertedAt)
+                .IsRequired();
         }
     }
 }

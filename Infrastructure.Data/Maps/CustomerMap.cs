@@ -69,7 +69,8 @@ namespace Infrastructure.Data.Maps
 
             builder.HasMany(x => x.Portfolios)
                 .WithOne(x => x.Customer)
-                .HasForeignKey(x => x.CustomerId);
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
