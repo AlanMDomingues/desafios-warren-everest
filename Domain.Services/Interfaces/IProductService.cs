@@ -9,9 +9,9 @@ namespace Domain.Services.Interfaces
 
         public Product Get(int id);
 
-        public (bool status, string message) Add(Product product);
+        public void Add(Product product);
 
-        public (bool status, string message) Update(Product product);
+        public void Update(Product product);
 
         public void Delete(int id);
     }
