@@ -6,14 +6,14 @@ namespace Application.Interfaces
 {
     public interface IProductAppService : IAppServicesBase
     {
-        public IEnumerable<ProductResult> GetAll();
+        IEnumerable<ProductResult> GetAll();
 
-        public ProductResult Get(int id);
+        ProductResult Get(int id);
 
-        public void Add(CreateProductRequest product);
+        void Add(CreateProductRequest product);
 
-        public (bool status, string message) Update(int id, UpdateProductRequest product);
+        (bool status, string message) Update(int id, UpdateProductRequest product);
 
-        public (bool status, string message) Delete(int id);
+        (bool status, string message) Delete(int id);
     }
 }

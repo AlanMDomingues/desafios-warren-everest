@@ -5,14 +5,14 @@ namespace Domain.Services.Interfaces
 {
     public interface IProductService : IServiceBase
     {
-        public IEnumerable<Product> GetAll();
+        IEnumerable<Product> GetAll();
 
-        public Product Get(int id);
+        Product Get(int id);
 
-        public void Add(Product product);
+        void Add(Product product);
 
-        public void Update(Product product);
+        void Update(Product product);
 
-        public void Delete(int id);
+        void Delete(int id);
     }
 }

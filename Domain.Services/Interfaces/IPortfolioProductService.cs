@@ -2,6 +2,6 @@
 {
     public interface IPortfolioProductService: IServiceBase
     {
-        public void Add(int portfolioId, int productId);
+        void Add(int portfolioId, int productId);
     }
 }

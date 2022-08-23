@@ -15,12 +15,12 @@ namespace Application.Interfaces
 
         CustomerResult Get(params Expression<Func<Customer, bool>>[] predicate);
 
-        public Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate);
+        Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate);
 
-        public (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto);
+        (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto);
 
-        public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
+        (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
 
-        public (bool status, string message) Delete(int id);
+        (bool status, string message) Delete(int id);
     }
 }

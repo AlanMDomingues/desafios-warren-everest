@@ -5,10 +5,10 @@ namespace Domain.Services.Interfaces
 {
     public interface IOrderService : IServiceBase
     {
-        public IEnumerable<Order> GetAll(int id);
+        IEnumerable<Order> GetAll(int id);
 
-        public Order Get(int id);
+        Order Get(int id);
 
-        public void Add(Order order);
+        void Add(Order order);
     }
 }

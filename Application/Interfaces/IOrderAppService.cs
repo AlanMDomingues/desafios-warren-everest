@@ -6,10 +6,10 @@ namespace Application.Interfaces
 {
     public interface IOrderAppService : IAppServicesBase
     {
-        public IEnumerable<OrderResult> GetAll(int id);
+        IEnumerable<OrderResult> GetAll(int id);
 
-        public OrderResult Get(int id);
+        OrderResult Get(int id);
 
-        public (bool status, string message) Add(int customerBankInfoId, CreateOrderRequest orderRequest);
+        (bool status, string message) Add(int customerBankInfoId, CreateOrderRequest orderRequest);
     }
 }
