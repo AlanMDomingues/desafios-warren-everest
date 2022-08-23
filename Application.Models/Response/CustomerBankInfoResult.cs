@@ -2,7 +2,7 @@
 {
     public class CustomerBankInfoResult
     {
-        public string Account { get; set; } // código da conta
-        public decimal AccountBalance { get; set; } // saldo da conta
+        public string Account { get; set; }
+        public decimal AccountBalance { get; set; }
     }
 }
