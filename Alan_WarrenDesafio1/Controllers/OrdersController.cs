@@ -1,56 +1,61 @@
 ﻿using Application.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Application.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrdersController : Controller
+    public class OrdersController : ControllersBase<OrdersController>
     {
         private readonly IOrderAppService _orderAppService;
 
-        public OrdersController(IOrderAppService orderAppService)
+        public OrdersController(
+            IOrderAppService orderAppService,
+            ILogger<OrdersController> logger)
+            : base(logger)
             => _orderAppService = orderAppService ?? throw new ArgumentNullException(nameof(orderAppService));
+
+        [HttpGet("get-all/{id}")]
+        public IActionResult GetAll(int id)
+        {
+            return SafeAction(() =>
+            {
+                var results = _orderAppService.GetAll(id);
+
+                return !results.Any()
+                    ? NotFound()
+                    : Ok(results);
+            });
+        }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             return SafeAction(() =>
             {
-                return _orderAppService.Get(id) is null
+                var result = _orderAppService.Get(id);
+
+                return result is null
                     ? NotFound()
-                    : Ok(_orderAppService.Get(id));
+                    : Ok(result);
             });
         }
 
         [HttpPost]
-        public IActionResult Post(int portfolioId, int productId, int quotes)
+        public IActionResult Post(int customerId, CreateOrderRequest orderRequest)
         {
             return SafeAction(() =>
             {
-                return !_orderAppService.Add(portfolioId, productId, quotes)
-                    ? NotFound()
-                    : Ok(_orderAppService.Add(portfolioId, productId, quotes));
+                var (status, message) = _orderAppService.Add(customerId, orderRequest);
+
+                return !status
+                    ? BadRequest(message)
+                    : Created("~api/orders", default);
             });
-        }
-
-        private IActionResult SafeAction(Func<IActionResult> action)
-        {
-            try
-            {
-                return action?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException);
-                }
-
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
         }
     }
 }

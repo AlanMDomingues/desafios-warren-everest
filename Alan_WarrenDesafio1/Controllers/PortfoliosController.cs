@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces;
 using Application.Models.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,8 +15,8 @@ namespace Alan_WarrenDesafio1.Controllers
 
         public PortfoliosController(
             IPortfolioAppService portfolioAppService,
-            ILogger<PortfoliosController> logger
-        ) : base(logger)
+            ILogger<PortfoliosController> logger)
+            : base(logger)
             => _portfolioAppService = portfolioAppService ?? throw new ArgumentNullException(nameof(portfolioAppService));
 
         [HttpGet("get-all/{id}")]
@@ -25,9 +24,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_portfolioAppService.GetAll(id).Any()
-                ? NotFound()
-                : Ok(_portfolioAppService.GetAll(id));
+                var results = _portfolioAppService.GetAll(id);
+
+                return !results.Any()
+                    ? NotFound()
+                    : Ok(results);
             });
         }
 
@@ -36,9 +37,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _portfolioAppService.Get(id) is null
-                ? BadRequest()
-                : Ok(_portfolioAppService.Get(id));
+                var result = _portfolioAppService.Get(id);
+
+                return result is null
+                    ? BadRequest()
+                    : Ok(result);
             });
         }
 
@@ -47,10 +50,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var result = _portfolioAppService.Add(portfolio);
-                return !result
-                    ? NotFound()
-                    : Ok(result);
+                var (status, message) = _portfolioAppService.Add(portfolio);
+
+                return !status
+                    ? NotFound(message)
+                    : Created("~api/portfolio", default);
             });
         }
 
@@ -59,9 +63,37 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_portfolioAppService.Update(id, portfolio)
-                    ? NotFound()
-                    : Ok(_portfolioAppService.Update(id, portfolio));
+                var (status, message) = _portfolioAppService.Update(id, portfolio);
+
+                return !status
+                    ? NotFound(message)
+                    : Ok();
+            });
+        }
+
+        [HttpPut("transfer-money-to-portfolio/{portfolioId}")]
+        public IActionResult TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash)
+        {
+            return SafeAction(() =>
+            {
+                var (status, message) = _portfolioAppService.TransferMoneyToPortfolio(customerBankInfoId, portfolioId, cash);
+
+                return !status
+                    ? BadRequest(message)
+                    : Ok();
+            });
+        }
+
+        [HttpPut("transfer-money-to-account-balance/{portfolioId}")]
+        public IActionResult TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash)
+        {
+            return SafeAction(() =>
+            {
+                var (status, message) = _portfolioAppService.TransferMoneyToAccountBalance(customerBankInfoId, portfolioId, cash);
+
+                return !status
+                    ? BadRequest(message)
+                    : Ok();
             });
         }
 
@@ -70,9 +102,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_portfolioAppService.Delete(id)
-                    ? NotFound()
-                    : Ok(_portfolioAppService.Delete(id));
+                var (status, message) = _portfolioAppService.Delete(id);
+
+                return !status
+                    ? BadRequest(message)
+                    : NoContent();
             });
         }
     }

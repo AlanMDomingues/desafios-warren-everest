@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
@@ -9,11 +9,14 @@ namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : Controller
+    public class ProductsController : ControllersBase<ProductsController>
     {
         private readonly IProductAppService _productAppService;
 
-        public ProductsController(IProductAppService productAppService)
+        public ProductsController(
+            IProductAppService productAppService,
+            ILogger<ProductsController> logger)
+            : base(logger)
             => _productAppService = productAppService ?? throw new ArgumentNullException(nameof(productAppService));
 
         [HttpGet]
@@ -21,9 +24,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_productAppService.GetAll().Any()
+                var result = _productAppService.GetAll();
+
+                return !result.Any()
                     ? NotFound()
-                    : Ok();
+                    : Ok(result);
             });
         }
 
@@ -32,9 +37,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _productAppService.Get(id) is null
+                var result = _productAppService.Get(id);
+
+                return result is null
                     ? NotFound()
-                    : Ok(_productAppService.Get(id));
+                    : Ok(result);
             });
         }
 
@@ -43,10 +50,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _productAppService.Add(product);
-                return !status
-                    ? BadRequest(message)
-                    : Ok();
+                _productAppService.Add(product);
+
+                return Created("~api/products", default);
             });
         }
 
@@ -56,6 +62,7 @@ namespace Alan_WarrenDesafio1.Controllers
             return SafeAction(() =>
             {
                 var (status, message) = _productAppService.Update(id, product);
+
                 return !status
                     ? BadRequest(message)
                     : Ok();
@@ -67,26 +74,12 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                _productAppService.Delete(id);
-                return NoContent();
+                var (status, message) = _productAppService.Delete(id);
+
+                return !status
+                    ? NotFound(message)
+                    : NoContent();
             });
-        }
-
-        private IActionResult SafeAction(Func<IActionResult> action)
-        {
-            try
-            {
-                return action?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException);
-                }
-
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
         }
     }
 }

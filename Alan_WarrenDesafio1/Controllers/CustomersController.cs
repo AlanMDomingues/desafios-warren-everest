@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
@@ -9,11 +9,14 @@ namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersController : Controller
+    public class CustomersController : ControllersBase<CustomersController>
     {
         private readonly ICustomerAppService _customersAppService;
 
-        public CustomersController(ICustomerAppService customerAppService)
+        public CustomersController(
+            ICustomerAppService customerAppService,
+            ILogger<CustomersController> logger)
+            : base(logger)
             => _customersAppService = customerAppService ?? throw new ArgumentNullException(nameof(customerAppService));
 
         [HttpGet]
@@ -22,6 +25,7 @@ namespace Alan_WarrenDesafio1.Controllers
             return SafeAction(() =>
             {
                 var customers = _customersAppService.GetAll();
+
                 return !customers.Any()
                     ? NotFound()
                     : Ok(customers);
@@ -46,9 +50,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_customersAppService.GetAll(c => c.FullName.Contains(fullName)).Any()
+                var results = _customersAppService.GetAll(c => c.FullName.Contains(fullName));
+
+                return !results.Any()
                     ? NotFound()
-                    : Ok(_customersAppService.GetAll(c => c.FullName.Contains(fullName)));
+                    : Ok(results);
             });
         }
 
@@ -57,9 +63,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.Get(c => c.Email.Equals(email)) is null
+                var result = _customersAppService.Get(c => c.Email.Equals(email));
+
+                return result is null
                     ? NotFound()
-                    : Ok(_customersAppService.Get(c => c.Email.Equals(email)));
+                    : Ok(result);
             });
         }
 
@@ -68,9 +76,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.Get(c => c.Cpf.Equals(cpf)) is null
+                var result = _customersAppService.Get(c => c.Cpf.Equals(cpf));
+
+                return result is null
                     ? NotFound()
-                    : Ok(_customersAppService.Get(c => c.Cpf.Equals(cpf)));
+                    : Ok(result);
             });
         }
 
@@ -83,7 +93,7 @@ namespace Alan_WarrenDesafio1.Controllers
 
                 return !status
                     ? BadRequest(messageResult)
-                    : Created("~api/customer", messageResult);
+                    : Created("~api/customers", messageResult);
             });
         }
 
@@ -105,27 +115,12 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_customersAppService.Delete(id)
-                    ? NotFound()
+                var (status, message) = _customersAppService.Delete(id);
+
+                return !status
+                    ? BadRequest(message)
                     : NoContent();
             });
-        }
-
-        private IActionResult SafeAction(Func<IActionResult> action)
-        {
-            try
-            {
-                return action?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException);
-                }
-
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
         }
     }
 }
