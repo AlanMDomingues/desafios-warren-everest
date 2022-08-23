@@ -35,11 +35,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _customerBankInfoAppService.MoneyDeposit(id, cash);
+                _customerBankInfoAppService.MoneyDeposit(id, cash);
 
-                return !status
-                    ? NotFound(message)
-                    : Ok();
+                return Ok();
             });
         }
 
