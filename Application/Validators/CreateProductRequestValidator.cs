@@ -11,7 +11,6 @@ namespace Application.Validators
                 .NotEmpty();
 
             RuleFor(x => x.UnitPrice)
-                .NotEmpty()
                 .GreaterThan(0);
         }
     }
