@@ -35,30 +35,20 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public (bool status, string message) Add(Product product)
+        public void Add(Product product)
         {
             var repository = UnitOfWork.Repository<Product>();
-
-            var (status, message) = ValidateAlreadyExists(product);
-            if (status) return (false, message);
 
             repository.Add(product);
             UnitOfWork.SaveChanges();
-
-            return (true, default);
         }
 
-        public (bool status, string message) Update(Product product)
+        public void Update(Product product)
         {
             var repository = UnitOfWork.Repository<Product>();
 
-            var (status, message) = ValidateAlreadyExists(product);
-            if (!status) return (false, message);
-
             repository.Update(product);
             UnitOfWork.SaveChanges();
-
-            return (true, default);
         }
 
         public void Delete(int id)
@@ -66,18 +56,6 @@ namespace Domain.Services.Services
             var repository = UnitOfWork.Repository<Product>();
 
             repository.Remove(x => x.Id.Equals(id));
-        }
-
-        private (bool status, string message) ValidateAlreadyExists(Product product)
-        {
-            var repository = RepositoryFactory.Repository<Product>();
-
-            if (repository.Any(x => x.Id.Equals(product.Id)))
-            {
-                return (true, "Product already exists");
-            }
-
-            return (false, "Product does not exists");
         }
     }
 }
