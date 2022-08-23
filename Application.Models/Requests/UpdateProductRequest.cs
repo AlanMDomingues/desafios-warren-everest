@@ -2,7 +2,7 @@
 {
     public class UpdateProductRequest
     {
-        public string Symbol { get; set; } // nome do ativo
-        public decimal UnitPrice { get; set; } // preço de cada cota de um ativo
+        public string Symbol { get; set; }
+        public decimal UnitPrice { get; set; }
     }
 }
