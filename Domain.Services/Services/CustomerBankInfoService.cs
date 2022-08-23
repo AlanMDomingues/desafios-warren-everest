@@ -24,7 +24,7 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public void Add(Customer customer)
+        public void Add(int customerId)
         {
             var randomNumber = new Random();
             string accountNumber = "";
@@ -33,11 +33,22 @@ namespace Domain.Services.Services
 
             var repository = UnitOfWork.Repository<CustomerBankInfo>();
 
-            repository.Add(new CustomerBankInfo
+            var customerBankInfo = new CustomerBankInfo
             {
                 Account = accountNumber,
-                Customer = customer
-            });
+                CustomerId = customerId
+            };
+
+            repository.Add(customerBankInfo);
+            UnitOfWork.SaveChanges();
+        }
+
+        public void Update(CustomerBankInfo customerBankInfo)
+        {
+            var repository = UnitOfWork.Repository<CustomerBankInfo>();
+
+            repository.Update(customerBankInfo);
+            UnitOfWork.SaveChanges();
         }
     }
 }
