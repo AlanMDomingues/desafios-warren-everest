@@ -6,9 +6,19 @@ namespace Domain.Services.Interfaces
     public interface IPortfolioService : IServiceBase
     {
         public IEnumerable<Portfolio> GetAll(int id);
+
         public Portfolio Get(int id);
-        public bool Add(Portfolio portfolio);
-        public bool Update(Portfolio portfolio);
-        public bool Delete(int id);
+
+        public Portfolio GetPortfolioByCustomer(int customerId, int id);
+
+        public IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId);
+
+        public void Add(Portfolio portfolio);
+
+        public void Update(Portfolio portfolio);
+
+        public void Delete(int id);
+
+        public void TransferMoneyToPortfolioOrAccountBalance(CustomerBankInfo customerBankInfo, Portfolio portfolio);
     }
 }
