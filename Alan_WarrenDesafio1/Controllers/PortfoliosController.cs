@@ -50,11 +50,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _portfolioAppService.Add(portfolio);
+                _portfolioAppService.Add(portfolio);
 
-                return !status
-                    ? NotFound(message)
-                    : Created("~api/portfolio", default);
+                return Created("~api/portfolio", default);
             });
         }
 
@@ -63,11 +61,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _portfolioAppService.Update(id, portfolio);
+                _portfolioAppService.Update(id, portfolio);
 
-                return !status
-                    ? NotFound(message)
-                    : Ok();
+                return Ok();
             });
         }
 
