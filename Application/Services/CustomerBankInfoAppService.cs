@@ -34,23 +34,19 @@ namespace Application.Services
 
         public void Add(int customerId) => _customerBankInfoService.Add(customerId);
 
-        public (bool status, string message) MoneyDeposit(int id, decimal cash)
+        public void MoneyDeposit(int id, decimal cash)
         {
-            var customerBankInfo = GetWithoutMap(id);
-            var (status, message) = ValidateAlreadyExists(customerBankInfo);
-            if (!status) return (status, message);
+            var customerBankInfo = GetWithoutMap(id) ?? throw new ArgumentException($"'Customer' not found for ID: {id}");
 
             customerBankInfo.AccountBalance += cash;
 
             _customerBankInfoService.Update(customerBankInfo);
-
-            return (true, default);
         }
 
         public (bool status, string message) WithdrawMoney(int id, decimal cash)
         {
-            var customerBankInfo = GetWithoutMap(id);
-            var (status, message) = ValidateAlreadyExists(customerBankInfo);
+            var customerBankInfo = GetWithoutMap(id) ?? throw new ArgumentException($"'Customer' not found for ID: {id}");
+            var (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, cash);
             if (!status) return (status, message);
 
             customerBankInfo.AccountBalance -= cash;
@@ -60,10 +56,10 @@ namespace Application.Services
             return (true, default);
         }
 
-        private static (bool status, string message) ValidateAlreadyExists(CustomerBankInfo customerBankInfo)
+        private static (bool status, string message) ValidateTransaction(decimal totalBalance, decimal cash)
         {
-            return customerBankInfo is null
-                ? (false, "'Customer' not found")
+            return totalBalance < cash
+                ? (false, "Insufficient balance")
                 : (true, default);
         }
     }
