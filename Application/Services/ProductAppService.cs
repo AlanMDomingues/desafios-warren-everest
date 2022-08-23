@@ -6,48 +6,67 @@ using Domain.Models;
 using Domain.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Application.Services
 {
-    public class ProductAppService : IProductAppService
+    public class ProductAppService : AppServicesBase, IProductAppService
     {
         private readonly IProductService _productService;
-        private readonly IMapper _mapper;
 
-        public ProductAppService(IProductService productService, IMapper mapper)
-        {
-            _productService = productService;
-            _mapper = mapper;
-        }
+        public ProductAppService(
+            IMapper mapper,
+            IProductService productService)
+            : base(mapper)
+            => _productService = productService ?? throw new ArgumentNullException(nameof(productService));
 
         public IEnumerable<ProductResult> GetAll()
         {
             var products = _productService.GetAll();
-            var result = _mapper.Map<IEnumerable<ProductResult>>(products);
+            var result = Mapper.Map<IEnumerable<ProductResult>>(products);
             return result;
         }
 
         public ProductResult Get(int id)
         {
             var product = _productService.Get(id);
-            var result = _mapper.Map<ProductResult>(product);
+            var result = Mapper.Map<ProductResult>(product);
             return result;
         }
 
-        public (bool status, string message) Add(CreateProductRequest product)
+        public void Add(CreateProductRequest product)
         {
-            var productToCreate = _mapper.Map<Product>(product);
-            return _productService.Add(productToCreate);
+            var productToCreate = Mapper.Map<Product>(product);
+
+            _productService.Add(productToCreate);
         }
 
         public (bool status, string message) Update(int id, UpdateProductRequest product)
         {
-            var productToUpdate = _mapper.Map<Product>(product);
+            var productExists = Get(id);
+            var (status, message) = ValidateAlreadyExists(productExists);
+            if (!status) return (status, message);
+
+            var productToUpdate = Mapper.Map<Product>(product);
             productToUpdate.Id = id;
-            return _productService.Update(productToUpdate);
+            _productService.Update(productToUpdate);
+            return (true, default);
         }
 
-        public void Delete(int id) => _productService.Delete(id);
+        public (bool status, string message) Delete(int id)
+        {
+            var product = Get(id);
+            var (status, message) = ValidateAlreadyExists(product);
+            if (!status) return (status, message);
+
+            _productService.Delete(id);
+            return (true, default);
+        }
+
+        private static (bool status, string message) ValidateAlreadyExists(ProductResult product)
+        {
+            return product is null
+                ? (false, "'Product' not found")
+                : (true, default);
+        }
     }
 }
