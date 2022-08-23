@@ -50,8 +50,8 @@ namespace Domain.Models
         public string Adress { get; set; }
         public int Number { get; set; }
 
-        public virtual CustomerBankInfo CustomerBankInfo { get; set; }
+        public CustomerBankInfo CustomerBankInfo { get; set; }
 
-        public virtual ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
+        public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
     }
 }
