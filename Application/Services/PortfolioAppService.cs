@@ -49,37 +49,28 @@ namespace Application.Services
 
         public IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId) => _portfolioService.GetAllPortfoliosByCustomer(customerId);
 
-        public (bool status, string message) Add(CreatePortfolioRequest portfolio)
+        public void Add(CreatePortfolioRequest portfolio)
         {
-            var customer = _customerBankInfoAppService.Get(portfolio.CustomerId);
-            var (status, message) = ValidateAlreadyExists(customer);
-            if (!status) return (status, message);
+            _ = _customerBankInfoAppService.Get(portfolio.CustomerId) ?? throw new ArgumentException($"'Customer' not found for ID: {portfolio.CustomerId}");
 
             var portfolioToCreate = Mapper.Map<Portfolio>(portfolio);
             _portfolioService.Add(portfolioToCreate);
-            return (true, default);
         }
 
-        public (bool status, string message) Update(int id, UpdatePortfolioRequest portfolio)
+        public void Update(int id, UpdatePortfolioRequest portfolio)
         {
-            var portfolioExists = GetWithoutMap(id);
-            var (status, message) = ValidateAlreadyExists(portfolioExists);
-            if (!status) return (status, message);
+            _ = Get(id) ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
             var portfolioToUpdate = Mapper.Map<Portfolio>(portfolio);
             portfolioToUpdate.Id = id;
             _portfolioService.Update(portfolioToUpdate);
-
-            return (true, default);
         }
 
         public (bool status, string message) Delete(int id)
         {
-            var portfolio = GetWithoutMap(id);
-            var (status, message) = ValidateAlreadyExists(portfolio);
-            if (!status) return (status, message);
+            var portfolio = GetWithoutMap(id) ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
-            (status, message) = ValidateWithdrawMoneyBeforeDelete(portfolio.TotalBalance);
+            var (status, message) = ValidateWithdrawMoneyBeforeDelete(portfolio.TotalBalance);
 
             return !status
                 ? (false, message)
@@ -88,13 +79,10 @@ namespace Application.Services
 
         public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash)
         {
-            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId);
-            var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId);
+            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId) ?? throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}");
+            var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {portfolioId}, on customer with ID: {customerBankInfoId}");
 
-            var (status, message) = ValidateAlreadyExists(customerBankInfo, portfolio);
-            if (!status) return (status, message);
-
-            (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, cash);
+            var (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, cash);
             if (!status) return (status, message);
 
             customerBankInfo.AccountBalance -= cash;
@@ -106,13 +94,10 @@ namespace Application.Services
 
         public (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash)
         {
-            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId);
-            var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId);
+            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId) ?? throw new ArgumentException($"'Customer' not found for Id: {customerBankInfoId}");
+            var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {portfolioId}, on Customer with ID: {customerBankInfoId}");
 
-            var (status, message) = ValidateAlreadyExists(customerBankInfo, portfolio);
-            if (!status) return (status, message);
-
-            (status, message) = ValidateTransaction(portfolio.TotalBalance, cash);
+            var (status, message) = ValidateTransaction(portfolio.TotalBalance, cash);
             if (!status) return (status, message);
 
             portfolio.TotalBalance -= cash;
@@ -120,27 +105,6 @@ namespace Application.Services
 
             _portfolioService.TransferMoneyToPortfolioOrAccountBalance(customerBankInfo, portfolio);
             return (true, default);
-        }
-
-        private static (bool status, string message) ValidateAlreadyExists(CustomerBankInfo customerBankInfo, Portfolio portfolio)
-        {
-            return customerBankInfo is null || portfolio is null
-                ? (false, "'Customer' or 'Portfolio' not found")
-                : (true, default);
-        }
-
-        private static (bool status, string message) ValidateAlreadyExists(Portfolio portfolio)
-        {
-            return portfolio is null
-                ? (false, "'Portfolio' not found")
-                : (true, default);
-        }
-
-        private static (bool status, string message) ValidateAlreadyExists(CustomerBankInfoResult customer)
-        {
-            return customer is null
-                ? (false, "'Customer' not found")
-                : (true, default);
         }
 
         private static (bool status, string message) ValidateTransaction(decimal totalBalance, decimal cash)
