@@ -1,19 +1,17 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace Domain.Services.Services
 {
     public class PortfolioService : ServiceBase, IPortfolioService
     {
-        private readonly ICustomerService _customerService;
         public PortfolioService(
             IRepositoryFactory repositoryFactory,
-            IUnitOfWork unitOfWork,
-            ICustomerService customerService)
-            : base(repositoryFactory, unitOfWork)
-            => _customerService = customerService;
+            IUnitOfWork unitOfWork)
+            : base(repositoryFactory, unitOfWork) { }
 
         public IEnumerable<Portfolio> GetAll(int id)
         {
@@ -31,54 +29,71 @@ namespace Domain.Services.Services
         {
             var repository = RepositoryFactory.Repository<Portfolio>();
 
-            var query = repository.MultipleResultQuery()
-                                  .AndFilter(x => x.Id.Equals(id));
+            var query = repository.SingleResultQuery()
+                                  .AndFilter(x => x.Id.Equals(id))
+                                  .Include(source => source.Include(x => x.PortfoliosProducts));
 
             var result = repository.FirstOrDefault(query);
 
             return result;
         }
 
-        public bool Add(Portfolio portfolio)
+        public Portfolio GetPortfolioByCustomer(int customerId, int id)
         {
-            var repositoryCustomer = RepositoryFactory.Repository<Customer>();
-            // TODO: mover para appService
-            if (!repositoryCustomer.Any(x => x.Id.Equals(portfolio.CustomerId))) return false;
+            var repository = RepositoryFactory.Repository<Portfolio>();
 
+            var query = repository.SingleResultQuery()
+                                  .AndFilter(x => x.Id.Equals(id))
+                                  .AndFilter(x => x.CustomerId.Equals(customerId));
+
+            var result = repository.FirstOrDefault(query);
+
+            return result;
+        }
+
+        public IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId)
+        {
+            var repository = RepositoryFactory.Repository<Portfolio>();
+
+            var query = repository.MultipleResultQuery()
+                                  .AndFilter(x => x.CustomerId.Equals(customerId));
+
+            var result = repository.Search(query);
+
+            return result;
+        }
+
+        public void Add(Portfolio portfolio)
+        {
             var repository = UnitOfWork.Repository<Portfolio>();
 
             repository.Add(portfolio);
-
-            //var customer = _customerService.Get(x => x.Id.Equals(portfolio.CustomerId));
-
-            //customer.Portfolios.Add(portfolio);
-
-            //repositoryCustomer.Update(customer);
             UnitOfWork.SaveChanges();
-
-            return true;
         }
 
-        public bool Update(Portfolio portfolio)
+        public void Update(Portfolio portfolio)
         {
             var repository = UnitOfWork.Repository<Portfolio>();
-
-            if (!repository.Any(x => x.Id.Equals(portfolio.Id))) return false;
 
             repository.Update(portfolio);
             UnitOfWork.SaveChanges();
-
-            return true;
         }
 
-        public bool Delete(int id)
+        public void Delete(int id)
         {
             var repository = UnitOfWork.Repository<Portfolio>();
 
-            if (!repository.Any(x => x.Id.Equals(id))) return false;
-
             repository.Remove(x => x.Id.Equals(id));
-            return true;
+        }
+
+        public void TransferMoneyToPortfolioOrAccountBalance(CustomerBankInfo customerBankInfo, Portfolio portfolio)
+        {
+            var repository = UnitOfWork.Repository<CustomerBankInfo>();
+            var repositoryPortfolio = UnitOfWork.Repository<Portfolio>();
+
+            repository.Update(customerBankInfo);
+            repositoryPortfolio.Update(portfolio);
+            UnitOfWork.SaveChanges();
         }
     }
 }
