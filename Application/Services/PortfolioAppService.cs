@@ -26,8 +26,16 @@ namespace Application.Services
 
         public IEnumerable<PortfolioResult> GetAll(int id)
         {
-            var portfolio = _portfolioService.GetAll(id);
-            var result = Mapper.Map<IEnumerable<PortfolioResult>>(portfolio);
+            var portfolios = _portfolioService.GetAll(id);
+            var result = Mapper.Map<IEnumerable<PortfolioResult>>(portfolios);
+            foreach (var portfoliosResult in result)
+            {
+                foreach (var portfolio in portfolios)
+                {
+                    portfoliosResult.Products = Mapper.Map<IEnumerable<PortfolioProductResult>>(portfolio.PortfoliosProducts);
+                }
+            }
+
             return result;
         }
 

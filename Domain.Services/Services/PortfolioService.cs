@@ -18,7 +18,8 @@ namespace Domain.Services.Services
             var repository = RepositoryFactory.Repository<Portfolio>();
 
             var query = repository.MultipleResultQuery()
-                                  .AndFilter(x => x.Id.Equals(id));
+                                  .AndFilter(x => x.Id.Equals(id))
+                                  .Include(source => source.Include(x => x.PortfoliosProducts));
 
             var result = repository.Search(query);
 
