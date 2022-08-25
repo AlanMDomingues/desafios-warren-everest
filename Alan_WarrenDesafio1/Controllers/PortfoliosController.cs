@@ -19,7 +19,7 @@ namespace Alan_WarrenDesafio1.Controllers
             : base(logger)
             => _portfolioAppService = portfolioAppService ?? throw new ArgumentNullException(nameof(portfolioAppService));
 
-        [HttpGet("get-all/{id}")]
+        [HttpGet("get-all-by-a-customer/{id}")]
         public IActionResult GetAll(int id)
         {
             return SafeAction(() =>
