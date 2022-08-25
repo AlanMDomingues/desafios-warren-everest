@@ -11,11 +11,11 @@ namespace Domain.Services.Services
             IUnitOfWork unitOfWork)
             : base(repositoryFactory, unitOfWork) { }
 
-        public void Add(int portfolioId, int productId)
+        public void Add(PortfolioProduct portfolioProduct)
         {
             var repository = UnitOfWork.Repository<PortfolioProduct>();
 
-            repository.Add(new PortfolioProduct(portfolioId, productId));
+            repository.Add(portfolioProduct);
 
             UnitOfWork.SaveChanges();
         }
