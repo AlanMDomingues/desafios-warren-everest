@@ -80,12 +80,10 @@ namespace Application.Services
 
         public (bool status, string message) Delete(int id)
         {
-            var customer = GetWithoutMap(x => x.Id.Equals(id));
-            var (status, message) = CustomerExists(customer);
-            if (!status) return (status, message);
+            _ = GetWithoutMap(x => x.Id.Equals(id)) ?? throw new ArgumentException("'Customer' not found");
 
             var customerBankInfo = _customerBankInfoAppService.Get(id);
-            (status, message) = ValidateWithdrawMoneyBeforeDelete(customerBankInfo.AccountBalance);
+            var (status, message) = ValidateWithdrawMoneyBeforeDelete(customerBankInfo.AccountBalance);
             if (!status) return (status, message);
 
             var portfolios = _portfolioAppService.GetAllPortfoliosByCustomer(id);
@@ -104,13 +102,6 @@ namespace Application.Services
             return status
                 ? (true, "Customer already exists, please insert a new customer")
                 : (false, default);
-        }
-
-        private static (bool status, string message) CustomerExists(Customer customer)
-        {
-            return customer is null
-                ? (false, "'Customer' not found")
-                : (true, default);
         }
 
         private static (bool status, string message) ValidateWithdrawMoneyBeforeDelete(decimal totalBalance)
