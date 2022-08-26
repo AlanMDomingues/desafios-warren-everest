@@ -25,7 +25,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _customerBankInfoAppService.Get(id);
 
                 return result is null
-                    ? BadRequest()
+                    ? NotFound()
                     : Ok(result);
             });
         }

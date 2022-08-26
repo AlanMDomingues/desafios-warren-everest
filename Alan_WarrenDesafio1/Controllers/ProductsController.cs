@@ -27,7 +27,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _productAppService.GetAll();
 
                 return !result.Any()
-                    ? NotFound()
+                    ? NoContent()
                     : Ok(result);
             });
         }

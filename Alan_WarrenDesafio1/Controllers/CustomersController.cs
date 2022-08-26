@@ -27,7 +27,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var customers = _customersAppService.GetAll();
 
                 return !customers.Any()
-                    ? NotFound()
+                    ? NoContent()
                     : Ok(customers);
             });
         }
