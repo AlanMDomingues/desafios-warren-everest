@@ -6,7 +6,7 @@ namespace Domain.Services.Interfaces
     {
         CustomerBankInfo Get(int id);
 
-        void Add(int customerId);
+        void Add(CustomerBankInfo customerBankInfo);
 
         void Update(CustomerBankInfo customerBankInfo);
     }

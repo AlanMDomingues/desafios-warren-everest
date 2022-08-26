@@ -32,7 +32,21 @@ namespace Application.Services
 
         public void Update(CustomerBankInfo customerBankInfo) => _customerBankInfoService.Update(customerBankInfo);
 
-        public void Add(int customerId) => _customerBankInfoService.Add(customerId);
+        public void Add(int customerId)
+        {
+            var randomNumber = new Random();
+            string accountNumber = "";
+            for (int i = 0; i < 20; i++)
+                accountNumber += randomNumber.Next(0, 9).ToString();
+
+            var customerBankInfo = new CustomerBankInfo
+            {
+                Account = accountNumber,
+                CustomerId = customerId
+            };
+
+            _customerBankInfoService.Add(customerBankInfo);
+        }
 
         public void MoneyDeposit(int id, decimal cash)
         {

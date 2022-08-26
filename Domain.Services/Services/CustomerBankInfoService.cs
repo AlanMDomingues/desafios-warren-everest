@@ -1,7 +1,6 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
-using System;
 
 namespace Domain.Services.Services
 {
@@ -24,20 +23,9 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public void Add(int customerId)
+        public void Add(CustomerBankInfo customerBankInfo)
         {
-            var randomNumber = new Random();
-            string accountNumber = "";
-            for (int i = 0; i < 20; i++)
-                accountNumber += randomNumber.Next(0, 9).ToString();
-
             var repository = UnitOfWork.Repository<CustomerBankInfo>();
-
-            var customerBankInfo = new CustomerBankInfo
-            {
-                Account = accountNumber,
-                CustomerId = customerId
-            };
 
             repository.Add(customerBankInfo);
             UnitOfWork.SaveChanges();
