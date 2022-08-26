@@ -19,7 +19,7 @@ namespace Alan_WarrenDesafio1.Controllers
             : base(logger)
             => _orderAppService = orderAppService ?? throw new ArgumentNullException(nameof(orderAppService));
 
-        [HttpGet("get-all/{id}")]
+        [HttpGet("get-all-orders-by-a-customer/{id}")]
         public IActionResult GetAll(int id)
         {
             return SafeAction(() =>
