@@ -8,7 +8,8 @@ namespace Application.Validators
         public CreateProductRequestValidator()
         {
             RuleFor(x => x.Symbol)
-                .NotEmpty();
+                .NotEmpty()
+                .MaximumLength(20);
 
             RuleFor(x => x.UnitPrice)
                 .GreaterThan(0);
