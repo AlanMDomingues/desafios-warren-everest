@@ -16,6 +16,7 @@ namespace Infrastructure.Data.Maps
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Account)
+                .HasColumnType("char(20)")
                 .IsRequired();
 
             builder.Property(x => x.AccountBalance);

@@ -16,7 +16,8 @@ namespace Infrastructure.Data.Maps
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Symbol)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("varchar(20)");
 
             builder.Property(x => x.UnitPrice)
                 .IsRequired();

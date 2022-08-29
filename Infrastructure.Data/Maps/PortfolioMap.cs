@@ -16,9 +16,11 @@ namespace Infrastructure.Data.Maps
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Name)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("varchar(30)");
 
-            builder.Property(x => x.Description);
+            builder.Property(x => x.Description)
+                .HasColumnType("varchar(100)");
 
             builder.Property(x => x.TotalBalance);
 
