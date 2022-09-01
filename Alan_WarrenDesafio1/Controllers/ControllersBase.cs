@@ -21,6 +21,23 @@ public abstract class ControllersBase<T> : Controller
         {
             return action?.Invoke();
         }
+        catch (ArgumentException ex)
+        {
+            var routeName = $"{Request.Method} - {Request.Path.Value}";
+            if (Request.QueryString.HasValue)
+            {
+                routeName += Request.QueryString.Value.ToString();
+            }
+
+            if (ex.InnerException != null)
+            {
+                _logger.LogError(ex.InnerException, "An error occurred while calling {route}", routeName);
+                return StatusCode(StatusCodes.Status400BadRequest, ex.InnerException);
+            }
+
+            _logger.LogError(ex, "An error occurred while calling {route}", routeName);
+            return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+        }
         catch (Exception ex)
         {
             var routeName = $"{Request.Method} - {Request.Path.Value}";
