@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using System;
 
 namespace Domain.Services.Services
 {
@@ -36,6 +37,37 @@ namespace Domain.Services.Services
             var repository = UnitOfWork.Repository<CustomerBankInfo>();
 
             repository.Update(customerBankInfo);
+            UnitOfWork.SaveChanges();
+        }
+
+        public (bool status, string message) Withdraw(int id, decimal amount)
+        {
+            var customerBankInfo = Get(id)
+                ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
+
+            var (status, message) = customerBankInfo.ValidateTransaction(amount);
+            if (!status) return (status, message);
+
+            customerBankInfo.AccountBalance -= amount;
+
+            var repository = UnitOfWork.Repository<CustomerBankInfo>();
+
+            repository.Update(customerBankInfo, x => x.AccountBalance);
+            UnitOfWork.SaveChanges();
+
+            return (true, default);
+        }
+
+        public void Deposit(int id, decimal amount)
+        {
+            var customerBankInfo = Get(id)
+                ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
+
+            customerBankInfo.AccountBalance += amount;
+
+            var repository = UnitOfWork.Repository<CustomerBankInfo>();
+
+            repository.Update(customerBankInfo, x => x.AccountBalance);
             UnitOfWork.SaveChanges();
         }
     }
