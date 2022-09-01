@@ -48,33 +48,18 @@ namespace Application.Services
             _customerBankInfoService.Add(customerBankInfo);
         }
 
-        public void MoneyDeposit(int id, decimal cash)
+        public void Deposit(int id, decimal cash) => _customerBankInfoService.Deposit(id, cash);
+
+        public (bool status, string message) Withdraw(int id, decimal amount) => _customerBankInfoService.Withdraw(id, amount);
+
+        public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
         {
-            var customerBankInfo = GetWithoutMap(id) ?? throw new ArgumentException($"'Customer' not found for ID: {id}");
-
-            customerBankInfo.AccountBalance += cash;
-
-            _customerBankInfoService.Update(customerBankInfo);
-        }
-
-        public (bool status, string message) WithdrawMoney(int id, decimal cash)
-        {
-            var customerBankInfo = GetWithoutMap(id) ?? throw new ArgumentException($"'Customer' not found for ID: {id}");
-            var (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, cash);
+            var (status, message) = Withdraw(customerBankInfoId, amount);
             if (!status) return (status, message);
 
-            customerBankInfo.AccountBalance -= cash;
-
-            _customerBankInfoService.Update(customerBankInfo);
+            //_portfolioAppService.Deposit(customerBankInfoId, portfolioId, amount);
 
             return (true, default);
-        }
-
-        private static (bool status, string message) ValidateTransaction(decimal totalBalance, decimal cash)
-        {
-            return totalBalance < cash
-                ? (false, "Insufficient balance")
-                : (true, default);
         }
     }
 }
