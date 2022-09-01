@@ -13,8 +13,10 @@ namespace Application.Interfaces
 
         void Update(CustomerBankInfo customerBankInfo);
 
-        void MoneyDeposit(int id, decimal cash);
+        void Deposit(int id, decimal amount);
 
-        (bool status, string message) WithdrawMoney(int id, decimal cash);
+        (bool status, string message) Withdraw(int id, decimal amount);
+
+        (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount);
     }
 }
