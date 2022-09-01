@@ -25,31 +25,42 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _customerBankInfoAppService.Get(id);
 
                 return result is null
-                    ? NotFound()
+                    ? NotFound($"CustomerBankInfo not found for Id: {id}")
                     : Ok(result);
             });
         }
 
-        [HttpPut("money-deposit/{id}")]
-        public IActionResult MoneyDeposit(int id, decimal cash)
+        [HttpPatch("deposit/{id}")]
+        public IActionResult Deposit(int id, decimal amount)
         {
             return SafeAction(() =>
             {
-                _customerBankInfoAppService.MoneyDeposit(id, cash);
+                _customerBankInfoAppService.Deposit(id, amount);
 
                 return Ok();
             });
         }
 
-        [HttpPut("withdraw-money/{id}")]
-        public IActionResult WithdrawMoney(int id, decimal cash)
+        [HttpPatch("withdraw/{id}")]
+        public IActionResult Withdraw(int id, decimal amount)
         {
             return SafeAction(() =>
             {
-                var (status, message) = _customerBankInfoAppService.WithdrawMoney(id, cash);
+                _customerBankInfoAppService.Withdraw(id, amount);
+
+                return Ok();
+            });
+        }
+
+        [HttpPatch("transfer/{portfolioId}")]
+        public IActionResult TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
+        {
+            return SafeAction(() =>
+            {
+                var (status, message) = _customerBankInfoAppService.TransferMoneyToPortfolio(customerBankInfoId, portfolioId, amount);
 
                 return !status
-                    ? NotFound(message)
+                    ? BadRequest(message)
                     : Ok();
             });
         }
