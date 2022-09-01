@@ -18,7 +18,7 @@ public class Order
     public DateTime ConvertedAt { get; set; } = DateTime.UtcNow;
 
     public int PortfolioId { get; set; }
-    public virtual Portfolio Portfolio { get; set; }
+    public Portfolio Portfolio { get; set; }
 
     public int ProductId { get; set; }
     public Product Product { get; set; }
