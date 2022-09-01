@@ -2,6 +2,7 @@
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 
 namespace Domain.Services.Services
@@ -87,14 +88,35 @@ namespace Domain.Services.Services
             repository.Remove(x => x.Id.Equals(id));
         }
 
-        public void TransferMoneyToPortfolioOrAccountBalance(CustomerBankInfo customerBankInfo, Portfolio portfolio)
+        public void Deposit(int customerBankInfoId, int id, decimal amount)
         {
-            var repository = UnitOfWork.Repository<CustomerBankInfo>();
-            var repositoryPortfolio = UnitOfWork.Repository<Portfolio>();
+            var portfolio = GetPortfolioByCustomer(customerBankInfoId, id)
+                 ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}, on customer with ID: {customerBankInfoId}");
 
-            repository.Update(customerBankInfo);
-            repositoryPortfolio.Update(portfolio);
+            portfolio.TotalBalance += amount;
+
+            var repository = UnitOfWork.Repository<Portfolio>();
+
+            repository.Update(portfolio, x => x.TotalBalance);
             UnitOfWork.SaveChanges();
+        }
+
+        public (bool status, string message) Withdraw(int customerBankInfoId, int id, decimal amount)
+        {
+            var portfolio = GetPortfolioByCustomer(customerBankInfoId, id)
+                 ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}, on customer with ID: {customerBankInfoId}");
+
+            var (status, message) = portfolio.ValidateTransaction(amount);
+            if (!status) return (status, message);
+
+            portfolio.TotalBalance -= amount;
+
+            var repository = UnitOfWork.Repository<Portfolio>();
+
+            repository.Update(portfolio, x => x.TotalBalance);
+            UnitOfWork.SaveChanges();
+
+            return (true, default);
         }
     }
 }

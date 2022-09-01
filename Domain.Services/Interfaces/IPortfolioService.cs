@@ -19,6 +19,8 @@ namespace Domain.Services.Interfaces
 
         void Delete(int id);
 
-        void TransferMoneyToPortfolioOrAccountBalance(CustomerBankInfo customerBankInfo, Portfolio portfolio);
+        void Deposit(int customerBankInfoId, int id, decimal amount);
+
+        (bool status, string message) Withdraw(int customerBankInfoId, int id, decimal amount);
     }
 }
