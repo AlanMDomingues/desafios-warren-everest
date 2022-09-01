@@ -1,5 +1,6 @@
 ﻿using Application.Models.Requests;
 using Application.Models.Response;
+using Domain.Models;
 using System.Collections.Generic;
 
 namespace Application.Interfaces
@@ -10,6 +11,6 @@ namespace Application.Interfaces
 
         OrderResult Get(int id);
 
-        (bool status, string message) Add(int customerBankInfoId, CreateOrderRequest orderRequest);
+        void Add(Order order);
     }
 }
