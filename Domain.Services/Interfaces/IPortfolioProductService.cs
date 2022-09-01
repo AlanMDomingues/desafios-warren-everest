@@ -4,6 +4,6 @@ namespace Domain.Services.Interfaces
 {
     public interface IPortfolioProductService: IServiceBase
     {
-        void Add(PortfolioProduct portfolioProduct);
+        void Add(int portfolioId, int productId);
     }
 }

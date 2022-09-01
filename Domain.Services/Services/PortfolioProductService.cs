@@ -11,8 +11,10 @@ namespace Domain.Services.Services
             IUnitOfWork unitOfWork)
             : base(repositoryFactory, unitOfWork) { }
 
-        public void Add(PortfolioProduct portfolioProduct)
+        public void Add(int portfolioId, int productId)
         {
+            var portfolioProduct = new PortfolioProduct(portfolioId, productId);
+
             var repository = UnitOfWork.Repository<PortfolioProduct>();
 
             repository.Add(portfolioProduct);
