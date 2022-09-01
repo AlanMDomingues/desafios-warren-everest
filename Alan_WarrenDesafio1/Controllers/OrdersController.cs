@@ -19,15 +19,15 @@ namespace Alan_WarrenDesafio1.Controllers
             : base(logger)
             => _orderAppService = orderAppService ?? throw new ArgumentNullException(nameof(orderAppService));
 
-        [HttpGet("get-all-orders-by-a-customer/{id}")]
-        public IActionResult GetAll(int id)
+        [HttpGet("customerId/{id}")]
+        public IActionResult GetAll(int customerId)
         {
             return SafeAction(() =>
             {
-                var results = _orderAppService.GetAll(id);
+                var results = _orderAppService.GetAll(customerId);
 
                 return !results.Any()
-                    ? NotFound()
+                    ? NotFound($"Orders not found for Customer Id: {customerId}")
                     : Ok(results);
             });
         }
@@ -40,21 +40,8 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _orderAppService.Get(id);
 
                 return result is null
-                    ? NotFound()
+                    ? NotFound($"Order not found for Id: {id}")
                     : Ok(result);
-            });
-        }
-
-        [HttpPost]
-        public IActionResult Post(int customerId, CreateOrderRequest orderRequest)
-        {
-            return SafeAction(() =>
-            {
-                var (status, message) = _orderAppService.Add(customerId, orderRequest);
-
-                return !status
-                    ? BadRequest(message)
-                    : Created("~api/orders", default);
             });
         }
     }
