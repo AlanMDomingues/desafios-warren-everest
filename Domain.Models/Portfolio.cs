@@ -15,5 +15,19 @@ namespace Domain.Models
         public Customer Customer { get; set; }
 
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+
+        public (bool status, string message) ValidateWithdrawMoneyBeforeDelete(decimal totalBalance)
+        {
+            return totalBalance > 0
+                ? (false, "You must withdraw money from the portfolio before deleting it")
+                : (true, default);
+        }
+
+        public (bool status, string message) ValidateTransaction(decimal cash)
+        {
+            return (TotalBalance - cash) < 0
+                ? (false, "Insufficient balance")
+                : (true, default);
+        }
     }
 }

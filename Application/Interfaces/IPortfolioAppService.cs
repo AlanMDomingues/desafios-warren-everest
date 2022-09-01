@@ -23,8 +23,10 @@ namespace Application.Interfaces
 
         (bool status, string message) Delete(int id);
 
-        (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash);
+        (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount);
 
-        (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash);
+        (bool status, string message) Invest(int customerBankInfoId, CreateOrderRequest orderRequest);
+
+        void Deposit(int customerBankInfoId, int id, decimal amount);
     }
 }

@@ -13,15 +13,24 @@ namespace Application.Services
     {
         private readonly IPortfolioService _portfolioService;
         private readonly ICustomerBankInfoAppService _customerBankInfoAppService;
+        private readonly IProductAppService _productAppService;
+        private readonly IOrderAppService _orderAppService;
+        private readonly IPortfolioProductService _portfolioProductService;
 
         public PortfolioAppService(
             IMapper mapper,
             IPortfolioService portfolioService,
-            ICustomerBankInfoAppService customerBankInfoAppService)
+            ICustomerBankInfoAppService customerBankInfoAppService,
+            IProductAppService productAppService,
+            IOrderAppService orderAppService,
+            IPortfolioProductService portfolioProductService)
             : base(mapper)
         {
             _portfolioService = portfolioService ?? throw new ArgumentNullException(nameof(portfolioService));
             _customerBankInfoAppService = customerBankInfoAppService ?? throw new ArgumentNullException(nameof(customerBankInfoAppService));
+            _productAppService = productAppService ?? throw new ArgumentNullException(nameof(productAppService));
+            _orderAppService = orderAppService ?? throw new ArgumentNullException(nameof(orderAppService));
+            _portfolioProductService = portfolioProductService ?? throw new ArgumentNullException(nameof(portfolioProductService));
         }
 
         public IEnumerable<PortfolioResult> GetAll(int id)
@@ -78,55 +87,54 @@ namespace Application.Services
         {
             var portfolio = GetWithoutMap(id) ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
-            var (status, message) = ValidateWithdrawMoneyBeforeDelete(portfolio.TotalBalance);
-
-            return !status
-                ? (false, message)
-                : (true, default);
-        }
-
-        public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash)
-        {
-            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId) ?? throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}");
-            var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {portfolioId}, on customer with ID: {customerBankInfoId}");
-
-            var (status, message) = ValidateTransaction(customerBankInfo.AccountBalance, cash);
+            var (status, message) = portfolio.ValidateWithdrawMoneyBeforeDelete(portfolio.TotalBalance);
             if (!status) return (status, message);
 
-            customerBankInfo.AccountBalance -= cash;
-            portfolio.TotalBalance += cash;
+            _portfolioService.Delete(id);
 
-            _portfolioService.TransferMoneyToPortfolioOrAccountBalance(customerBankInfo, portfolio);
             return (true, default);
         }
 
-        public (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash)
-        {
-            var customerBankInfo = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId) ?? throw new ArgumentException($"'Customer' not found for Id: {customerBankInfoId}");
-            var portfolio = GetPortfolioByCustomer(customerBankInfoId, portfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {portfolioId}, on Customer with ID: {customerBankInfoId}");
+        //public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
+        //{
+        //    var (status, message) = _customerBankInfoAppService.Withdraw(customerBankInfoId, amount);
+        //    if (!status) return (status, message);
 
-            var (status, message) = ValidateTransaction(portfolio.TotalBalance, cash);
+        //    _portfolioService.Deposit(customerBankInfoId, portfolioId, amount);
+
+        //    return (true, default);
+        //}
+
+        public (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount)
+        {
+            _customerBankInfoAppService.Deposit(customerBankInfoId, amount);
+
+            var (status, message) = _portfolioService.Withdraw(customerBankInfoId, portfolioId, amount);
             if (!status) return (status, message);
 
-            portfolio.TotalBalance -= cash;
-            customerBankInfo.AccountBalance += cash;
-
-            _portfolioService.TransferMoneyToPortfolioOrAccountBalance(customerBankInfo, portfolio);
             return (true, default);
         }
 
-        private static (bool status, string message) ValidateTransaction(decimal totalBalance, decimal cash)
+        public (bool status, string message) Invest(int customerBankInfoId, CreateOrderRequest orderRequest)
         {
-            return totalBalance < cash
-                ? (false, "Insufficient balance")
-                : (true, default);
+            _ = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId)
+                ?? throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}");
+            _ = GetPortfolioByCustomer(customerBankInfoId, orderRequest.PortfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {orderRequest.PortfolioId}");
+            var product = _productAppService.Get(orderRequest.ProductId) ?? throw new ArgumentException($"'Product' not found for ID: {orderRequest.ProductId}");
+
+            var order = Mapper.Map<Order>(orderRequest);
+            order.UnitPrice = product.UnitPrice;
+            order.SetNetValue();
+
+            var (status, message) = _customerBankInfoAppService.Withdraw(customerBankInfoId, order.NetValue);
+            if (!status) return (status, message);
+
+            _orderAppService.Add(order);
+            _portfolioProductService.Add(order.PortfolioId, order.ProductId);
+
+            return (true, default);
         }
 
-        private static (bool status, string message) ValidateWithdrawMoneyBeforeDelete(decimal totalBalance)
-        {
-            return totalBalance > 0
-                ? (false, "You must withdraw money from the portfolio before deleting it")
-                : (true, default);
-        }
+        public void Deposit(int customerBankInfoId, int id, decimal amount) => _portfolioService.Deposit(customerBankInfoId, id, amount);
     }
 }
