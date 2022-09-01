@@ -19,15 +19,15 @@ namespace Alan_WarrenDesafio1.Controllers
             : base(logger)
             => _portfolioAppService = portfolioAppService ?? throw new ArgumentNullException(nameof(portfolioAppService));
 
-        [HttpGet("get-all-portfolios-by-a-customer/{id}")]
-        public IActionResult GetAll(int id)
+        [HttpGet("customerId/{id}")]
+        public IActionResult GetAll(int customerId)
         {
             return SafeAction(() =>
             {
-                var results = _portfolioAppService.GetAll(id);
+                var results = _portfolioAppService.GetAll(customerId);
 
                 return !results.Any()
-                    ? NotFound()
+                    ? NotFound($"Portfolios not found for Customer Id: {customerId}")
                     : Ok(results);
             });
         }
@@ -67,20 +67,7 @@ namespace Alan_WarrenDesafio1.Controllers
             });
         }
 
-        [HttpPut("transfer-money-to-portfolio/{portfolioId}")]
-        public IActionResult TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal cash)
-        {
-            return SafeAction(() =>
-            {
-                var (status, message) = _portfolioAppService.TransferMoneyToPortfolio(customerBankInfoId, portfolioId, cash);
-
-                return !status
-                    ? BadRequest(message)
-                    : Ok();
-            });
-        }
-
-        [HttpPut("transfer-money-to-account-balance/{portfolioId}")]
+        [HttpPatch("withdraw/{portfolioId}")]
         public IActionResult TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal cash)
         {
             return SafeAction(() =>
@@ -103,6 +90,19 @@ namespace Alan_WarrenDesafio1.Controllers
                 return !status
                     ? BadRequest(message)
                     : NoContent();
+            });
+        }
+
+        [HttpPost]
+        public IActionResult Invest(int customerId, CreateOrderRequest orderRequest)
+        {
+            return SafeAction(() =>
+            {
+                var (status, message) = _portfolioAppService.Invest(customerId, orderRequest);
+
+                return !status
+                    ? BadRequest(message)
+                    : Created("~api/portfolios", default);
             });
         }
     }
