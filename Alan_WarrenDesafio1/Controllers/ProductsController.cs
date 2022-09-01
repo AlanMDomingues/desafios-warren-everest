@@ -40,7 +40,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _productAppService.Get(id);
 
                 return result is null
-                    ? NotFound()
+                    ? NotFound($"Product not found for Id: {id}")
                     : Ok(result);
             });
         }
