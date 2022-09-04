@@ -20,5 +20,7 @@ namespace Domain.Services.Interfaces
         void Delete(int id);
 
         bool ValidateAlreadyExists(Customer customer);
+
+        bool AnyForId(int id);
     }
 }

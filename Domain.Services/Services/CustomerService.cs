@@ -87,5 +87,12 @@ namespace Domain.Services.Services
 
             return false;
         }
+
+        public bool AnyForId(int id)
+        {
+            var repository = RepositoryFactory.Repository<Customer>();
+
+            return repository.Any(x => x.Id.Equals(id));
+        }
     }
 }

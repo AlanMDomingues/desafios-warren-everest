@@ -80,7 +80,8 @@ namespace Application.Services
 
         public (bool status, string message) Delete(int id)
         {
-            _ = GetWithoutMap(x => x.Id.Equals(id)) ?? throw new ArgumentException("'Customer' not found");
+            var customerExists = _customerServices.AnyForId(id);
+            if (!customerExists) return (false, $"'Customer' not found for ID: {id}");
 
             var customerBankInfo = _customerBankInfoAppService.Get(id);
             var (status, message) = ValidateWithdrawMoneyBeforeDelete(customerBankInfo.AccountBalance);
