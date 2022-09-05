@@ -3,7 +3,6 @@ using FluentValidation;
 using FluentValidation.Validators;
 using Infrastructure.Extensions;
 using System;
-using System.Linq;
 
 namespace Application.Validators
 {
@@ -12,10 +11,10 @@ namespace Application.Validators
         public CreateCustomerRequestValidator()
         {
             RuleFor(x => x.FullName)
-                 .NotEmpty()
-                 .Must(x => x.IsValidFullName())
-                 .MinimumLength(2)
-                 .MaximumLength(300);
+                .NotEmpty()
+                .Must(x => x.IsValidFullName())
+                .MinimumLength(2)
+                .MaximumLength(300);
 
             RuleFor(x => x.Email)
                 .NotEmpty()

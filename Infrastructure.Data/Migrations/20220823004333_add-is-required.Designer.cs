@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220823004333_add-is-required")]
+    partial class addisrequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,7 +84,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<string>("Account")
                         .IsRequired()
-                        .HasColumnType("char(20)");
+                        .HasColumnType("longtext");
 
                     b.Property<decimal>("AccountBalance")
                         .HasColumnType("decimal(65,30)");
@@ -141,11 +143,11 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("longtext");
 
                     b.Property<decimal>("TotalBalance")
                         .HasColumnType("decimal(65,30)");
@@ -187,7 +189,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasColumnType("varchar(20)");
+                        .HasColumnType("longtext");
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(65,30)");

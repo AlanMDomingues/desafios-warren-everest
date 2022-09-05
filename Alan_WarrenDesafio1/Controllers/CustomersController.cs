@@ -1,7 +1,7 @@
-﻿using Application;
+﻿using Application.Interfaces;
 using Application.Models.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
@@ -9,11 +9,14 @@ namespace Alan_WarrenDesafio1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomersController : ControllersBase<CustomersController>
     {
         private readonly ICustomerAppService _customersAppService;
 
-        public CustomersController(ICustomerAppService customerAppService)
+        public CustomersController(
+            ICustomerAppService customerAppService,
+            ILogger<CustomersController> logger)
+            : base(logger)
             => _customersAppService = customerAppService ?? throw new ArgumentNullException(nameof(customerAppService));
 
         [HttpGet]
@@ -22,20 +25,23 @@ namespace Alan_WarrenDesafio1.Controllers
             return SafeAction(() =>
             {
                 var customers = _customersAppService.GetAll();
+
                 return !customers.Any()
-                    ? NotFound()
+                    ? NoContent()
                     : Ok(customers);
             });
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Id == id) is null
+                var result = _customersAppService.Get(c => c.Id.Equals(id));
+
+                return result is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Id == id));
+                    : Ok(result);
             });
         }
 
@@ -44,9 +50,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_customersAppService.GetAll(c => c.FullName.Contains(fullName)).Any()
+                var results = _customersAppService.GetAll(c => c.FullName.Contains(fullName));
+
+                return !results.Any()
                     ? NotFound()
-                    : Ok(_customersAppService.GetAll(c => c.FullName.Contains(fullName)));
+                    : Ok(results);
             });
         }
 
@@ -55,9 +63,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Email == email) is null
+                var result = _customersAppService.Get(c => c.Email.Equals(email));
+
+                return result is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Email == email));
+                    : Ok(result);
             });
         }
 
@@ -66,9 +76,11 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return _customersAppService.GetBy(c => c.Cpf == cpf) is null
+                var result = _customersAppService.Get(c => c.Cpf.Equals(cpf));
+
+                return result is null
                     ? NotFound()
-                    : Ok(_customersAppService.GetBy(c => c.Cpf == cpf));
+                    : Ok(result);
             });
         }
 
@@ -77,11 +89,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, messageResult) = _customersAppService.Create(newCustomerDto);
+               var result = _customersAppService.Add(newCustomerDto);
 
-                return !status
-                    ? BadRequest(messageResult)
-                    : Created("~api/customer", messageResult);
+                return Created("~api/customers", result);
             });
         }
 
@@ -90,11 +100,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, messageResult) = _customersAppService.Update(id, customerToUpdateDto);
+                _customersAppService.Update(id, customerToUpdateDto);
 
-                return !status
-                    ? BadRequest(messageResult)
-                    : Ok(messageResult);
+                return Ok();
             });
         }
 
@@ -103,27 +111,10 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                return !_customersAppService.Delete(id)
-                    ? NotFound()
-                    : NoContent();
+                _customersAppService.Delete(id);
+
+                return NoContent();
             });
-        }
-
-        private IActionResult SafeAction(Func<IActionResult> action)
-        {
-            try
-            {
-                return action?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, ex.InnerException);
-                }
-
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
         }
     }
 }
