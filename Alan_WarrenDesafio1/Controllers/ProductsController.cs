@@ -61,11 +61,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _productAppService.Update(id, product);
+                _productAppService.Update(id, product);
 
-                return !status
-                    ? BadRequest(message)
-                    : Ok();
+                return Ok();
             });
         }
 
@@ -74,11 +72,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _productAppService.Delete(id);
+                _productAppService.Delete(id);
 
-                return !status
-                    ? NotFound(message)
-                    : NoContent();
+                return NoContent();
             });
         }
     }
