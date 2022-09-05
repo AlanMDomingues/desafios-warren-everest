@@ -89,11 +89,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, messageResult) = _customersAppService.Add(newCustomerDto);
+               var result = _customersAppService.Add(newCustomerDto);
 
-                return !status
-                    ? BadRequest(messageResult)
-                    : Created("~api/customers", messageResult);
+                return Created("~api/customers", result);
             });
         }
 
@@ -102,11 +100,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, messageResult) = _customersAppService.Update(id, customerToUpdateDto);
+                _customersAppService.Update(id, customerToUpdateDto);
 
-                return !status
-                    ? BadRequest(messageResult)
-                    : Ok(messageResult);
+                return Ok();
             });
         }
 
@@ -115,11 +111,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _customersAppService.Delete(id);
+                _customersAppService.Delete(id);
 
-                return !status
-                    ? BadRequest(message)
-                    : NoContent();
+                return NoContent();
             });
         }
     }
