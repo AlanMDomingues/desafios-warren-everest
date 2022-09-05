@@ -57,11 +57,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _customerBankInfoAppService.TransferMoneyToPortfolio(customerBankInfoId, portfolioId, amount);
+                _customerBankInfoAppService.TransferMoneyToPortfolio(customerBankInfoId, portfolioId, amount);
 
-                return !status
-                    ? BadRequest(message)
-                    : Ok();
+                return Ok();
             });
         }
     }
