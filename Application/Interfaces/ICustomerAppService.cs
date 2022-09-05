@@ -15,8 +15,6 @@ namespace Application.Interfaces
 
         CustomerResult Get(params Expression<Func<Customer, bool>>[] predicate);
 
-        Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate);
-
         int Add(CreateCustomerRequest newCustomerDto);
 
         void Update(int id, UpdateCustomerRequest customerToUpdateDto);

@@ -9,8 +9,6 @@ namespace Domain.Services.Interfaces
 
         Portfolio Get(int id);
 
-        Portfolio GetPortfolioByCustomer(int customerId, int id);
-
         bool AnyPortfolioFromACustomerArentEmpty(int customerId);
 
         bool AnyPortfolioForId(int id);

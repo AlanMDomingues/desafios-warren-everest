@@ -3,6 +3,7 @@ using Application.Models.Response;
 using AutoMapper;
 using Domain.Models;
 using Domain.Services.Interfaces;
+using EntityFrameworkCore.UnitOfWork.Factories;
 using System;
 
 namespace Application.Services
@@ -29,13 +30,7 @@ namespace Application.Services
             return result;
         }
 
-        public CustomerBankInfo GetWithoutMap(int id)
-        {
-            var customerBankInfo = _customerBankInfoService.Get(id);
-            return customerBankInfo;
-        }
-
-        public bool IsAccountBalanceFromACustomerArentEmpty(int customerId) => _customerBankInfoService.IsAccountBalanceFromACustomerArentEmpty(customerId);
+        public bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId) => _customerBankInfoService.AnyAccountBalanceThatIsntZeroForCustomerId(customerId);
 
         public bool AnyCustomerBankInfoForId(int id) => _customerBankInfoService.AnyCustomerBankInfoForId(id);
 
@@ -61,9 +56,13 @@ namespace Application.Services
 
         public void TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
         {
+            using var transactionScope = TransactionScopeFactory.CreateTransactionScope();
+
             _customerBankInfoService.Withdraw(customerBankInfoId, amount);
 
             _investmentService.DepositMoneyInPortfolio(portfolioId, amount);
+
+            transactionScope.Complete();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace Domain.Services.Services
@@ -42,8 +43,17 @@ namespace Domain.Services.Services
             return repository.Any(x => x.Id.Equals(id));
         }
 
+        private bool AnyProductForSymbol(string symbol)
+        {
+            var repository = RepositoryFactory.Repository<Product>();
+
+            return repository.Any(x => x.Symbol.Equals(symbol));
+        }
+
         public void Add(Product product)
         {
+            if (AnyProductForSymbol(product.Symbol)) throw new ArgumentException($"Product already exists for Symbol: {product.Symbol}");
+
             var repository = UnitOfWork.Repository<Product>();
 
             repository.Add(product);
@@ -52,6 +62,8 @@ namespace Domain.Services.Services
 
         public void Update(Product product)
         {
+            if (!AnyProductForId(product.Id)) throw new ArgumentException($"Product already doesn't exists for Id: {product.Id}");
+
             var repository = UnitOfWork.Repository<Product>();
 
             repository.Update(product);
@@ -60,6 +72,8 @@ namespace Domain.Services.Services
 
         public void Delete(int id)
         {
+            if (!AnyProductForId(id)) throw new ArgumentException($"Product already doesn't exists for Id: {id}");
+
             var repository = UnitOfWork.Repository<Product>();
 
             repository.Remove(x => x.Id.Equals(id));

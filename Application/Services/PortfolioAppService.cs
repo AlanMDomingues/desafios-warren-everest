@@ -118,7 +118,7 @@ namespace Application.Services
             order.UnitPrice = product.UnitPrice;
             order.SetNetValue();
 
-            _customerBankInfoAppService.Withdraw(customerBankInfoId, order.NetValue);
+            _portfolioService.Withdraw(order.PortfolioId, order.NetValue);
 
             _orderAppService.Add(order);
             _portfolioProductService.Add(order.PortfolioId, order.ProductId);

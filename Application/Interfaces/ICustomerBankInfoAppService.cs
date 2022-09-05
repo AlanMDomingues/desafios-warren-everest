@@ -7,9 +7,7 @@ namespace Application.Interfaces
     {
         CustomerBankInfoResult Get(int id);
 
-        CustomerBankInfo GetWithoutMap(int id);
-
-        bool IsAccountBalanceFromACustomerArentEmpty(int customerId);
+        bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId);
 
         bool AnyCustomerBankInfoForId(int id);
 

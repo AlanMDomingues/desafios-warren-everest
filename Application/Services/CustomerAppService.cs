@@ -49,12 +49,6 @@ namespace Application.Services
             return result;
         }
 
-        public Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate)
-        {
-            var customer = _customerServices.Get(predicate);
-            return customer;
-        }
-
         public int Add(CreateCustomerRequest customerRequest)
         {
             var customer = Mapper.Map<Customer>(customerRequest);
@@ -82,7 +76,7 @@ namespace Application.Services
             var customerExists = _customerServices.AnyForId(id);
             if (!customerExists) throw new ArgumentException($"'Customer' not found for ID: {id}");
 
-            var accountBalanceArentEmpty = _customerBankInfoAppService.IsAccountBalanceFromACustomerArentEmpty(id);
+            var accountBalanceArentEmpty = _customerBankInfoAppService.AnyAccountBalanceThatIsntZeroForCustomerId(id);
             if (!accountBalanceArentEmpty) throw new ArgumentException("You must withdraw money from your account balance before deleting it");
 
             var result = _portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id);

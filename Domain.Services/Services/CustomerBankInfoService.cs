@@ -24,11 +24,11 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public bool IsAccountBalanceFromACustomerArentEmpty(int customerId)
+        public bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId)
         {
             var repository = RepositoryFactory.Repository<CustomerBankInfo>();
 
-            return repository.Any(x => x.CustomerId.Equals(customerId) && x.AccountBalance > 0);
+            return repository.Any(x => x.CustomerId.Equals(customerId) && x.AccountBalance > 0 && x.AccountBalance < 0);
         }
 
         public bool AnyCustomerBankInfoForId(int id)

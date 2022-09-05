@@ -40,19 +40,6 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public Portfolio GetPortfolioByCustomer(int customerId, int id)
-        {
-            var repository = RepositoryFactory.Repository<Portfolio>();
-
-            var query = repository.SingleResultQuery()
-                                  .AndFilter(x => x.Id.Equals(id))
-                                  .AndFilter(x => x.CustomerId.Equals(customerId));
-
-            var result = repository.FirstOrDefault(query);
-
-            return result;
-        }
-
         public bool AnyPortfolioFromACustomerArentEmpty(int customerId)
         {
             var repository = RepositoryFactory.Repository<Portfolio>();
