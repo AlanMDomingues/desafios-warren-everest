@@ -72,11 +72,9 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _portfolioAppService.TransferMoneyToAccountBalance(customerBankInfoId, portfolioId, cash);
+                _portfolioAppService.TransferMoneyToAccountBalance(customerBankInfoId, portfolioId, cash);
 
-                return !status
-                    ? BadRequest(message)
-                    : Ok();
+                return Ok();
             });
         }
 
@@ -85,24 +83,20 @@ namespace Alan_WarrenDesafio1.Controllers
         {
             return SafeAction(() =>
             {
-                var (status, message) = _portfolioAppService.Delete(id);
+                _portfolioAppService.Delete(id);
 
-                return !status
-                    ? BadRequest(message)
-                    : NoContent();
+                return NoContent();
             });
         }
 
-        [HttpPost]
+        [HttpPost("{customerId}")]
         public IActionResult Invest(int customerId, CreateOrderRequest orderRequest)
         {
             return SafeAction(() =>
             {
-                var (status, message) = _portfolioAppService.Invest(customerId, orderRequest);
+                _portfolioAppService.Invest(customerId, orderRequest);
 
-                return !status
-                    ? BadRequest(message)
-                    : Created("~api/portfolios", default);
+                return Created("~api/portfolios", default);
             });
         }
     }
