@@ -24,6 +24,20 @@ namespace Domain.Services.Services
             return result;
         }
 
+        public bool IsAccountBalanceFromACustomerArentEmpty(int customerId)
+        {
+            var repository = RepositoryFactory.Repository<CustomerBankInfo>();
+
+            return repository.Any(x => x.CustomerId.Equals(customerId) && x.AccountBalance > 0);
+        }
+
+        public bool AnyCustomerBankInfoForId(int id)
+        {
+            var repository = RepositoryFactory.Repository<CustomerBankInfo>();
+
+            return repository.Any(x => x.CustomerId.Equals(id));
+        }
+
         public void Add(CustomerBankInfo customerBankInfo)
         {
             var repository = UnitOfWork.Repository<CustomerBankInfo>();
@@ -40,13 +54,13 @@ namespace Domain.Services.Services
             UnitOfWork.SaveChanges();
         }
 
-        public (bool status, string message) Withdraw(int id, decimal amount)
+        public void Withdraw(int id, decimal amount)
         {
             var customerBankInfo = Get(id)
                 ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
 
-            var (status, message) = customerBankInfo.ValidateTransaction(amount);
-            if (!status) return (status, message);
+            var isValidTransaction = customerBankInfo.ValidateTransaction(amount);
+            if (isValidTransaction) throw new ArgumentException("Insufficient balance");
 
             customerBankInfo.AccountBalance -= amount;
 
@@ -54,8 +68,6 @@ namespace Domain.Services.Services
 
             repository.Update(customerBankInfo, x => x.AccountBalance);
             UnitOfWork.SaveChanges();
-
-            return (true, default);
         }
 
         public void Deposit(int id, decimal amount)

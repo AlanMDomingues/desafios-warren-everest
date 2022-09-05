@@ -10,10 +10,12 @@ namespace Application.Interfaces
 
         ProductResult Get(int id);
 
+        bool AnyProductForId(int id);
+
         void Add(CreateProductRequest product);
 
-        (bool status, string message) Update(int id, UpdateProductRequest product);
+        void Update(int id, UpdateProductRequest product);
 
-        (bool status, string message) Delete(int id);
+        void Delete(int id);
     }
 }

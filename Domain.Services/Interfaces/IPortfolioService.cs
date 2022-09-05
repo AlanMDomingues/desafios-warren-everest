@@ -11,7 +11,9 @@ namespace Domain.Services.Interfaces
 
         Portfolio GetPortfolioByCustomer(int customerId, int id);
 
-        IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId);
+        bool AnyPortfolioFromACustomerArentEmpty(int customerId);
+
+        bool AnyPortfolioForId(int id);
 
         void Add(Portfolio portfolio);
 
@@ -19,8 +21,8 @@ namespace Domain.Services.Interfaces
 
         void Delete(int id);
 
-        void Deposit(int customerBankInfoId, int id, decimal amount);
+        void Deposit(int id, decimal amount);
 
-        (bool status, string message) Withdraw(int customerBankInfoId, int id, decimal amount);
+        void Withdraw(int id, decimal amount);
     }
 }

@@ -35,6 +35,13 @@ namespace Domain.Services.Services
             return result;
         }
 
+        public bool AnyProductForId(int id)
+        {
+            var repository = RepositoryFactory.Repository<Product>();
+
+            return repository.Any(x => x.Id.Equals(id));
+        }
+
         public void Add(Product product)
         {
             var repository = UnitOfWork.Repository<Product>();

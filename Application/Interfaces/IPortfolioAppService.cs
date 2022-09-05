@@ -13,20 +13,16 @@ namespace Application.Interfaces
 
         Portfolio GetWithoutMap(int id);
 
-        Portfolio GetPortfolioByCustomer(int customerId, int id);
-
-        IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId);
+        bool AnyPortfolioFromACustomerArentEmpty(int customerId);
 
         void Add(CreatePortfolioRequest portfolio);
 
         void Update(int id, UpdatePortfolioRequest portfolio);
 
-        (bool status, string message) Delete(int id);
+        void Delete(int id);
 
-        (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount);
+        void TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount);
 
-        (bool status, string message) Invest(int customerBankInfoId, CreateOrderRequest orderRequest);
-
-        void Deposit(int customerBankInfoId, int id, decimal amount);
+        void Invest(int customerBankInfoId, CreateOrderRequest orderRequest);
     }
 }

@@ -38,9 +38,9 @@ namespace Domain.Services.Services
 
         public void Add(Order order)
         {
-            var repositoryOrder = UnitOfWork.Repository<Order>();
+            var repository = UnitOfWork.Repository<Order>();
 
-            repositoryOrder.Add(order);
+            repository.Add(order);
             UnitOfWork.SaveChanges();
         }
     }

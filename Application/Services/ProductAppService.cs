@@ -33,6 +33,8 @@ namespace Application.Services
             return result;
         }
 
+        public bool AnyProductForId(int id) => _productService.AnyProductForId(id);
+
         public void Add(CreateProductRequest product)
         {
             var productToCreate = Mapper.Map<Product>(product);
@@ -40,33 +42,22 @@ namespace Application.Services
             _productService.Add(productToCreate);
         }
 
-        public (bool status, string message) Update(int id, UpdateProductRequest product)
+        public void Update(int id, UpdateProductRequest product)
         {
-            var productExists = Get(id);
-            var (status, message) = ValidateAlreadyExists(productExists);
-            if (!status) return (status, message);
+            var productExists = _productService.AnyProductForId(id);
+            if (!productExists) throw new ArgumentException($"'Product' not found for ID: {id}");
 
             var productToUpdate = Mapper.Map<Product>(product);
             productToUpdate.Id = id;
             _productService.Update(productToUpdate);
-            return (true, default);
         }
 
-        public (bool status, string message) Delete(int id)
+        public void Delete(int id)
         {
-            var product = Get(id);
-            var (status, message) = ValidateAlreadyExists(product);
-            if (!status) return (status, message);
+            var productExists = _productService.AnyProductForId(id);
+            if (!productExists) throw new ArgumentException($"'Product' not found for ID: {id}");
 
             _productService.Delete(id);
-            return (true, default);
-        }
-
-        private static (bool status, string message) ValidateAlreadyExists(ProductResult product)
-        {
-            return product is null
-                ? (false, "'Product' not found")
-                : (true, default);
         }
     }
 }

@@ -53,16 +53,18 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId)
+        public bool AnyPortfolioFromACustomerArentEmpty(int customerId)
         {
             var repository = RepositoryFactory.Repository<Portfolio>();
 
-            var query = repository.MultipleResultQuery()
-                                  .AndFilter(x => x.CustomerId.Equals(customerId));
+            return repository.Any(x => x.CustomerId.Equals(customerId) && x.TotalBalance > 0);
+        }
 
-            var result = repository.Search(query);
+        public bool AnyPortfolioForId(int id)
+        {
+            var repository = RepositoryFactory.Repository<Portfolio>();
 
-            return result;
+            return repository.Any(x => x.Id.Equals(id));
         }
 
         public void Add(Portfolio portfolio)
@@ -88,10 +90,10 @@ namespace Domain.Services.Services
             repository.Remove(x => x.Id.Equals(id));
         }
 
-        public void Deposit(int customerBankInfoId, int id, decimal amount)
+        public void Deposit(int id, decimal amount)
         {
-            var portfolio = GetPortfolioByCustomer(customerBankInfoId, id)
-                 ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}, on customer with ID: {customerBankInfoId}");
+            var portfolio = Get(id)
+                ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
             portfolio.TotalBalance += amount;
 
@@ -101,13 +103,12 @@ namespace Domain.Services.Services
             UnitOfWork.SaveChanges();
         }
 
-        public (bool status, string message) Withdraw(int customerBankInfoId, int id, decimal amount)
+        public void Withdraw(int id, decimal amount)
         {
-            var portfolio = GetPortfolioByCustomer(customerBankInfoId, id)
-                 ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}, on customer with ID: {customerBankInfoId}");
+            var portfolio = Get(id)
+                ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
-            var (status, message) = portfolio.ValidateTransaction(amount);
-            if (!status) return (status, message);
+            if (!portfolio.ValidateTransaction(amount)) throw new ArgumentException("Insufficient balance");
 
             portfolio.TotalBalance -= amount;
 
@@ -115,8 +116,6 @@ namespace Domain.Services.Services
 
             repository.Update(portfolio, x => x.TotalBalance);
             UnitOfWork.SaveChanges();
-
-            return (true, default);
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Application.Services
         private readonly IProductAppService _productAppService;
         private readonly IOrderAppService _orderAppService;
         private readonly IPortfolioProductService _portfolioProductService;
+        private readonly IInvestmentService _investmentService;
 
         public PortfolioAppService(
             IMapper mapper,
@@ -23,7 +24,8 @@ namespace Application.Services
             ICustomerBankInfoAppService customerBankInfoAppService,
             IProductAppService productAppService,
             IOrderAppService orderAppService,
-            IPortfolioProductService portfolioProductService)
+            IPortfolioProductService portfolioProductService,
+            IInvestmentService investmentService)
             : base(mapper)
         {
             _portfolioService = portfolioService ?? throw new ArgumentNullException(nameof(portfolioService));
@@ -31,6 +33,7 @@ namespace Application.Services
             _productAppService = productAppService ?? throw new ArgumentNullException(nameof(productAppService));
             _orderAppService = orderAppService ?? throw new ArgumentNullException(nameof(orderAppService));
             _portfolioProductService = portfolioProductService ?? throw new ArgumentNullException(nameof(portfolioProductService));
+            _investmentService = investmentService ?? throw new ArgumentNullException(nameof(investmentService));
         }
 
         public IEnumerable<PortfolioResult> GetAll(int id)
@@ -62,13 +65,12 @@ namespace Application.Services
             return portfolio;
         }
 
-        public Portfolio GetPortfolioByCustomer(int customerId, int id) => _portfolioService.GetPortfolioByCustomer(customerId, id);
-
-        public IEnumerable<Portfolio> GetAllPortfoliosByCustomer(int customerId) => _portfolioService.GetAllPortfoliosByCustomer(customerId);
+        public bool AnyPortfolioFromACustomerArentEmpty(int customerId) => _portfolioService.AnyPortfolioFromACustomerArentEmpty(customerId);
 
         public void Add(CreatePortfolioRequest portfolio)
         {
-            _ = _customerBankInfoAppService.Get(portfolio.CustomerId) ?? throw new ArgumentException($"'Customer' not found for ID: {portfolio.CustomerId}");
+            var customerBankInfoExists = _customerBankInfoAppService.AnyCustomerBankInfoForId(portfolio.CustomerId);
+            if (!customerBankInfoExists) throw new ArgumentException($"'Customer' not found for ID: {portfolio.CustomerId}");
 
             var portfolioToCreate = Mapper.Map<Portfolio>(portfolio);
             _portfolioService.Add(portfolioToCreate);
@@ -76,65 +78,50 @@ namespace Application.Services
 
         public void Update(int id, UpdatePortfolioRequest portfolio)
         {
-            _ = Get(id) ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+            var portfolioExists = _portfolioService.AnyPortfolioForId(id);
+            if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
             var portfolioToUpdate = Mapper.Map<Portfolio>(portfolio);
             portfolioToUpdate.Id = id;
             _portfolioService.Update(portfolioToUpdate);
         }
 
-        public (bool status, string message) Delete(int id)
+        public void Delete(int id)
         {
-            var portfolio = GetWithoutMap(id) ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+            var portfolioExists = _portfolioService.AnyPortfolioForId(id);
+            if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {id}");
 
-            var (status, message) = portfolio.ValidateWithdrawMoneyBeforeDelete(portfolio.TotalBalance);
-            if (!status) return (status, message);
+            var portfoliosArentEmpty = _portfolioService.AnyPortfolioFromACustomerArentEmpty(id);
+            if (portfoliosArentEmpty) throw new ArgumentException("You must withdraw money from the portfolio before deleting it");
 
             _portfolioService.Delete(id);
-
-            return (true, default);
         }
 
-        //public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
-        //{
-        //    var (status, message) = _customerBankInfoAppService.Withdraw(customerBankInfoId, amount);
-        //    if (!status) return (status, message);
-
-        //    _portfolioService.Deposit(customerBankInfoId, portfolioId, amount);
-
-        //    return (true, default);
-        //}
-
-        public (bool status, string message) TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount)
+        public void TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount)
         {
-            _customerBankInfoAppService.Deposit(customerBankInfoId, amount);
+            _investmentService.DepositMoneyInCustomerBankInfo(customerBankInfoId, amount);
 
-            var (status, message) = _portfolioService.Withdraw(customerBankInfoId, portfolioId, amount);
-            if (!status) return (status, message);
-
-            return (true, default);
+            _portfolioService.Withdraw(portfolioId, amount);
         }
 
-        public (bool status, string message) Invest(int customerBankInfoId, CreateOrderRequest orderRequest)
+        public void Invest(int customerBankInfoId, CreateOrderRequest orderRequest)
         {
-            _ = _customerBankInfoAppService.GetWithoutMap(customerBankInfoId)
-                ?? throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}");
-            _ = GetPortfolioByCustomer(customerBankInfoId, orderRequest.PortfolioId) ?? throw new ArgumentException($"'Portfolio' not found for ID: {orderRequest.PortfolioId}");
+            var customerBankInfoExists = _customerBankInfoAppService.AnyCustomerBankInfoForId(customerBankInfoId);
+            if (!customerBankInfoExists) throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}");
+
+            var portfolioExists = _portfolioService.AnyPortfolioForId(orderRequest.PortfolioId);
+            if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {orderRequest.PortfolioId}");
+
             var product = _productAppService.Get(orderRequest.ProductId) ?? throw new ArgumentException($"'Product' not found for ID: {orderRequest.ProductId}");
 
             var order = Mapper.Map<Order>(orderRequest);
             order.UnitPrice = product.UnitPrice;
             order.SetNetValue();
 
-            var (status, message) = _customerBankInfoAppService.Withdraw(customerBankInfoId, order.NetValue);
-            if (!status) return (status, message);
+            _customerBankInfoAppService.Withdraw(customerBankInfoId, order.NetValue);
 
             _orderAppService.Add(order);
             _portfolioProductService.Add(order.PortfolioId, order.ProductId);
-
-            return (true, default);
         }
-
-        public void Deposit(int customerBankInfoId, int id, decimal amount) => _portfolioService.Deposit(customerBankInfoId, id, amount);
     }
 }

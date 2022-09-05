@@ -9,6 +9,8 @@ namespace Domain.Services.Interfaces
 
         Product Get(int id);
 
+        bool AnyProductForId(int id);
+
         void Add(Product product);
 
         void Update(Product product);
