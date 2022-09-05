@@ -10,12 +10,17 @@ namespace Application.Services
     public class CustomerBankInfoAppService : AppServicesBase, ICustomerBankInfoAppService
     {
         private readonly ICustomerBankInfoService _customerBankInfoService;
+        private readonly IInvestmentService _investmentService;
 
         public CustomerBankInfoAppService(
             IMapper mapper,
-            ICustomerBankInfoService customerBankInfoService)
+            ICustomerBankInfoService customerBankInfoService,
+            IInvestmentService investmentService)
             : base(mapper)
-            => _customerBankInfoService = customerBankInfoService ?? throw new ArgumentNullException(nameof(customerBankInfoService));
+        {
+            _customerBankInfoService = customerBankInfoService ?? throw new ArgumentNullException(nameof(customerBankInfoService));
+            _investmentService = investmentService ?? throw new ArgumentNullException(nameof(investmentService));
+        }
 
         public CustomerBankInfoResult Get(int id)
         {
@@ -30,7 +35,9 @@ namespace Application.Services
             return customerBankInfo;
         }
 
-        public void Update(CustomerBankInfo customerBankInfo) => _customerBankInfoService.Update(customerBankInfo);
+        public bool IsAccountBalanceFromACustomerArentEmpty(int customerId) => _customerBankInfoService.IsAccountBalanceFromACustomerArentEmpty(customerId);
+
+        public bool AnyCustomerBankInfoForId(int id) => _customerBankInfoService.AnyCustomerBankInfoForId(id);
 
         public void Add(int customerId)
         {
@@ -50,16 +57,13 @@ namespace Application.Services
 
         public void Deposit(int id, decimal cash) => _customerBankInfoService.Deposit(id, cash);
 
-        public (bool status, string message) Withdraw(int id, decimal amount) => _customerBankInfoService.Withdraw(id, amount);
+        public void Withdraw(int id, decimal amount) => _customerBankInfoService.Withdraw(id, amount);
 
-        public (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
+        public void TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount)
         {
-            var (status, message) = Withdraw(customerBankInfoId, amount);
-            if (!status) return (status, message);
+            _customerBankInfoService.Withdraw(customerBankInfoId, amount);
 
-            //_portfolioAppService.Deposit(customerBankInfoId, portfolioId, amount);
-
-            return (true, default);
+            _investmentService.DepositMoneyInPortfolio(portfolioId, amount);
         }
     }
 }

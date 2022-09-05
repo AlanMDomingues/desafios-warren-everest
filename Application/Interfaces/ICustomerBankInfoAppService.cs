@@ -9,14 +9,16 @@ namespace Application.Interfaces
 
         CustomerBankInfo GetWithoutMap(int id);
 
-        void Add(int customerId);
+        bool IsAccountBalanceFromACustomerArentEmpty(int customerId);
 
-        void Update(CustomerBankInfo customerBankInfo);
+        bool AnyCustomerBankInfoForId(int id);
+
+        void Add(int customerId);
 
         void Deposit(int id, decimal amount);
 
-        (bool status, string message) Withdraw(int id, decimal amount);
+        void Withdraw(int id, decimal amount);
 
-        (bool status, string message) TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount);
+        void TransferMoneyToPortfolio(int customerBankInfoId, int portfolioId, decimal amount);
     }
 }
