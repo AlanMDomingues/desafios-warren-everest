@@ -9,11 +9,9 @@
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 
-        public (bool status, string message) ValidateTransaction(decimal cash)
+        public bool ValidateTransaction(decimal cash)
         {
-            return (AccountBalance - cash) < 0
-                ? (false, "Insufficient balance")
-                : (true, default);
+            return (AccountBalance - cash) < 0;
         }
     }
 }
