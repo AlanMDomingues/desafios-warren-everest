@@ -17,10 +17,10 @@ namespace Application.Interfaces
 
         Customer GetWithoutMap(params Expression<Func<Customer, bool>>[] predicate);
 
-        (bool status, string messageResult) Add(CreateCustomerRequest newCustomerDto);
+        int Add(CreateCustomerRequest newCustomerDto);
 
-        (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerToUpdateDto);
+        void Update(int id, UpdateCustomerRequest customerToUpdateDto);
 
-        (bool status, string message) Delete(int id);
+        void Delete(int id);
     }
 }

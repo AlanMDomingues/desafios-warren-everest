@@ -55,74 +55,40 @@ namespace Application.Services
             return customer;
         }
 
-        public (bool status, string messageResult) Add(CreateCustomerRequest customerRequest)
+        public int Add(CreateCustomerRequest customerRequest)
         {
             var customer = Mapper.Map<Customer>(customerRequest);
-            var (status, message) = ValidateAlreadyExists(customer);
-            if (status) return (false, message);
+            var customerExists = _customerServices.ValidateAlreadyExists(customer);
+            if (!customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
 
             _customerServices.Add(customer);
             _customerBankInfoAppService.Add(customer.Id);
 
-            return (true, customer.Id.ToString());
+            return customer.Id;
         }
 
-        public (bool status, string messageResult) Update(int id, UpdateCustomerRequest customerRequest)
+        public void Update(int id, UpdateCustomerRequest customerRequest)
         {
             var customer = Mapper.Map<Customer>(customerRequest);
-            (bool exists, string message) = ValidateAlreadyExists(customer);
-            if (exists) return (false, message);
+            var customerExists = _customerServices.ValidateAlreadyExists(customer);
+            if (!customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
 
             customer.Id = id;
             _customerServices.Update(customer);
-            return (true, default);
         }
 
-        public (bool status, string message) Delete(int id)
+        public void Delete(int id)
         {
             var customerExists = _customerServices.AnyForId(id);
-            if (!customerExists) return (false, $"'Customer' not found for ID: {id}");
+            if (!customerExists) throw new ArgumentException($"'Customer' not found for ID: {id}");
 
-            var customerBankInfo = _customerBankInfoAppService.Get(id);
-            var (status, message) = ValidateWithdrawMoneyBeforeDelete(customerBankInfo.AccountBalance);
-            if (!status) return (status, message);
+            var accountBalanceArentEmpty = _customerBankInfoAppService.IsAccountBalanceFromACustomerArentEmpty(id);
+            if (!accountBalanceArentEmpty) throw new ArgumentException("You must withdraw money from your account balance before deleting it");
 
-            var portfolios = _portfolioAppService.GetAllPortfoliosByCustomer(id);
-
-            (status, message) = ValidateWithdrawMoneyBeforeDelete(portfolios);
-            if (!status) return (status, message);
+            var result = _portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id);
+            if (!result) throw new ArgumentException("You must withdraw money from your portfolios before deleting it");
 
             _customerServices.Delete(id);
-            return (true, default);
-        }
-
-        private (bool status, string message) ValidateAlreadyExists(Customer customer)
-        {
-            var status = _customerServices.ValidateAlreadyExists(customer);
-
-            return status
-                ? (true, "Customer already exists, please insert a new customer")
-                : (false, default);
-        }
-
-        private static (bool status, string message) ValidateWithdrawMoneyBeforeDelete(decimal totalBalance)
-        {
-            return totalBalance > 0
-                ? (false, "You must withdraw money from your account before deleting it")
-                : (true, default);
-        }
-
-        private static (bool status, string message) ValidateWithdrawMoneyBeforeDelete(IEnumerable<Portfolio> portfolios)
-        {
-            foreach (var item in portfolios)
-            {
-                if (item.TotalBalance > 0)
-                {
-                    return (false, "You must withdraw money from your portfolios before deleting it");
-                }
-            }
-
-            return (true, default);
         }
     }
 }
