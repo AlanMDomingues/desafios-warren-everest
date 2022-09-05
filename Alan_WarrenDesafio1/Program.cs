@@ -52,8 +52,9 @@ builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IOrderAppService, OrderAppService>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 
-builder.Services.AddTransient<IPortfolioProductAppService, PortfolioProductAppService>();
 builder.Services.AddTransient<IPortfolioProductService, PortfolioProductService>();
+
+builder.Services.AddTransient<IInvestmentService, InvestmentService>();
 
 builder.Services.AddAutoMapper(mapperConfiguration => mapperConfiguration.AddMaps(assembly), assembly);
 builder.Services.AddUnitOfWork(ServiceLifetime.Transient);
