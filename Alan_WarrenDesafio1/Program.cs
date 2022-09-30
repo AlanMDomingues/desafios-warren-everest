@@ -17,25 +17,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddControllers();
+
 var assembly = Assembly.Load("Application");
-builder.Services.AddControllers()
-    .AddFluentValidation(options =>
-    {
-        options.RegisterValidatorsFromAssembly(assembly);
-    });
+builder.Services.AddFluentValidation(options =>
+{
+    options.RegisterValidatorsFromAssembly(assembly);
+});
+
+builder.Services.AddAutoMapper(mapperConfiguration => mapperConfiguration.AddMaps(assembly), assembly);
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseMySql(builder.Configuration.GetConnectionString("Default"),
                     ServerVersion.Parse("8.0.29-mysql"),
                     config => config.MigrationsAssembly("Infrastructure.Data"));
-});
+}, contextLifetime: ServiceLifetime.Transient);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddTransient<DbContext, DataContext>();
 
 builder.Services.AddTransient<ICustomerAppService, CustomerAppService>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
@@ -56,8 +57,7 @@ builder.Services.AddTransient<IPortfolioProductService, PortfolioProductService>
 
 builder.Services.AddTransient<IInvestmentService, InvestmentService>();
 
-builder.Services.AddAutoMapper(mapperConfiguration => mapperConfiguration.AddMaps(assembly), assembly);
-builder.Services.AddUnitOfWork(ServiceLifetime.Transient);
+builder.Services.AddUnitOfWork<DataContext>(ServiceLifetime.Transient);
 
 var app = builder.Build();
 

@@ -36,9 +36,9 @@ namespace Application.Services
             _investmentService = investmentService ?? throw new ArgumentNullException(nameof(investmentService));
         }
 
-        public IEnumerable<PortfolioResult> GetAll(int id)
+        public IEnumerable<PortfolioResult> GetAll(int customerId)
         {
-            var portfolios = _portfolioService.GetAll(id);
+            var portfolios = _portfolioService.GetAll(customerId);
             var result = Mapper.Map<IEnumerable<PortfolioResult>>(portfolios);
             foreach (var portfoliosResult in result)
             {
@@ -57,12 +57,6 @@ namespace Application.Services
             var result = Mapper.Map<PortfolioResult>(portfolio);
             result.Products = Mapper.Map<IEnumerable<PortfolioProductResult>>(portfolio.PortfoliosProducts);
             return result;
-        }
-
-        public Portfolio GetWithoutMap(int id)
-        {
-            var portfolio = _portfolioService.Get(id);
-            return portfolio;
         }
 
         public bool AnyPortfolioFromACustomerArentEmpty(int customerId) => _portfolioService.AnyPortfolioFromACustomerArentEmpty(customerId);

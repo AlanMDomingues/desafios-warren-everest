@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using Application.Models.Requests;
 using Application.Models.Response;
 using AutoMapper;
 using Domain.Models;
@@ -16,7 +15,7 @@ namespace Application.Services
         public OrderAppService(
             IMapper mapper,
             IOrderService orderService)
-            : base(mapper) 
+            : base(mapper)
             => _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
 
         public IEnumerable<OrderResult> GetAll(int id)

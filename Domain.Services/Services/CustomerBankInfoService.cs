@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Infrastructure.Data.Context;
 using System;
 
 namespace Domain.Services.Services
@@ -8,8 +9,8 @@ namespace Domain.Services.Services
     public class CustomerBankInfoService : ServiceBase, ICustomerBankInfoService
     {
         public CustomerBankInfoService(
-            IRepositoryFactory repositoryFactory,
-            IUnitOfWork unitOfWork)
+            IRepositoryFactory<DataContext> repositoryFactory,
+            IUnitOfWork<DataContext> unitOfWork)
             : base(repositoryFactory, unitOfWork) { }
 
         public CustomerBankInfo Get(int id)

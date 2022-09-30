@@ -40,7 +40,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _customersAppService.Get(c => c.Id.Equals(id));
 
                 return result is null
-                    ? NotFound()
+                    ? NotFound($"Customer not found for ID: {id}")
                     : Ok(result);
             });
         }
@@ -53,7 +53,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var results = _customersAppService.GetAll(c => c.FullName.Contains(fullName));
 
                 return !results.Any()
-                    ? NotFound()
+                    ? NotFound($"Customer not found for FullName: {fullName}")
                     : Ok(results);
             });
         }
@@ -66,7 +66,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _customersAppService.Get(c => c.Email.Equals(email));
 
                 return result is null
-                    ? NotFound()
+                    ? NotFound($"Customer not found for Email: {email}")
                     : Ok(result);
             });
         }
@@ -79,7 +79,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _customersAppService.Get(c => c.Cpf.Equals(cpf));
 
                 return result is null
-                    ? NotFound()
+                    ? NotFound($"Customer not found for Cpf: {cpf}")
                     : Ok(result);
             });
         }

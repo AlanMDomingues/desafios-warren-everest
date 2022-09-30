@@ -11,8 +11,6 @@ namespace Application.Interfaces
 
         PortfolioResult Get(int id);
 
-        Portfolio GetWithoutMap(int id);
-
         bool AnyPortfolioFromACustomerArentEmpty(int customerId);
 
         void Add(CreatePortfolioRequest portfolio);

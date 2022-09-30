@@ -53,7 +53,7 @@ namespace Application.Services
         {
             var customer = Mapper.Map<Customer>(customerRequest);
             var customerExists = _customerServices.ValidateAlreadyExists(customer);
-            if (!customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
+            if (customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
 
             _customerServices.Add(customer);
             _customerBankInfoAppService.Add(customer.Id);
@@ -63,9 +63,12 @@ namespace Application.Services
 
         public void Update(int id, UpdateCustomerRequest customerRequest)
         {
+            var customerExists = _customerServices.AnyForId(id);
+            if (!customerExists) throw new ArgumentException($"'Customer' not found for ID: {id}");
+
             var customer = Mapper.Map<Customer>(customerRequest);
-            var customerExists = _customerServices.ValidateAlreadyExists(customer);
-            if (!customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
+            var customerEmailOrAndCpfExists = _customerServices.ValidateAlreadyExists(customer);
+            if (customerEmailOrAndCpfExists) throw new ArgumentException("Customer already exists, please insert a new customer");
 
             customer.Id = id;
             _customerServices.Update(customer);
@@ -77,10 +80,10 @@ namespace Application.Services
             if (!customerExists) throw new ArgumentException($"'Customer' not found for ID: {id}");
 
             var accountBalanceArentEmpty = _customerBankInfoAppService.AnyAccountBalanceThatIsntZeroForCustomerId(id);
-            if (!accountBalanceArentEmpty) throw new ArgumentException("You must withdraw money from your account balance before deleting it");
+            if (accountBalanceArentEmpty) throw new ArgumentException("You must withdraw money from your account balance before deleting it");
 
             var result = _portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id);
-            if (!result) throw new ArgumentException("You must withdraw money from your portfolios before deleting it");
+            if (result) throw new ArgumentException("You must withdraw money from your portfolios before deleting it");
 
             _customerServices.Delete(id);
         }

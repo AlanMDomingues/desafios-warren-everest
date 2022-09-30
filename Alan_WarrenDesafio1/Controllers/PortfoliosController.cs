@@ -19,7 +19,7 @@ namespace Alan_WarrenDesafio1.Controllers
             : base(logger)
             => _portfolioAppService = portfolioAppService ?? throw new ArgumentNullException(nameof(portfolioAppService));
 
-        [HttpGet("customerId/{id}")]
+        [HttpGet("customerId/{customerId}")]
         public IActionResult GetAll(int customerId)
         {
             return SafeAction(() =>
@@ -27,7 +27,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var results = _portfolioAppService.GetAll(customerId);
 
                 return !results.Any()
-                    ? NotFound($"Portfolios not found for Customer Id: {customerId}")
+                    ? NotFound($"Portfolios not found for Customer ID: {customerId}")
                     : Ok(results);
             });
         }
@@ -40,7 +40,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _portfolioAppService.Get(id);
 
                 return result is null
-                    ? BadRequest()
+                    ? BadRequest($"Portfolio not found for ID: {id}")
                     : Ok(result);
             });
         }

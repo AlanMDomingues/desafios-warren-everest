@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Infrastructure.Data.Context;
 using System;
 using System.Collections.Generic;
 
@@ -9,8 +10,8 @@ namespace Domain.Services.Services
     public class ProductService : ServiceBase, IProductService
     {
         public ProductService(
-            IRepositoryFactory repositoryFactory,
-            IUnitOfWork unitOfWork)
+            IRepositoryFactory<DataContext> repositoryFactory,
+            IUnitOfWork<DataContext> unitOfWork)
             : base(repositoryFactory, unitOfWork) { }
 
         public IEnumerable<Product> GetAll()

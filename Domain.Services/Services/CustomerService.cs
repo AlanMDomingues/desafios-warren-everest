@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Infrastructure.Data.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -10,8 +11,8 @@ namespace Domain.Services.Services
     public class CustomerService : ServiceBase, ICustomerService
     {
         public CustomerService(
-            IUnitOfWork unitOfWork,
-            IRepositoryFactory repositoryFactory)
+            IUnitOfWork<DataContext> unitOfWork,
+            IRepositoryFactory<DataContext> repositoryFactory)
             : base(repositoryFactory, unitOfWork) { }
 
         public IEnumerable<Customer> GetAll()

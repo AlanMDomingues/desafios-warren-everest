@@ -25,7 +25,7 @@ namespace Alan_WarrenDesafio1.Controllers
                 var result = _customerBankInfoAppService.Get(id);
 
                 return result is null
-                    ? NotFound($"CustomerBankInfo not found for Id: {id}")
+                    ? NotFound($"CustomerBankInfo not found for ID: {id}")
                     : Ok(result);
             });
         }

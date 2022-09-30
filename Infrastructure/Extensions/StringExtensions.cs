@@ -17,16 +17,13 @@ namespace Infrastructure.Extensions
         public static bool IsValidNumber(this string number)
             => number.All(x => char.IsDigit(x));
 
-        public static bool IsValidText(this string text)
+        public static bool IsValidPlace(this string text)
         {
-            if (text.Trim() != text
-                || text.Split(' ').Contains("")
-                || text.Split(' ').Any(_ => !char.IsUpper(_.First()))) return false;
+            if (text is null
+                || text.Trim() != text
+                || text.Split(' ').Contains("")) return false;
 
-            text = text.Replace(" ", string.Empty);
-            if (AllCharacteresArentEqualsToTheFirstCharacter(text)) return false;
-
-            return text.All(x => char.IsLetter(x));
+            return !AllCharacteresAreEqualsToTheFirstCharacter(text);
         }
 
         public static string FormatCpf(this string cpf)
@@ -37,13 +34,45 @@ namespace Infrastructure.Extensions
 
         public static bool IsValidFullName(this string fullName)
         {
-            if (!fullName.IsValidText()) return false;
+            if (fullName is null
+                || fullName.Trim() != fullName
+                || fullName.Split(' ').Contains("")
+                || !char.IsUpper(fullName.First())
+                || fullName.Any(x => char.IsNumber(x))
+                || AllCharacteresAreEqualsToTheFirstCharacter(fullName)) return false;
 
-            string[] nameAndLastName = fullName.Split(' ');
-            return nameAndLastName.Length > 1 && nameAndLastName.Length <= 7;
+            var nameAndLastName = fullName.Split(' ');
+            return nameAndLastName.Length > 1 && nameAndLastName.Length <= 30;
         }
 
-        public static bool AllCharacteresArentEqualsToTheFirstCharacter(this string field)
+        public static bool AllCharacteresAreEqualsToTheFirstCharacter(this string field)
             => field.All(c => c.Equals(field.First()));
+
+        public static bool IsValidCPF(this string cpf)
+        {
+            cpf = cpf.Replace(".", string.Empty).Replace("-", string.Empty);
+
+            if (!cpf.IsValidNumber() || cpf.AllCharacteresAreEqualsToTheFirstCharacter()) return false;
+
+            var firstDigitAfterDash = 0;
+            for (int i = 0; i < cpf.Length - 2; i++)
+            {
+                firstDigitAfterDash += cpf.ToIntAt(i) * (10 - i);
+            }
+
+            firstDigitAfterDash = (firstDigitAfterDash * 10) % 11;
+            firstDigitAfterDash = firstDigitAfterDash == 10 ? 0 : firstDigitAfterDash;
+
+            var secondDigitAfterDash = 0;
+            for (int i = 0; i < cpf.Length - 1; i++)
+            {
+                secondDigitAfterDash += cpf.ToIntAt(i) * (11 - i);
+            }
+
+            secondDigitAfterDash = (secondDigitAfterDash * 10) % 11;
+            secondDigitAfterDash = secondDigitAfterDash == 10 ? 0 : secondDigitAfterDash;
+
+            return firstDigitAfterDash == cpf.ToIntAt(^2) && secondDigitAfterDash == cpf.ToIntAt(^1);
+        }
     }
 }
