@@ -41,7 +41,8 @@ public static class OrderFactory
         var fakeOrder = new Faker<CreateOrderRequest>()
             .RuleFor(x => x.Quotes, x => x.Random.Int(1, 100))
             .RuleFor(x => x.PortfolioId, x => x.Random.Int(1, 10))
-            .RuleFor(x => x.ProductId, x => x.Random.Int(1, 1000));
+            .RuleFor(x => x.ProductId, x => x.Random.Int(1, 1000))
+            .RuleFor(x => x.CustomerBankInfoId, x => x.Random.Int(1, 1000));
 
         var order = fakeOrder.Generate();
 

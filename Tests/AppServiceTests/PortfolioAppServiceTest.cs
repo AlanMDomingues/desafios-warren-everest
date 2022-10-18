@@ -201,10 +201,10 @@ namespace Tests.AppServiceTests
             _customerBankInfoAppServiceMock.Setup(x => x.AnyCustomerBankInfoForId(It.IsAny<int>())).Returns(false);
 
             // Act
-            var actionResult = () => _portfolioAppService.Invest(customerBankInfoId, order);
+            var actionResult = () => _portfolioAppService.Invest(order);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Customer' not found for ID: {customerBankInfoId}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Customer' not found for ID: {order.CustomerBankInfoId}");
             _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Never);
             _productAppServiceMock.Verify(x => x.Get(It.IsAny<int>()), Times.Never);
@@ -220,7 +220,7 @@ namespace Tests.AppServiceTests
             _portfolioServiceMock.Setup(x => x.AnyPortfolioForId(It.IsAny<int>())).Returns(false);
 
             // Act
-            var actionResult = () => _portfolioAppService.Invest(It.IsAny<int>(), order);
+            var actionResult = () => _portfolioAppService.Invest(order);
 
             // Assert
             actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' not found for ID: {order.PortfolioId}");
@@ -239,7 +239,7 @@ namespace Tests.AppServiceTests
             _portfolioServiceMock.Setup(x => x.AnyPortfolioForId(It.IsAny<int>())).Returns(true);
 
             // Act
-            var actionResult = () => _portfolioAppService.Invest(It.IsAny<int>(), order);
+            var actionResult = () => _portfolioAppService.Invest(order);
 
             // Assert
             actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Product' not found for ID: {order.ProductId}");
