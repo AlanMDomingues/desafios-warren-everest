@@ -22,7 +22,7 @@ public static class CustomerFactory
             .RuleFor(x => x.Country, x => x.Address.Country())
             .RuleFor(x => x.City, x => x.Address.City())
             .RuleFor(x => x.PostalCode, x => x.Address.ZipCode("########"))
-            .RuleFor(x => x.Adress, x => x.Address.StreetAddress())
+            .RuleFor(x => x.Address, x => x.Address.StreetAddress())
             .RuleFor(x => x.Number, x => x.Random.Int(1, 100000));
 
         var customer = fakeCustomer.Generate();
@@ -47,7 +47,7 @@ public static class CustomerFactory
             .RuleFor(x => x.Country, x => x.Address.Country())
             .RuleFor(x => x.City, x => x.Address.City())
             .RuleFor(x => x.PostalCode, x => x.Address.ZipCode("########"))
-            .RuleFor(x => x.Adress, x => x.Address.StreetAddress())
+            .RuleFor(x => x.Address, x => x.Address.StreetAddress())
             .RuleFor(x => x.Number, x => x.Random.Int(1, 100000));
 
         var customer = fakeCustomer.Generate();
@@ -72,7 +72,7 @@ public static class CustomerFactory
                 country: x.Address.Country(),
                 city: x.Address.City(),
                 postalCode: x.Address.ZipCode("########"),
-                adress: x.Address.StreetAddress(),
+                address: x.Address.StreetAddress(),
                 number: x.Random.Int(1, 100000)
                 ))
             .RuleFor(x => x.Id, x => ++x.IndexVariable);
@@ -101,7 +101,7 @@ public static class CustomerFactory
                 country: x.Address.Country(),
                 city: x.Address.City(),
                 postalCode: x.Address.ZipCode("########"),
-                adress: x.Address.StreetAddress(),
+                address: x.Address.StreetAddress(),
                 number: x.Random.Int(1, 100000)
                 ))
             .RuleFor(x => x.Id, x => ++x.IndexVariable);

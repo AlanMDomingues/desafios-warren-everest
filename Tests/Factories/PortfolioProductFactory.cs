@@ -6,11 +6,11 @@ namespace Tests.Factories
 {
     public static class PortfolioProductFactory
     {
-        public static ICollection<PortfolioProduct> CreatePortfolioProduct()
+        public static ICollection<PortfolioProduct> FakePortfolioProduct()
         {
             var fakePortfolioProduct = new Faker<PortfolioProduct>()
-                .RuleFor(x => x.PortfolioId, x => x.Random.Int(1, 10000))
-                .RuleFor(x => x.ProductId, x => x.Random.Int(1, 10000));
+                .CustomInstantiator(x => new PortfolioProduct(x.Random.Int(1, 10000), x.Random.Int(1, 10000)))
+                .RuleFor(x => x.Id, x => ++x.IndexVariable);
 
             var portfolioProduct = fakePortfolioProduct.Generate(1);
 

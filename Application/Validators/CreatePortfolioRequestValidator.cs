@@ -9,7 +9,6 @@ namespace Application.Validators
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .MinimumLength(2)
                 .MaximumLength(30);
 
             RuleFor(x => x.Description)

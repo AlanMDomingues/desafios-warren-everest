@@ -8,7 +8,9 @@ namespace Application.Validators
         public CreateOrderRequestValidator()
         {
             RuleFor(x => x.Quotes)
-                .GreaterThan(0);
+                .NotEmpty()
+                .GreaterThan(0)
+                .LessThanOrEqualTo(100);
         }
     }
 }

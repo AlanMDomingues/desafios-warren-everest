@@ -61,7 +61,7 @@ namespace Application.Validators
                 .Must(x => x.IsValidNumber())
                 .Length(8);
 
-            RuleFor(x => x.Adress)
+            RuleFor(x => x.Address)
                 .NotEmpty()
                 .Must(x => x.IsValidPlace())
                 .MinimumLength(2)

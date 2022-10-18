@@ -1,16 +1,16 @@
 ﻿using Application.Models.Response;
-using Application.Profiles;
 using Application.Services;
 using AutoMapper;
+using Domain.Models;
 using Domain.Services.Interfaces;
-using Domain.Services.Services;
 using FluentAssertions;
 using Moq;
+using System;
 using System.Collections.Generic;
 using Tests.Factories;
 using Xunit;
 
-namespace Tests;
+namespace Tests.AppServiceTests;
 
 public class OrderAppServiceTest
 {
@@ -20,19 +20,19 @@ public class OrderAppServiceTest
 
     public OrderAppServiceTest(IMapper mapper)
     {
-        _mapper = mapper;
-        _orderServiceMock = new Mock<IOrderService>();
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _orderServiceMock = new();
         _orderAppService = new(
             _mapper,
             _orderServiceMock.Object);
     }
 
     [Fact]
-    public void Should_Pass_And_Return_Orders_List_When_Trying_To_GetAll_Orders()
+    public void Should_Pass_And_Return_Orders_List_When_Trying_To_Get_All_Orders()
     {
         // Arrange
-        var fakeOrders = OrderFactory.CreateOrders();
-        var expectedOrders = _mapper.Map<IEnumerable<OrderResult>>(fakeOrders);
+        var fakeOrders = OrderFactory.FakeOrders();
+        var ordersExpected = _mapper.Map<IEnumerable<OrderResult>>(fakeOrders);
 
         _orderServiceMock.Setup(x => x.GetAll(It.IsAny<int>())).Returns(fakeOrders);
 
@@ -40,15 +40,16 @@ public class OrderAppServiceTest
         var actionResult = _orderAppService.GetAll(It.IsAny<int>());
 
         // Assert
-        actionResult.Should().BeEquivalentTo(expectedOrders);
+        actionResult.Should().BeEquivalentTo(ordersExpected);
+        _orderServiceMock.Verify(x => x.GetAll(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
     public void Should_Pass_And_Return_Order_When_Trying_To_Get_Order()
     {
         // Arrange
-        var fakeOrder = OrderFactory.CreateOrder();
-        var expectedOrder = _mapper.Map<OrderResult>(fakeOrder);
+        var fakeOrder = OrderFactory.FakeOrder();
+        var orderExpected = _mapper.Map<OrderResult>(fakeOrder);
 
         _orderServiceMock.Setup(x => x.Get(It.IsAny<int>())).Returns(fakeOrder);
 
@@ -56,6 +57,17 @@ public class OrderAppServiceTest
         var actionResult = _orderAppService.Get(It.IsAny<int>());
 
         // Assert
-        actionResult.Should().BeEquivalentTo(expectedOrder);
+        actionResult.Should().BeEquivalentTo(orderExpected);
+        _orderServiceMock.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
+    }
+
+    [Fact]
+    public void Should_Pass_When_Trying_To_Call_Add()
+    {
+        // Act
+        _orderAppService.Add(It.IsAny<Order>());
+
+        // Assert
+        _orderServiceMock.Verify(x => x.Add(It.IsAny<Order>()), Times.Once);
     }
 }

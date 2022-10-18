@@ -15,7 +15,7 @@ namespace Application.Models.Requests
         public string Country { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }
-        public string Adress { get; set; }
+        public string Address { get; set; }
         public int Number { get; set; }
     }
 }

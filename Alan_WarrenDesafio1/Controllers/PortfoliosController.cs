@@ -89,12 +89,12 @@ namespace Alan_WarrenDesafio1.Controllers
             });
         }
 
-        [HttpPost("{customerId}")]
-        public IActionResult Invest(int customerId, CreateOrderRequest orderRequest)
+        [HttpPost("invest/{customerBankInfoId}")]
+        public IActionResult Invest(int customerBankInfoId, CreateOrderRequest orderRequest)
         {
             return SafeAction(() =>
             {
-                _portfolioAppService.Invest(customerId, orderRequest);
+                _portfolioAppService.Invest(customerBankInfoId, orderRequest);
 
                 return Created("~api/portfolios", default);
             });

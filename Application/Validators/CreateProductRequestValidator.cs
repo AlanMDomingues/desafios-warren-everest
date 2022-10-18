@@ -12,6 +12,7 @@ namespace Application.Validators
                 .MaximumLength(20);
 
             RuleFor(x => x.UnitPrice)
+                .NotEmpty()
                 .GreaterThan(0);
         }
     }

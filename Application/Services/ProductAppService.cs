@@ -44,20 +44,11 @@ namespace Application.Services
 
         public void Update(int id, UpdateProductRequest product)
         {
-            var productExists = _productService.AnyProductForId(id);
-            if (!productExists) throw new ArgumentException($"'Product' not found for ID: {id}");
-
             var productToUpdate = Mapper.Map<Product>(product);
             productToUpdate.Id = id;
             _productService.Update(productToUpdate);
         }
 
-        public void Delete(int id)
-        {
-            var productExists = _productService.AnyProductForId(id);
-            if (!productExists) throw new ArgumentException($"'Product' not found for ID: {id}");
-
-            _productService.Delete(id);
-        }
+        public void Delete(int id) => _productService.Delete(id);
     }
 }

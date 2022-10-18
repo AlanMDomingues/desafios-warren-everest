@@ -8,8 +8,8 @@ public static class CustomerBankInfoFactory
     public static CustomerBankInfo FakeCustomerBankInfo()
     {
         var customerBankInfoFaker = new Faker<CustomerBankInfo>()
-            .RuleFor(x => x.Account, x => x.Finance.Account(20))
-            .RuleFor(x => x.AccountBalance, x => x.Finance.Amount(0, 10000));
+            .CustomInstantiator(x => new CustomerBankInfo(x.Finance.Account(20), x.Finance.Amount(0, 10000)))
+            .RuleFor(x => x.Id, x => ++x.IndexVariable);
 
         var customerBankInfo = customerBankInfoFaker.Generate();
         return customerBankInfo;

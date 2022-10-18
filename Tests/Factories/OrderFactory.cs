@@ -7,10 +7,11 @@ namespace Tests.Factories;
 
 public static class OrderFactory
 {
-    public static Order CreateOrder()
+    public static Order FakeOrder()
     {
         var fakeOrder = new Faker<Order>()
             .CustomInstantiator(x => new Order(x.Random.Int(1, 100), x.Random.Int(1, 10), x.Random.Int(1, 1000)))
+            .RuleFor(x => x.Id, x => ++x.IndexVariable)
             .RuleFor(x => x.UnitPrice, x => x.Finance.Amount(0, 10000));
 
         var order = fakeOrder.Generate();
@@ -19,10 +20,11 @@ public static class OrderFactory
         return order;
     }
 
-    public static List<Order> CreateOrders()
+    public static List<Order> FakeOrders()
     {
         var fakeOrder = new Faker<Order>()
             .CustomInstantiator(x => new Order(x.Random.Int(1, 100), x.Random.Int(1, 10), x.Random.Int(1, 1000)))
+            .RuleFor(x => x.Id, x => ++x.IndexVariable)
             .RuleFor(x => x.UnitPrice, x => x.Finance.Amount(0, 10000));
 
         var orders = fakeOrder.Generate(5);
@@ -34,7 +36,7 @@ public static class OrderFactory
         return orders;
     }
 
-    public static CreateOrderRequest CreateOrderRequest()
+    public static CreateOrderRequest FakeCreateOrderRequest()
     {
         var fakeOrder = new Faker<CreateOrderRequest>()
             .RuleFor(x => x.Quotes, x => x.Random.Int(1, 100))

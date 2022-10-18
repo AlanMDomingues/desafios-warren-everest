@@ -19,7 +19,7 @@ namespace Application.Validators
             RuleFor(x => x.Email)
                 .NotEmpty()
                 .EmailAddress(EmailValidationMode.Net4xRegex)
-                .MinimumLength(7)
+                .MinimumLength(10)
                 .MaximumLength(256);
 
             RuleFor(x => x)
@@ -59,7 +59,7 @@ namespace Application.Validators
                 .Must(x => x.IsValidNumber())
                 .Length(8);
 
-            RuleFor(x => x.Adress)
+            RuleFor(x => x.Address)
                 .NotEmpty()
                 .Must(x => x.IsValidPlace())
                 .MinimumLength(2)

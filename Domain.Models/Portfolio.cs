@@ -4,6 +4,12 @@ namespace Domain.Models
 {
     public class Portfolio
     {
+        public Portfolio(string name, string description)
+        {
+            Name = name;
+            Description = description;
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -18,7 +24,7 @@ namespace Domain.Models
 
         public bool ValidateTransaction(decimal cash)
         {
-            return (TotalBalance - cash) < 0;
+            return (TotalBalance - cash) >= 0;
         }
     }
 }

@@ -60,8 +60,7 @@ namespace Domain.Services.Services
             var customerBankInfo = Get(id)
                 ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
 
-            var isValidTransaction = customerBankInfo.ValidateTransaction(amount);
-            if (isValidTransaction) throw new ArgumentException("Insufficient balance");
+            if (!customerBankInfo.ValidateTransaction(amount)) throw new ArgumentException("Insufficient balance");
 
             customerBankInfo.AccountBalance -= amount;
 

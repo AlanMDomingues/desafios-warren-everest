@@ -8,5 +8,7 @@ namespace Application.Models.Response
         public decimal UnitPrice { get; set; }
         public decimal NetValue { get; set; }
         public DateTime ConvertedAt { get; set; }
+        public int PortfolioId { get; set; }
+        public int ProductId { get; set; }
     }
 }

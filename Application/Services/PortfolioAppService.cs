@@ -40,14 +40,6 @@ namespace Application.Services
         {
             var portfolios = _portfolioService.GetAll(customerId);
             var result = Mapper.Map<IEnumerable<PortfolioResult>>(portfolios);
-            foreach (var portfoliosResult in result)
-            {
-                foreach (var portfolio in portfolios)
-                {
-                    portfoliosResult.Products = Mapper.Map<IEnumerable<PortfolioProductResult>>(portfolio.PortfoliosProducts);
-                }
-            }
-
             return result;
         }
 
@@ -55,7 +47,6 @@ namespace Application.Services
         {
             var portfolio = _portfolioService.Get(id);
             var result = Mapper.Map<PortfolioResult>(portfolio);
-            result.Products = Mapper.Map<IEnumerable<PortfolioProductResult>>(portfolio.PortfoliosProducts);
             return result;
         }
 

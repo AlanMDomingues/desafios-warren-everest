@@ -4,6 +4,12 @@ namespace Domain.Models
 {
     public class Product
     {
+        public Product(string symbol, decimal unitPrice)
+        {
+            Symbol = symbol;
+            UnitPrice = unitPrice;
+        }
+
         public int Id { get; set; }
         public string Symbol { get; set; }
         public decimal UnitPrice { get; set; }

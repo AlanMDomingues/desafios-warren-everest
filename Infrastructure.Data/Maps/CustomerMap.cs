@@ -54,7 +54,7 @@ namespace Infrastructure.Data.Maps
                 .HasColumnType("varchar(8)")
                 .IsRequired();
 
-            builder.Property(x => x.Adress)
+            builder.Property(x => x.Address)
                 .HasColumnType("varchar(100)")
                 .IsRequired();
 

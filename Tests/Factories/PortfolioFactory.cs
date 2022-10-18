@@ -7,14 +7,15 @@ namespace Tests.Factories
 {
     public static class PortfolioFactory
     {
-        public static List<Portfolio> CreatePortfolios()
+        private static readonly string[] FakePortfolioNames = new[] { "Minha Casa", "Meu Carro", "Minha filha", "Minha Viagem", "Reserva de emergência", "Aposentadoria" };
+
+        public static List<Portfolio> FakePortfolios()
         {
-            var fakePortfolioNames = new[] { "Minha Casa", "Meu Carro", "Minha filha", "Minha Viagem", "Reserva de emergência", "Aposentadoria" };
-            var fakePortfolioProducts = PortfolioProductFactory.CreatePortfolioProduct();
+            var fakePortfolioProducts = PortfolioProductFactory.FakePortfolioProduct();
 
             var fakePortfolios = new Faker<Portfolio>()
-                .RuleFor(x => x.Name, x => x.PickRandom(fakePortfolioNames))
-                .RuleFor(x => x.Description, x => x.Lorem.Text())
+                .CustomInstantiator(x => new Portfolio(x.PickRandom(FakePortfolioNames), x.Random.Words(4)))
+                .RuleFor(x => x.Id, x => ++x.IndexVariable)
                 .RuleFor(x => x.TotalBalance, x => x.Finance.Amount(0, 10000000))
                 .RuleFor(x => x.CustomerId, x => x.Random.Int(1, 100))
                 .RuleFor(x => x.PortfoliosProducts, fakePortfolioProducts);
@@ -23,14 +24,13 @@ namespace Tests.Factories
             return portfolios;
         }
 
-        public static Portfolio CreatePortfolio()
+        public static Portfolio FakePortfolio()
         {
-            var fakePortfolioNames = new[] { "Minha Casa", "Meu Carro", "Minha filha", "Minha Viagem", "Reserva de emergência", "Aposentadoria" };
-            var fakePortfolioProducts = PortfolioProductFactory.CreatePortfolioProduct();
+            var fakePortfolioProducts = PortfolioProductFactory.FakePortfolioProduct();
 
             var fakePortfolios = new Faker<Portfolio>()
-                .RuleFor(x => x.Name, x => x.PickRandom(fakePortfolioNames))
-                .RuleFor(x => x.Description, x => x.Lorem.Text())
+                .CustomInstantiator(x => new Portfolio(x.PickRandom(FakePortfolioNames), x.Random.Words(4)))
+                .RuleFor(x => x.Id, x => ++x.IndexVariable)
                 .RuleFor(x => x.TotalBalance, x => x.Finance.Amount(0, 10000000))
                 .RuleFor(x => x.CustomerId, x => x.Random.Int(1, 100))
                 .RuleFor(x => x.PortfoliosProducts, x => fakePortfolioProducts);
@@ -39,26 +39,22 @@ namespace Tests.Factories
             return portfolio;
         }
 
-        public static CreatePortfolioRequest CreatePortfolioRequest()
+        public static CreatePortfolioRequest FakeCreatePortfolioRequest()
         {
-            var fakePortfolioNames = new[] { "Minha Casa", "Meu Carro", "Minha filha", "Minha Viagem", "Reserva de emergência", "Aposentadoria" };
-
             var fakePortfolio = new Faker<CreatePortfolioRequest>()
-                .RuleFor(x => x.Name, x => x.PickRandom(fakePortfolioNames))
-                .RuleFor(x => x.Description, x => x.Lorem.Text())
+                .RuleFor(x => x.Name, x => x.PickRandom(FakePortfolioNames))
+                .RuleFor(x => x.Description, x => x.Random.Words(4))
                 .RuleFor(x => x.CustomerId, x => x.Random.Int(1, 100));
 
             var portfolio = fakePortfolio.Generate();
             return portfolio;
         }
 
-        public static UpdatePortfolioRequest UpdatePortfolioRequest()
+        public static UpdatePortfolioRequest FakeUpdatePortfolioRequest()
         {
-            var fakePortfolioNames = new[] { "Minha Casa", "Meu Carro", "Minha filha", "Minha Viagem", "Reserva de emergência", "Aposentadoria" };
-
             var fakePortfolio = new Faker<UpdatePortfolioRequest>()
-                .RuleFor(x => x.Name, x => x.PickRandom(fakePortfolioNames))
-                .RuleFor(x => x.Description, x => x.Lorem.Text());
+                .RuleFor(x => x.Name, x => x.PickRandom(FakePortfolioNames))
+                .RuleFor(x => x.Description, x => x.Random.Words(4));
 
             var portfolio = fakePortfolio.Generate();
             return portfolio;

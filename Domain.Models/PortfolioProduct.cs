@@ -2,7 +2,7 @@
 {
     public class PortfolioProduct
     {
-        public PortfolioProduct() { }
+        //public PortfolioProduct() { }
         public PortfolioProduct(int portfolioId, int productId)
         {
             PortfolioId = portfolioId;

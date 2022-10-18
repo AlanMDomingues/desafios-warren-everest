@@ -41,11 +41,7 @@ namespace Application.Services
             for (int i = 0; i < 20; i++)
                 accountNumber += randomNumber.Next(0, 9).ToString();
 
-            var customerBankInfo = new CustomerBankInfo
-            {
-                Account = accountNumber,
-                CustomerId = customerId
-            };
+            var customerBankInfo = new CustomerBankInfo(accountNumber, customerId);
 
             _customerBankInfoService.Add(customerBankInfo);
         }

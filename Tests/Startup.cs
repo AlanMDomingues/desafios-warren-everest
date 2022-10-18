@@ -1,12 +1,8 @@
 ﻿using Application.Profiles;
-using Domain.Models;
 using EntityFrameworkCore.UnitOfWork.Extensions;
 using Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Tests
 {

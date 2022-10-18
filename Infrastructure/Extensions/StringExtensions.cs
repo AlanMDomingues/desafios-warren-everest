@@ -15,7 +15,11 @@ namespace Infrastructure.Extensions
         }
 
         public static bool IsValidNumber(this string number)
-            => number.All(x => char.IsDigit(x));
+        {
+            if (number is null) return false;
+
+            return number.All(x => char.IsDigit(x));
+        }
 
         public static bool IsValidPlace(this string text)
         {
