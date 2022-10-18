@@ -89,10 +89,10 @@ namespace Application.Services
             _portfolioService.Withdraw(portfolioId, amount);
         }
 
-        public void Invest(int customerBankInfoId, CreateOrderRequest orderRequest)
+        public void Invest(CreateOrderRequest orderRequest)
         {
-            var customerBankInfoExists = _customerBankInfoAppService.AnyCustomerBankInfoForId(customerBankInfoId);
-            if (!customerBankInfoExists) throw new ArgumentException($"'Customer' not found for ID: {customerBankInfoId}");
+            var customerBankInfoExists = _customerBankInfoAppService.AnyCustomerBankInfoForId(orderRequest.CustomerBankInfoId);
+            if (!customerBankInfoExists) throw new ArgumentException($"'Customer' not found for ID: {orderRequest.CustomerBankInfoId}");
 
             var portfolioExists = _portfolioService.AnyPortfolioForId(orderRequest.PortfolioId);
             if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {orderRequest.PortfolioId}");

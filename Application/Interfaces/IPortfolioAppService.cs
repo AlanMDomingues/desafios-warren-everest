@@ -21,6 +21,6 @@ namespace Application.Interfaces
 
         void TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount);
 
-        void Invest(int customerBankInfoId, CreateOrderRequest orderRequest);
+        void Invest(CreateOrderRequest orderRequest);
     }
 }
