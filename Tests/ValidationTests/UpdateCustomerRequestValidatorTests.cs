@@ -507,11 +507,41 @@ namespace Tests.ValidationTests
         }
 
         [Fact]
-        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Birthdate_Under_Eighteen_Years_Old()
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Birthdate_Under_Eighteen_Years_Old_One_Year_Left()
         {
             // Arrange
             var customerRequest = CustomerFactory.FakeUpdateCustomerRequest();
             customerRequest.Birthdate = new DateTime(DateTime.Today.Year - 17, DateTime.Today.Month, DateTime.Today.Day);
+
+            // Act
+            var actionTestValidate = _updateCustomerRequestValidator.TestValidate(customerRequest);
+
+            // Assert
+            actionTestValidate.Errors.Should().HaveCount(1);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Birthdate).WithErrorMessage("Customer must be at least eighteen years old");
+        }
+
+        [Fact]
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Birthdate_Under_Eighteen_Years_Old_One_Month_Left()
+        {
+            // Arrange
+            var customerRequest = CustomerFactory.FakeUpdateCustomerRequest();
+            customerRequest.Birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month + 1, DateTime.Today.Day);
+
+            // Act
+            var actionTestValidate = _updateCustomerRequestValidator.TestValidate(customerRequest);
+
+            // Assert
+            actionTestValidate.Errors.Should().HaveCount(1);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Birthdate).WithErrorMessage("Customer must be at least eighteen years old");
+        }
+
+        [Fact]
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Birthdate_Under_Eighteen_Years_Old_One_Day_Left()
+        {
+            // Arrange
+            var customerRequest = CustomerFactory.FakeUpdateCustomerRequest();
+            customerRequest.Birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month, DateTime.Today.Day + 1);
 
             // Act
             var actionTestValidate = _updateCustomerRequestValidator.TestValidate(customerRequest);
