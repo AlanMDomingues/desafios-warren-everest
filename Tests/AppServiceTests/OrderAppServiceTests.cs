@@ -12,13 +12,13 @@ using Xunit;
 
 namespace Tests.AppServiceTests;
 
-public class OrderAppServiceTest
+public class OrderAppServiceTests
 {
     private readonly IMapper _mapper;
     private readonly Mock<IOrderService> _orderServiceMock;
     private readonly OrderAppService _orderAppService;
 
-    public OrderAppServiceTest(IMapper mapper)
+    public OrderAppServiceTests(IMapper mapper)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _orderServiceMock = new();

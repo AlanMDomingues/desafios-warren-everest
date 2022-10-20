@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Tests.AppServiceTests
 {
-    public class PortfolioAppServiceTest
+    public class PortfolioAppServiceTests
     {
         private readonly IMapper _mapper;
         private readonly Mock<IPortfolioService> _portfolioServiceMock;
@@ -23,7 +23,7 @@ namespace Tests.AppServiceTests
         private readonly Mock<IPortfolioProductService> _portfolioProductServiceMock;
         private readonly Mock<IInvestmentService> _investmentServiceMock;
         private readonly PortfolioAppService _portfolioAppService;
-        public PortfolioAppServiceTest(IMapper mapper)
+        public PortfolioAppServiceTests(IMapper mapper)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _portfolioServiceMock = new();

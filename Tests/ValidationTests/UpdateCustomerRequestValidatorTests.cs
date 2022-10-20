@@ -7,11 +7,11 @@ using Xunit;
 
 namespace Tests.ValidationTests
 {
-    public class UpdateCustomerRequestValidatorTest
+    public class UpdateCustomerRequestValidatorTests
     {
         private readonly UpdateCustomerRequestValidator _updateCustomerRequestValidator;
 
-        public UpdateCustomerRequestValidatorTest() => _updateCustomerRequestValidator = new();
+        public UpdateCustomerRequestValidatorTests() => _updateCustomerRequestValidator = new();
 
         #region FullName Property Tests
 
@@ -586,7 +586,7 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.Errors.Should().HaveCount(1);
-            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Country);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Country).WithErrorMessage("'Country' não atende a condição definida.");
         }
 
         [Theory]
@@ -624,13 +624,13 @@ namespace Tests.ValidationTests
         }
 
         [Fact]
-        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Country_Have_Greater_Than_Fifty_Four_Characters()
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Country_Have_Greater_Than_Fifty_Eight_Characters()
         {
             // Arrange
             var updateCustomerRequest = CustomerFactory.FakeUpdateCustomerRequest();
             updateCustomerRequest.Country = "";
 
-            while (updateCustomerRequest.Country.Length < 54)
+            while (updateCustomerRequest.Country.Length < 58)
             {
                 updateCustomerRequest.Country += "A";
             }
@@ -641,7 +641,7 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.Errors.Should().HaveCount(1);
-            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Country);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Country).WithErrorMessage("'Country' deve ser menor ou igual a 58 caracteres. Você digitou 70 caracteres.");
         }
 
         [Theory]
@@ -713,7 +713,7 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.Errors.Should().HaveCount(1);
-            actionTestValidate.ShouldHaveValidationErrorFor(x => x.City);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.City).WithErrorMessage("'City' não atende a condição definida.");
         }
 
         [Theory]
@@ -751,13 +751,13 @@ namespace Tests.ValidationTests
         }
 
         [Fact]
-        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_City_Have_Greater_Than_Fifty_Four_Characters()
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_City_Have_Greater_Than_Fifty_Eight_Characters()
         {
             // Arrange
             var updateCustomerRequest = CustomerFactory.FakeUpdateCustomerRequest();
             updateCustomerRequest.City = "";
 
-            while (updateCustomerRequest.City.Length < 54)
+            while (updateCustomerRequest.City.Length < 58)
             {
                 updateCustomerRequest.City += "A";
             }
@@ -768,7 +768,7 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.Errors.Should().HaveCount(1);
-            actionTestValidate.ShouldHaveValidationErrorFor(x => x.City);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.City).WithErrorMessage("'City' deve ser menor ou igual a 58 caracteres. Você digitou 70 caracteres.");
         }
 
         [Theory]
@@ -928,7 +928,7 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.Errors.Should().HaveCount(1);
-            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Address);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Address).WithErrorMessage("'Address' não atende a condição definida.");
         }
 
         [Theory]
@@ -966,7 +966,7 @@ namespace Tests.ValidationTests
         }
 
         [Fact]
-        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Address_Have_Greater_Than_Fifty_Four_Characters()
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Customer_Address_Have_Greater_Than_One_Hundred_Characters()
         {
             // Arrange
             var updateCustomerRequest = CustomerFactory.FakeUpdateCustomerRequest();
@@ -983,7 +983,7 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.Errors.Should().HaveCount(1);
-            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Address);
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Address).WithErrorMessage("'Address' deve ser menor ou igual a 100 caracteres. Você digitou 112 caracteres.");
         }
 
         [Theory]
@@ -1021,6 +1021,22 @@ namespace Tests.ValidationTests
 
             // Assert
             actionTestValidate.ShouldHaveValidationErrorFor(x => x.Number).WithErrorMessage("'Number' deve ser superior a '0'.");
+        }
+
+        [Fact]
+        public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Update_A_Null_Or_Empty_Customer()
+        {
+            // Arrange
+            var customerRequest = CustomerFactory.FakeUpdateCustomerRequest();
+            customerRequest.Number = 0;
+
+            // Act
+            var actionTestValidate = _updateCustomerRequestValidator.TestValidate(customerRequest);
+
+            // Assert
+            actionTestValidate.Errors[0].ErrorMessage.Should().Be("'Number' deve ser informado.");
+            actionTestValidate.Errors[1].ErrorMessage.Should().Be("'Number' deve ser superior a '0'.");
+            actionTestValidate.ShouldHaveValidationErrorFor(x => x.Number);
         }
 
         #endregion Number Property Tests

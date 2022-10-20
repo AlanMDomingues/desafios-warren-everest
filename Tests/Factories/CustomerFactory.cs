@@ -77,7 +77,6 @@ public static class CustomerFactory
                 ))
             .RuleFor(x => x.Id, x => ++x.IndexVariable);
 
-
         var customer = fakeCustomer.Generate();
         if (customer.Whatsapp is false && customer.EmailSms is false)
         {

@@ -10,11 +10,11 @@ using Xunit;
 
 namespace Tests
 {
-    public class MapperTest
+    public class MapperTests
     {
         private readonly IMapper _mapper;
 
-        public MapperTest(IMapper mapper) => _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        public MapperTests(IMapper mapper) => _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
         #region Customer Mapping Tests
 

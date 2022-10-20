@@ -11,14 +11,14 @@ using Xunit;
 
 namespace Tests.AppServiceTests;
 
-public class CustomerBankInfoAppServiceTest
+public class CustomerBankInfoAppServiceTests
 {
     private readonly IMapper _mapper;
     private readonly Mock<ICustomerBankInfoService> _customerBankInfoServiceMock;
     private readonly Mock<IInvestmentService> _investmentServiceMock;
     private readonly CustomerBankInfoAppService _customerBankInfoAppService;
 
-    public CustomerBankInfoAppServiceTest(IMapper mapper)
+    public CustomerBankInfoAppServiceTests(IMapper mapper)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _customerBankInfoServiceMock = new();

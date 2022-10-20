@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Tests.AppServiceTests;
 
-public class CustomerAppServiceTest
+public class CustomerAppServiceTests
 {
     private readonly IMapper _mapper;
     private readonly Mock<ICustomerService> _customerServiceMock;
@@ -22,7 +22,7 @@ public class CustomerAppServiceTest
     private readonly Mock<IPortfolioAppService> _portfolioAppServiceMock;
     private readonly CustomerAppService _customerAppService;
 
-    public CustomerAppServiceTest(IMapper mapper)
+    public CustomerAppServiceTests(IMapper mapper)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _customerServiceMock = new();

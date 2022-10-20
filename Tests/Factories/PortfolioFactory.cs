@@ -54,7 +54,8 @@ namespace Tests.Factories
         {
             var fakePortfolio = new Faker<UpdatePortfolioRequest>()
                 .RuleFor(x => x.Name, x => x.PickRandom(FakePortfolioNames))
-                .RuleFor(x => x.Description, x => x.Random.Words(4));
+                .RuleFor(x => x.Description, x => x.Random.Words(4))
+                .RuleFor(x => x.CustomerId, x => x.Random.Int(1, 100));
 
             var portfolio = fakePortfolio.Generate();
             return portfolio;

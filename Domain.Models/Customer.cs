@@ -23,7 +23,7 @@ namespace Domain.Models
         {
             FullName = fullName;
             Email = email;
-            Cpf = cpf.FormatCpf();
+            Cpf = cpf.CpfFormatter();
             Cellphone = cellphone;
             Birthdate = birthdate;
             EmailSms = emailSms;

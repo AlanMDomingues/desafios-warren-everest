@@ -30,7 +30,7 @@ namespace Infrastructure.Extensions
             return !AllCharacteresAreEqualsToTheFirstCharacter(text);
         }
 
-        public static string FormatCpf(this string cpf)
+        public static string CpfFormatter(this string cpf)
         {
             var cpfFormated = cpf.Replace(".", string.Empty).Replace("-", string.Empty);
             return cpfFormated;
@@ -50,7 +50,11 @@ namespace Infrastructure.Extensions
         }
 
         public static bool AllCharacteresAreEqualsToTheFirstCharacter(this string field)
-            => field.All(c => c.Equals(field.First()));
+        {
+            field = field.Replace(" ", string.Empty).ToLower();
+
+            return field.All(c => c.Equals(field.First()));
+        }
 
         public static bool IsValidCPF(this string cpf)
         {

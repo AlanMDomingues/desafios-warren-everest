@@ -11,6 +11,18 @@ namespace Application.Validators
                 .NotEmpty()
                 .GreaterThan(0)
                 .LessThanOrEqualTo(100);
+
+            RuleFor(x => x.PortfolioId)
+                .NotEmpty()
+                .GreaterThan(0);
+
+            RuleFor(x => x.ProductId)
+                .NotEmpty()
+                .GreaterThan(0);
+
+            RuleFor(x => x.CustomerBankInfoId)
+                .NotEmpty()
+                .GreaterThan(0);
         }
     }
 }
