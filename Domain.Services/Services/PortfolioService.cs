@@ -81,7 +81,7 @@ namespace Domain.Services.Services
         public void Deposit(int id, decimal amount)
         {
             var portfolio = Get(id)
-                ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+                ?? throw new ArgumentException($"'Portfolio' não encontrado para o ID: {id}");
 
             portfolio.TotalBalance += amount;
 
@@ -94,9 +94,9 @@ namespace Domain.Services.Services
         public void Withdraw(int id, decimal amount)
         {
             var portfolio = Get(id)
-                ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+                ?? throw new ArgumentException($"'Portfolio' não encontrado para o ID: {id}");
 
-            if (!portfolio.ValidateTransaction(amount)) throw new ArgumentException("Insufficient balance");
+            if (!portfolio.ValidateTransaction(amount)) throw new ArgumentException("Saldo insuficiente");
 
             portfolio.TotalBalance -= amount;
 

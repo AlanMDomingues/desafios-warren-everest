@@ -68,13 +68,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var supportedCultures = "en-US";
-var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures)
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
-
-app.UseRequestLocalization(localizationOptions);
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

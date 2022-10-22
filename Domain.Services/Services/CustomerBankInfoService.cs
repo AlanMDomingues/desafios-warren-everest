@@ -58,9 +58,9 @@ namespace Domain.Services.Services
         public void Withdraw(int id, decimal amount)
         {
             var customerBankInfo = Get(id)
-                ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
+                ?? throw new ArgumentException($"'CustomerBankInfo' não encontrado para o ID: {id}");
 
-            if (!customerBankInfo.ValidateTransaction(amount)) throw new ArgumentException("Insufficient balance");
+            if (!customerBankInfo.ValidateTransaction(amount)) throw new ArgumentException("Saldo insuficiente");
 
             customerBankInfo.AccountBalance -= amount;
 
@@ -73,7 +73,7 @@ namespace Domain.Services.Services
         public void Deposit(int id, decimal amount)
         {
             var customerBankInfo = Get(id)
-                ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
+                ?? throw new ArgumentException($"'CustomerBankInfo' não encontrado para o ID: {id}");
 
             customerBankInfo.AccountBalance += amount;
 

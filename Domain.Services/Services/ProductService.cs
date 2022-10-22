@@ -53,7 +53,7 @@ namespace Domain.Services.Services
 
         public void Add(Product product)
         {
-            if (AnyProductForSymbol(product.Symbol)) throw new ArgumentException($"Product already exists for Symbol: {product.Symbol}");
+            if (AnyProductForSymbol(product.Symbol)) throw new ArgumentException($"Produto já existente para esse 'Symbol': {product.Symbol}");
 
             var repository = UnitOfWork.Repository<Product>();
 
@@ -63,7 +63,7 @@ namespace Domain.Services.Services
 
         public void Update(Product product)
         {
-            if (!AnyProductForId(product.Id)) throw new ArgumentException($"Product already doesn't exists for Id: {product.Id}");
+            if (!AnyProductForId(product.Id)) throw new ArgumentException($"Produto não existente para o ID: {product.Id}");
 
             var repository = UnitOfWork.Repository<Product>();
 
@@ -73,7 +73,7 @@ namespace Domain.Services.Services
 
         public void Delete(int id)
         {
-            if (!AnyProductForId(id)) throw new ArgumentException($"Product already doesn't exists for Id: {id}");
+            if (!AnyProductForId(id)) throw new ArgumentException($"Produto não existente para o ID: {id}");
 
             var repository = UnitOfWork.Repository<Product>();
 

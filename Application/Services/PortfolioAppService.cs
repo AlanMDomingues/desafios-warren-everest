@@ -54,8 +54,7 @@ namespace Application.Services
 
         public void Add(CreatePortfolioRequest portfolio)
         {
-            var customerBankInfoExists = _customerBankInfoAppService.AnyCustomerBankInfoForId(portfolio.CustomerId);
-            if (!customerBankInfoExists) throw new ArgumentException($"'Customer' not found for ID: {portfolio.CustomerId}");
+            if (!_customerBankInfoAppService.AnyCustomerBankInfoForId(portfolio.CustomerId)) throw new ArgumentException($"'Customer' não encontrado para o ID: {portfolio.CustomerId}");
 
             var portfolioToCreate = Mapper.Map<Portfolio>(portfolio);
             _portfolioService.Add(portfolioToCreate);
@@ -63,8 +62,7 @@ namespace Application.Services
 
         public void Update(int id, UpdatePortfolioRequest portfolio)
         {
-            var portfolioExists = _portfolioService.AnyPortfolioForId(id);
-            if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+            if (!_portfolioService.AnyPortfolioForId(id)) throw new ArgumentException($"'Portfolio' não encontrado para o ID: {id}");
 
             var portfolioToUpdate = Mapper.Map<Portfolio>(portfolio);
             portfolioToUpdate.Id = id;
@@ -73,11 +71,9 @@ namespace Application.Services
 
         public void Delete(int id)
         {
-            var portfolioExists = _portfolioService.AnyPortfolioForId(id);
-            if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+            if (!_portfolioService.AnyPortfolioForId(id)) throw new ArgumentException($"'Portfolio' não encontrado para o ID: {id}");
 
-            var portfoliosArentEmpty = _portfolioService.AnyPortfolioFromACustomerArentEmpty(id);
-            if (portfoliosArentEmpty) throw new ArgumentException("You must withdraw money from the portfolio before deleting it");
+            if (_portfolioService.AnyPortfolioFromACustomerArentEmpty(id)) throw new ArgumentException("Você precisa sacar o saldo das sua carteira antes de deletá-la");
 
             _portfolioService.Delete(id);
         }
@@ -91,13 +87,11 @@ namespace Application.Services
 
         public void Invest(CreateOrderRequest orderRequest)
         {
-            var customerBankInfoExists = _customerBankInfoAppService.AnyCustomerBankInfoForId(orderRequest.CustomerBankInfoId);
-            if (!customerBankInfoExists) throw new ArgumentException($"'Customer' not found for ID: {orderRequest.CustomerBankInfoId}");
+            if (!_customerBankInfoAppService.AnyCustomerBankInfoForId(orderRequest.CustomerBankInfoId)) throw new ArgumentException($"'Customer' não encontrado para o ID: {orderRequest.CustomerBankInfoId}");
 
-            var portfolioExists = _portfolioService.AnyPortfolioForId(orderRequest.PortfolioId);
-            if (!portfolioExists) throw new ArgumentException($"'Portfolio' not found for ID: {orderRequest.PortfolioId}");
+            if (!_portfolioService.AnyPortfolioForId(orderRequest.PortfolioId)) throw new ArgumentException($"'Portfolio' não encontrado para o ID: {orderRequest.PortfolioId}");
 
-            var product = _productAppService.Get(orderRequest.ProductId) ?? throw new ArgumentException($"'Product' not found for ID: {orderRequest.ProductId}");
+            var product = _productAppService.Get(orderRequest.ProductId) ?? throw new ArgumentException($"'Product' não encontrado para o ID: {orderRequest.ProductId}");
 
             var order = Mapper.Map<Order>(orderRequest);
             order.UnitPrice = product.UnitPrice;
