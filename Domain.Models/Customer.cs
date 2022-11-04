@@ -52,6 +52,6 @@ namespace Domain.Models
 
         public CustomerBankInfo CustomerBankInfo { get; set; }
 
-        public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
+        public ICollection<Portfolio> Portfolios { get; set; }
     }
 }

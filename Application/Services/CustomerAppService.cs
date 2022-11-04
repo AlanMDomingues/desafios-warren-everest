@@ -62,7 +62,7 @@ namespace Application.Services
 
         public void Update(int id, UpdateCustomerRequest customerRequest)
         {
-            if (!_customerServices.AnyForId(id)) throw new ArgumentException($"'Customer' not found for ID: {id}");
+            if (!_customerServices.AnyForId(id)) throw new ArgumentException($"'Customer' não encontrado para o ID: {id}");
 
             var customer = Mapper.Map<Customer>(customerRequest);
             if (_customerServices.ValidateAlreadyExists(customer)) throw new ArgumentException("'Customer' já existente, por favor insira um novo 'Customer'");
@@ -75,7 +75,7 @@ namespace Application.Services
         {
             if (!_customerServices.AnyForId(id)) throw new ArgumentException($"'Customer' não encontrado para o ID: {id}");
 
-            if (_customerBankInfoAppService.AnyAccountBalanceThatIsntZeroForCustomerId(id)) throw new ArgumentException("Você precisa sacar o saldo da sua conta antes de deletá-la");
+            if (_customerBankInfoAppService.IsAccountBalanceThatIsntZeroForCustomerId(id)) throw new ArgumentException("Você precisa sacar o saldo da sua conta antes de deletá-la");
 
             if (_portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id)) throw new ArgumentException("Você precisa sacar o saldo das suas carteiras antes de deletá-las");
 

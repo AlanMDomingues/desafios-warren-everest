@@ -1,10 +1,10 @@
-﻿using Application.Validators;
+﻿using API.Tests.Fixtures;
+using Application.Validators;
 using FluentAssertions;
 using FluentValidation.TestHelper;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.ValidationTests
+namespace API.Tests.ValidatorsTests
 {
     public class CreateProductRequestValidatorTests
     {

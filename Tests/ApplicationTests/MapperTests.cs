@@ -1,14 +1,14 @@
-﻿using Application.Models.Response;
+﻿using API.Tests.Fixtures;
+using Application.Models.Response;
 using AutoMapper;
 using Domain.Models;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests
+namespace API.Tests.ApplicationTests
 {
     public class MapperTests
     {

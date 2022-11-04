@@ -2,7 +2,7 @@
 using Domain.Models;
 using System.Collections.Generic;
 
-namespace Tests.Factories
+namespace API.Tests.Fixtures
 {
     public static class PortfolioProductFactory
     {

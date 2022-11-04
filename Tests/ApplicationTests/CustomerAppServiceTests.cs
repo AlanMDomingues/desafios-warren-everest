@@ -1,18 +1,19 @@
-﻿using Application.Interfaces;
+﻿using API.Tests.Fixtures;
+using Application.Interfaces;
 using Application.Models.Response;
 using Application.Services;
 using AutoMapper;
 using Domain.Models;
 using Domain.Services.Interfaces;
 using FluentAssertions;
-using Infrastructure.Data.Context;
 using Moq;
 using System;
 using System.Collections.Generic;
-using Tests.Factories;
+using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
-namespace Tests.AppServiceTests;
+namespace API.Tests.ApplicationTests;
 
 public class CustomerAppServiceTests
 {
@@ -48,7 +49,7 @@ public class CustomerAppServiceTests
         // Assert
         action.Should()
               .ThrowExactly<ArgumentException>()
-              .WithMessage("Customer already exists, please insert a new customer");
+              .WithMessage("'Customer' já existente, por favor insira um novo 'Customer'");
 
         _customerServiceMock.Verify(x => x.ValidateAlreadyExists(It.IsAny<Customer>()), Times.Once);
         _customerServiceMock.Verify(x => x.Add(It.IsAny<Customer>()), Times.Never);
@@ -63,9 +64,10 @@ public class CustomerAppServiceTests
         _customerServiceMock.Setup(x => x.ValidateAlreadyExists(It.IsAny<Customer>())).Returns(false);
 
         // Act
-        var action = _customerAppService.Add(createCustomerRequest);
+        var action = () => _customerAppService.Add(createCustomerRequest);
 
         // Assert
+        action.Should().NotThrow();
         _customerServiceMock.Verify(x => x.ValidateAlreadyExists(It.IsAny<Customer>()), Times.Once);
         _customerServiceMock.Verify(x => x.Add(It.IsAny<Customer>()), Times.Once);
         _customerBankInfoAppServiceMock.Verify(x => x.Add(It.IsAny<int>()), Times.Once);
@@ -85,7 +87,7 @@ public class CustomerAppServiceTests
         // Assert
         action.Should()
               .ThrowExactly<ArgumentException>()
-              .WithMessage($"'Customer' not found for ID: {id}");
+              .WithMessage($"'Customer' não encontrado para o ID: {id}");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
         _customerServiceMock.Verify(x => x.ValidateAlreadyExists(It.IsAny<Customer>()), Times.Never);
@@ -106,7 +108,7 @@ public class CustomerAppServiceTests
         // Assert
         action.Should()
               .ThrowExactly<ArgumentException>()
-              .WithMessage("Customer already exists, please insert a new customer");
+              .WithMessage("'Customer' já existente, por favor insira um novo 'Customer'");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
         _customerServiceMock.Verify(x => x.ValidateAlreadyExists(It.IsAny<Customer>()), Times.Once);
@@ -122,16 +124,17 @@ public class CustomerAppServiceTests
         _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
         _customerServiceMock.Setup(x => x.ValidateAlreadyExists(It.IsAny<Customer>())).Returns(false);
         // Act
-        _customerAppService.Update(It.IsAny<int>(), updateCustomerRequest);
+        var action = () => _customerAppService.Update(It.IsAny<int>(), updateCustomerRequest);
 
         // Assert
+        action.Should().NotThrow();
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
         _customerServiceMock.Verify(x => x.ValidateAlreadyExists(It.IsAny<Customer>()), Times.Once);
         _customerServiceMock.Verify(x => x.Update(It.IsAny<Customer>()), Times.Once);
     }
 
     [Fact]
-    public void Should_Pass_When_Trying_To_Get_A_Customer()
+    public void Should_Pass_And_Return_CustomerResult_When_Trying_To_Get_A_Customer()
     {
         // Arrange
         var customer = CustomerFactory.FakeCustomer();
@@ -148,7 +151,7 @@ public class CustomerAppServiceTests
     }
 
     [Fact]
-    public void Should_Return_Valid_CustomerResults_Successfully_When_Trying_To_Get_All_CustomerResult()
+    public void Should_Pass_And_Return_Valid_CustomerResults_Successfully_When_Trying_To_Get_All_CustomerResult()
     {
         // Arrange
         var customers = CustomerFactory.FakeCustomers();
@@ -164,6 +167,28 @@ public class CustomerAppServiceTests
     }
 
     [Fact]
+    public void Should_Pass_And_Return_Valid_CustomerResults_Successfully_When_Trying_To_Get_All_CustomerResult_With_Filters()
+    {
+        // Arrange
+        var customers = CustomerFactory.FakeCustomers();
+        customers[0].FullName = "José Leandro Pereira Júnior";
+        customers[1].FullName = "José Leandro Pereira Júnior";
+        customers[2].FullName = "José Leandro Pereira Júnior";
+
+        var customersFound = customers.Where(x => x.FullName.Equals("José Leandro Pereira Júnior"));
+        var customersExpected = _mapper.Map<IEnumerable<CustomerResult>>(customersFound);
+
+        _customerServiceMock.Setup(x => x.GetAll(x => x.FullName.Equals("José Leandro Pereira Júnior"))).Returns(customersFound);
+
+        // Act
+        var result = _customerAppService.GetAll(x => x.FullName.Equals("José Leandro Pereira Júnior"));
+
+        // Assert
+        result.Should().BeEquivalentTo(customersExpected);
+        _customerServiceMock.Verify(x => x.GetAll(It.IsAny<Expression<Func<Customer, bool>>>()), Times.Once);
+    }
+
+    [Fact]
     public void Should_Fail_And_Return_ArgumentException_WithMessage_When_Trying_To_Delete_Customer_Doesnt_Exists()
     {
         // Arrange
@@ -176,11 +201,12 @@ public class CustomerAppServiceTests
         // Assert
         action.Should()
               .ThrowExactly<ArgumentException>()
-              .WithMessage($"'Customer' not found for ID: {id}");
+              .WithMessage($"'Customer' não encontrado para o ID: {id}");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Never);
+        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Never);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Never);
+        _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -188,7 +214,7 @@ public class CustomerAppServiceTests
     {
         // Arrange
         _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
-        _customerBankInfoAppServiceMock.Setup(x => x.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(true);
+        _customerBankInfoAppServiceMock.Setup(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(true);
 
         // Act
         var action = () => _customerAppService.Delete(It.IsAny<int>());
@@ -196,11 +222,12 @@ public class CustomerAppServiceTests
         // Assert
         action.Should()
               .ThrowExactly<ArgumentException>()
-              .WithMessage("You must withdraw money from your account balance before deleting it");
+              .WithMessage("Você precisa sacar o saldo da sua conta antes de deletá-la");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Never);
+        _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -208,8 +235,9 @@ public class CustomerAppServiceTests
     {
         // Arrange
         _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
-        _customerBankInfoAppServiceMock.Setup(x => x.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(false);
+        _customerBankInfoAppServiceMock.Setup(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(false);
         _portfolioAppServiceMock.Setup(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>())).Returns(true);
+        _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
 
         // Act
         var action = () => _customerAppService.Delete(It.IsAny<int>());
@@ -217,10 +245,30 @@ public class CustomerAppServiceTests
         // Assert
         action.Should()
               .ThrowExactly<ArgumentException>()
-              .WithMessage("You must withdraw money from your portfolios before deleting it");
+              .WithMessage("Você precisa sacar o saldo das suas carteiras antes de deletá-las");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Once);
+        _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public void Should_Pass_When_Trying_To_Delete_A_Portfolio()
+    {
+        // Arrange
+        _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
+        _customerBankInfoAppServiceMock.Setup(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(false);
+        _portfolioAppServiceMock.Setup(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>())).Returns(false);
+
+        // Act
+        var action = () => _customerAppService.Delete(It.IsAny<int>());
+
+        // Assert
+        action.Should().NotThrow();
+        _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Once);
+        _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Once);
     }
 }

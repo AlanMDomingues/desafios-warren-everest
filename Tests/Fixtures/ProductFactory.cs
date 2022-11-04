@@ -1,9 +1,10 @@
 ﻿using Application.Models.Requests;
+using Application.Models.Response;
 using Bogus;
 using Domain.Models;
 using System.Collections.Generic;
 
-namespace Tests.Factories
+namespace API.Tests.Fixtures
 {
     public static class ProductFactory
     {
@@ -45,6 +46,17 @@ namespace Tests.Factories
         public static UpdateProductRequest FakeUpdateProductRequest()
         {
             var fakeProduct = new Faker<UpdateProductRequest>()
+                .RuleFor(x => x.Symbol, x => x.PickRandom(FakeSymbols))
+                .RuleFor(x => x.UnitPrice, x => x.Finance.Amount());
+
+            var product = fakeProduct.Generate();
+
+            return product;
+        }
+
+        public static ProductResult FakeProductResult()
+        {
+            var fakeProduct = new Faker<ProductResult>()
                 .RuleFor(x => x.Symbol, x => x.PickRandom(FakeSymbols))
                 .RuleFor(x => x.UnitPrice, x => x.Finance.Amount());
 

@@ -19,15 +19,15 @@ namespace Alan_WarrenDesafio1.Controllers
             : base(logger)
             => _orderAppService = orderAppService ?? throw new ArgumentNullException(nameof(orderAppService));
 
-        [HttpGet("customerId/{id}")]
-        public IActionResult GetAll(int customerId)
+        [HttpGet("portfolioId/{id}")]
+        public IActionResult GetAll(int portfolioId)
         {
             return SafeAction(() =>
             {
-                var results = _orderAppService.GetAll(customerId);
+                var results = _orderAppService.GetAll(portfolioId);
 
                 return !results.Any()
-                    ? NotFound($"Orders not found for Customer Id: {customerId}")
+                    ? NotFound($"Orders not found for Portfolio Id: {portfolioId}")
                     : Ok(results);
             });
         }

@@ -5,7 +5,7 @@ namespace Domain.Services.Interfaces
 {
     public interface IOrderService : IServiceBase
     {
-        IEnumerable<Order> GetAll(int id);
+        IEnumerable<Order> GetAll(int portfolioId);
 
         Order Get(int id);
 

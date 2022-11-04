@@ -1,5 +1,6 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
+using EntityFrameworkCore.Repository.Extensions;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Infrastructure.Data.Context;
 using System;
@@ -75,7 +76,9 @@ namespace Domain.Services.Services
 
         public void Delete(int id)
         {
+            var customer = Get(x => x.Id.Equals(id));
             var repository = UnitOfWork.Repository<Customer>();
+            repository.RemoveTracking(customer);
 
             repository.Remove(x => x.Id.Equals(id));
         }
@@ -84,9 +87,7 @@ namespace Domain.Services.Services
         {
             var repository = RepositoryFactory.Repository<Customer>();
 
-            if (repository.Any(x => x.Email.Equals(customer.Email) || x.Cpf.Equals(customer.Cpf))) return true;
-
-            return false;
+            return repository.Any(x => x.Email.Equals(customer.Email) || x.Cpf.Equals(customer.Cpf));
         }
 
         public bool AnyForId(int id)

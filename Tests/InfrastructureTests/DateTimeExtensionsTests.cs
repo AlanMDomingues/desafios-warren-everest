@@ -3,7 +3,7 @@ using Infrastructure.Extensions;
 using System;
 using Xunit;
 
-namespace Tests.InfrastructureTests
+namespace API.Tests.InfrastructureTests
 {
     public class DateTimeExtensionsTests
     {
@@ -20,37 +20,51 @@ namespace Tests.InfrastructureTests
             actionTest.Should().BeTrue();
         }
 
-        [Fact]
-        public void Should_Fail_When_Trying_To_Add_Birthdate_Under_Eighteen_Years_Old_One_Year_Left()
+        [Theory]
+        [InlineData(17, 0, 0)]
+        [InlineData(18, 1, 0)]
+        [InlineData(18, 0, 1)]
+        public void Should_Fail_When_Trying_To_Add_Birthdate_Under_Eighteen_Years_Old(int reducedYears, int addedMonths, int addedDays)
         {
             // Arrange
-            var birthdate = new DateTime(DateTime.Today.Year - 17, DateTime.Today.Month, DateTime.Today.Day);
+            var yearToday = DateTime.Today.Year;
+            var monthToday = DateTime.Today.Month;
+            var dayToday = DateTime.Today.Day;
 
-            // Act
-            var actionTest = birthdate.CheckIfCustomerIsHigherThanEighteenYearsOld();
+            var daysInMonth = DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month);
 
-            // Assert
-            actionTest.Should().BeFalse();
-        }
+            if (dayToday + addedDays > daysInMonth)
+            {
+                monthToday += 1;
+                dayToday = 1;
+                addedDays--;
+            }
 
-        [Fact]
-        public void Should_Fail_When_Trying_To_Add_Birthdate_Under_Eighteen_Years_Old_One_Month_Left()
-        {
-            // Arrange
-            var birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month + 1, DateTime.Today.Day);
+            if (monthToday + addedMonths == 13)
+            {
+                yearToday += 1;
+                monthToday = 1;
+                dayToday = 1;
+                addedMonths--;
+            }
 
-            // Act
-            var actionTest = birthdate.CheckIfCustomerIsHigherThanEighteenYearsOld();
+            try
+            {
+                var test = new DateTime(yearToday, monthToday + addedMonths, dayToday);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                if (monthToday == 2)
+                {
+                    dayToday -= 3;
+                }
+                else
+                {
+                    dayToday -= 1;
+                }
+            }
 
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Add_Birthdate_Under_Eighteen_Years_Old_One_Day_Left()
-        {
-            // Arrange
-            var birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month, DateTime.Today.Day + 1);
+            var birthdate = new DateTime(yearToday - reducedYears, monthToday + addedMonths, dayToday + addedDays);
 
             // Act
             var actionTest = birthdate.CheckIfCustomerIsHigherThanEighteenYearsOld();

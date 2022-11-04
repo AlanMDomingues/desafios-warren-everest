@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using Domain.Models;
 
-namespace Tests.Factories;
+namespace API.Tests.Fixtures;
 
 public static class CustomerBankInfoFactory
 {
@@ -12,6 +12,8 @@ public static class CustomerBankInfoFactory
             .RuleFor(x => x.Id, x => ++x.IndexVariable);
 
         var customerBankInfo = customerBankInfoFaker.Generate();
+        customerBankInfo.CustomerId = customerBankInfo.Id;
+
         return customerBankInfo;
     }
 }

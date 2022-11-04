@@ -30,7 +30,7 @@ namespace Application.Services
             return result;
         }
 
-        public bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId) => _customerBankInfoService.AnyAccountBalanceThatIsntZeroForCustomerId(customerId);
+        public bool IsAccountBalanceThatIsntZeroForCustomerId(int customerId) => _customerBankInfoService.IsAccountBalanceThatIsntZeroForCustomerId(customerId);
 
         public bool AnyCustomerBankInfoForId(int id) => _customerBankInfoService.AnyCustomerBankInfoForId(id);
 

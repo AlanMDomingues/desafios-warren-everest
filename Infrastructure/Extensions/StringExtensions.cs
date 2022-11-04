@@ -16,7 +16,7 @@ namespace Infrastructure.Extensions
 
         public static bool IsValidNumber(this string number)
         {
-            if (number is null) return false;
+            if (string.IsNullOrEmpty(number)) return false;
 
             return number.All(x => char.IsDigit(x));
         }
@@ -58,7 +58,7 @@ namespace Infrastructure.Extensions
 
         public static bool IsValidCPF(this string cpf)
         {
-            cpf = cpf.Replace(".", string.Empty).Replace("-", string.Empty);
+            cpf = cpf.CpfFormatter();
 
             if (!cpf.IsValidNumber() || cpf.AllCharacteresAreEqualsToTheFirstCharacter()) return false;
 

@@ -6,13 +6,11 @@ namespace Domain.Services.Interfaces
     {
         CustomerBankInfo Get(int id);
 
-        bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId);
+        bool IsAccountBalanceThatIsntZeroForCustomerId(int customerId);
 
         bool AnyCustomerBankInfoForId(int customerId);
 
         void Add(CustomerBankInfo customerBankInfo);
-
-        void Update(CustomerBankInfo customerBankInfo);
 
         void Withdraw(int id, decimal amount);
 

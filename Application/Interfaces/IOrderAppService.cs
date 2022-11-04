@@ -7,7 +7,7 @@ namespace Application.Interfaces
 {
     public interface IOrderAppService : IAppServicesBase
     {
-        IEnumerable<OrderResult> GetAll(int id);
+        IEnumerable<OrderResult> GetAll(int portfolioId);
 
         OrderResult Get(int id);
 

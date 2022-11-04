@@ -18,9 +18,9 @@ namespace Application.Services
             : base(mapper)
             => _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
 
-        public IEnumerable<OrderResult> GetAll(int id)
+        public IEnumerable<OrderResult> GetAll(int portfolioId)
         {
-            var orders = _orderService.GetAll(id);
+            var orders = _orderService.GetAll(portfolioId);
             var results = Mapper.Map<IEnumerable<OrderResult>>(orders);
 
             return results;

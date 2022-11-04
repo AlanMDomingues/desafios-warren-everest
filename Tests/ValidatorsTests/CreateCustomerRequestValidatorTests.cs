@@ -1,29 +1,29 @@
-﻿using Application.Validators;
+﻿using API.Tests.Fixtures;
+using Application.Validators;
 using FluentAssertions;
 using FluentValidation.TestHelper;
 using System;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.ValidationTests;
+namespace API.Tests.ValidatorsTests;
 
 public class CreateCustomerRequestValidatorTests
 {
     private readonly CreateCustomerRequestValidator _createCustomerRequestValidator;
 
     public CreateCustomerRequestValidatorTests() => _createCustomerRequestValidator = new();
-    
+
     #region FullName Property Tests
 
     [Fact]
     public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Null_Customer_FullName()
     {
         // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = null;
+        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
+        createCustomerRequest.FullName = null;
 
         // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
+        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
         // Assert
         actionTestValidate.Errors.Should().HaveCount(2);
         actionTestValidate.Errors[0].ErrorMessage.Should().Be("'Full Name' deve ser informado.");
@@ -35,11 +35,11 @@ public class CreateCustomerRequestValidatorTests
     public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_An_Empty_Customer_FullName()
     {
         // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "";
+        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
+        createCustomerRequest.FullName = "";
 
         // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
+        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
         actionTestValidate.Errors.Should().HaveCount(3);
@@ -49,97 +49,29 @@ public class CreateCustomerRequestValidatorTests
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.FullName);
     }
 
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_Without_First_Letter_In_UpperCase()
-    {
-        // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "carlos Eduardo";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.FullName).WithErrorMessage("'Full Name' não atende a condição definida.");
-    }
-
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_With_Numbers()
-    {
-        // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "Carlos Eduardo 2022";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.FullName).WithErrorMessage("'Full Name' não atende a condição definida.");
-    }
-
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_With_Two_Spaces_Or_More_Between_Words()
-    {
-        // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "Carlos  Eduardo";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.FullName).WithErrorMessage("'Full Name' não atende a condição definida.");
-    }
-
     [Theory]
     [InlineData(" Carlos Eduardo")]
     [InlineData("Carlos Eduardo ")]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_With_Space_First_Or_After_Words(string fullName)
+    [InlineData("Carlos")]
+    [InlineData("Carlos Eduardo 2022")]
+    [InlineData("Carlos  Eduardo")]
+    [InlineData("João")]
+    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_An_Invalid_Customer_FullName(string fullName)
     {
         // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = fullName;
+        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
+        createCustomerRequest.FullName = fullName;
 
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.FullName).WithErrorMessage("'Full Name' não atende a condição definida.");
-    }
-
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_Have_Less_Than_Two_Words()
-    {
-        // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "Carlos";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.FullName).WithErrorMessage("'Full Name' não atende a condição definida.");
-    }
-
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_Have_Greater_Than_Thirty_Words()
-    {
-        // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "";
-        for (int i = 0; i < 30; i++)
+        if (fullName.Equals("João"))
         {
-            updateCustomerRequest.FullName += "Carlos ";
+            for (int i = 0; i < 30; i++)
+            {
+                createCustomerRequest.FullName += " João";
+            }
         }
-        updateCustomerRequest.FullName += "Augusto";
 
         // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
+        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
         actionTestValidate.Errors.Should().HaveCount(1);
@@ -150,11 +82,11 @@ public class CreateCustomerRequestValidatorTests
     public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_Have_Less_Than_Two_Letters()
     {
         // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "C";
+        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
+        createCustomerRequest.FullName = "C";
 
         // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
+        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
         actionTestValidate.Errors.Should().HaveCount(2);
@@ -167,17 +99,17 @@ public class CreateCustomerRequestValidatorTests
     public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_FullName_Have_Greater_Than_Three_Hundred_Characters()
     {
         // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = "";
+        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
+        createCustomerRequest.FullName = "";
 
-        while (updateCustomerRequest.FullName.Length < 300)
+        while (createCustomerRequest.FullName.Length < 300)
         {
-            updateCustomerRequest.FullName += "Ab";
+            createCustomerRequest.FullName += "Ab";
         }
-        updateCustomerRequest.FullName += " Batata Doce";
+        createCustomerRequest.FullName += " Batata Doce";
 
         // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
+        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
         actionTestValidate.Errors.Should().HaveCount(1);
@@ -192,11 +124,11 @@ public class CreateCustomerRequestValidatorTests
     public void Should_Pass_When_Trying_To_Add_A_Customer_FullName(string fullName)
     {
         // Arrange
-        var updateCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        updateCustomerRequest.FullName = fullName;
+        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
+        createCustomerRequest.FullName = fullName;
 
         // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(updateCustomerRequest);
+        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
         actionTestValidate.Errors.Should().HaveCount(0);
@@ -458,9 +390,10 @@ public class CreateCustomerRequestValidatorTests
         var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
-        actionTestValidate.Errors.Should().HaveCount(2);
+        actionTestValidate.Errors.Should().HaveCount(3);
         actionTestValidate.Errors[0].ErrorMessage.Should().Be("'Cellphone' deve ser informado.");
-        actionTestValidate.Errors[1].ErrorMessage.Should().Be("'Cellphone' deve ter no máximo 11 caracteres. Você digitou 0 caracteres.");
+        actionTestValidate.Errors[1].ErrorMessage.Should().Be("'Cellphone' não atende a condição definida.");
+        actionTestValidate.Errors[2].ErrorMessage.Should().Be("'Cellphone' deve ter no máximo 11 caracteres. Você digitou 0 caracteres.");
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.Cellphone);
     }
 
@@ -533,42 +466,51 @@ public class CreateCustomerRequestValidatorTests
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.Birthdate).WithErrorMessage("'Birthdate' deve ser informado.");
     }
 
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Birthdate_Under_Eighteen_Years_Old_One_Year_Left()
+    [Theory]
+    [InlineData(17, 0, 0)]
+    [InlineData(18, 1, 0)]
+    [InlineData(18, 0, 1)]
+    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Birthdate_Under_Eighteen_Years_Old(int reducedYears, int addedMonths, int addedDays)
     {
         // Arrange
+        var yearToday = DateTime.Today.Year;
+        var monthToday = DateTime.Today.Month;
+        var dayToday = DateTime.Today.Day;
+
+        var daysInMonth = DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month);
+
+        if (dayToday + addedDays > daysInMonth)
+        {
+            monthToday += 1;
+            dayToday = 1;
+            addedDays--;
+        }
+
+        if (monthToday + addedMonths == 13)
+        {
+            yearToday += 1;
+            monthToday = 1;
+            dayToday = 1;
+            addedMonths--;
+        }
+
+        try
+        {
+            var test = new DateTime(yearToday, monthToday + addedMonths, dayToday);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            if (monthToday == 2)
+            {
+                dayToday -= 3;
+            }
+            else
+            {
+                dayToday -= 1;
+            }
+        }
         var customerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        customerRequest.Birthdate = new DateTime(DateTime.Today.Year - 17, DateTime.Today.Month, DateTime.Today.Day);
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(customerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.Birthdate).WithErrorMessage("Customer must be at least eighteen years old");
-    }
-
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Birthdate_Under_Eighteen_Years_Old_One_Month_Left()
-    {
-        // Arrange
-        var customerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        customerRequest.Birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month + 1, DateTime.Today.Day);
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(customerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.Birthdate).WithErrorMessage("Customer must be at least eighteen years old");
-    }
-
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Birthdate_Under_Eighteen_Years_Old_One_Day_Left()
-    {
-        // Arrange
-        var customerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        customerRequest.Birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month, DateTime.Today.Day + 1);
+        customerRequest.Birthdate = new DateTime(yearToday - reducedYears, monthToday + addedMonths, dayToday + addedDays);
 
         // Act
         var actionTestValidate = _createCustomerRequestValidator.TestValidate(customerRequest);
@@ -631,25 +573,11 @@ public class CreateCustomerRequestValidatorTests
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.Country);
     }
 
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Country_With_Two_Spaces_Or_More_Between_Words()
-    {
-        // Arrange
-        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        createCustomerRequest.Country = "United  States";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.Country).WithErrorMessage("'Country' não atende a condição definida.");
-    }
-
     [Theory]
+    [InlineData("United  States")]
     [InlineData(" United States")]
     [InlineData("United States ")]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Country_With_Space_First_Or_After_Words(string country)
+    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_An_Invalid_Customer_Country(string country)
     {
         // Arrange
         var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
@@ -759,25 +687,11 @@ public class CreateCustomerRequestValidatorTests
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.City);
     }
 
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_City_With_Two_Spaces_Or_More_Between_Words()
-    {
-        // Arrange
-        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        createCustomerRequest.City = "Little  Rock";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.City).WithErrorMessage("'City' não atende a condição definida.");
-    }
-
     [Theory]
+    [InlineData("Little  Rock")]
     [InlineData(" Little Rock")]
     [InlineData("Little Rock ")]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_City_With_Space_First_Or_After_Words(string city)
+    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_An_Invalid_Customer_City(string city)
     {
         // Arrange
         var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
@@ -880,17 +794,16 @@ public class CreateCustomerRequestValidatorTests
         var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
 
         // Assert
-        actionTestValidate.Errors.Should().HaveCount(2);
+        actionTestValidate.Errors.Should().HaveCount(3);
         actionTestValidate.Errors[0].ErrorMessage.Should().Be("'Postal Code' deve ser informado.");
-        actionTestValidate.Errors[1].ErrorMessage.Should().Be("'Postal Code' deve ter no máximo 8 caracteres. Você digitou 0 caracteres.");
+        actionTestValidate.Errors[1].ErrorMessage.Should().Be("'Postal Code' não atende a condição definida.");
+        actionTestValidate.Errors[2].ErrorMessage.Should().Be("'Postal Code' deve ter no máximo 8 caracteres. Você digitou 0 caracteres.");
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.PostalCode);
     }
 
     [Theory]
     [InlineData("#3999501")]
     [InlineData("-3999501")]
-    [InlineData("!3999501")]
-    [InlineData(")3999501")]
     [InlineData(" 3999501")]
     [InlineData("@3999501")]
     public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_An_Invalid_Customer_PostalCode_With_Special_Characters(string postalCode)
@@ -974,25 +887,11 @@ public class CreateCustomerRequestValidatorTests
         actionTestValidate.ShouldHaveValidationErrorFor(x => x.Address);
     }
 
-    [Fact]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Address_With_Two_Spaces_Or_More_Between_Words()
-    {
-        // Arrange
-        var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();
-        createCustomerRequest.Address = "Little  Rock";
-
-        // Act
-        var actionTestValidate = _createCustomerRequestValidator.TestValidate(createCustomerRequest);
-
-        // Assert
-        actionTestValidate.Errors.Should().HaveCount(1);
-        actionTestValidate.ShouldHaveValidationErrorFor(x => x.Address).WithErrorMessage("'Address' não atende a condição definida.");
-    }
-
     [Theory]
+    [InlineData("Little  Rock")]
     [InlineData(" Little Rock")]
     [InlineData("Little Rock ")]
-    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_A_Customer_Address_With_Space_First_Or_After_Words(string address)
+    public void Should_Fail_And_Return_Error_With_Message_When_Trying_To_Add_An_Invalid_Customer_Address(string address)
     {
         // Arrange
         var createCustomerRequest = CustomerFactory.FakeCreateCustomerRequest();

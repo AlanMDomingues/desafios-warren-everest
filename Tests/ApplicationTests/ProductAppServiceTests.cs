@@ -1,4 +1,4 @@
-﻿using Application.Models.Requests;
+﻿using API.Tests.Fixtures;
 using Application.Models.Response;
 using Application.Services;
 using AutoMapper;
@@ -8,10 +8,9 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Collections.Generic;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.AppServiceTests
+namespace API.Tests.ApplicationTests
 {
     public class ProductAppServiceTests
     {
@@ -64,10 +63,10 @@ namespace Tests.AppServiceTests
         public void Should_Pass_When_Trying_To_Call_AnyProductForId()
         {
             // Act
-            var actionTest = _productAppService.AnyProductForId(It.IsAny<int>());
+            var actionTest = () => _productAppService.AnyProductForId(It.IsAny<int>());
 
             // Assert
-            actionTest.Should().As<bool>();
+            actionTest.Should().NotThrow();
             _productServiceMock.Verify(x => x.AnyProductForId(It.IsAny<int>()), Times.Once);
         }
 
@@ -78,9 +77,10 @@ namespace Tests.AppServiceTests
             var createProductRequest = ProductFactory.FakeCreateProductRequest();
 
             // Act
-            _productAppService.Add(createProductRequest);
+            var action = () => _productAppService.Add(createProductRequest);
 
             // Assert
+            action.Should().NotThrow();
             _productServiceMock.Verify(x => x.Add(It.IsAny<Product>()), Times.Once);
         }
 
@@ -90,12 +90,11 @@ namespace Tests.AppServiceTests
             // Arrange
             var updateProductRequest = ProductFactory.FakeUpdateProductRequest();
 
-            _productServiceMock.Setup(x => x.AnyProductForId(It.IsAny<int>())).Returns(true);
-
             // Act
-            _productAppService.Update(It.IsAny<int>(), updateProductRequest);
+            var action = () => _productAppService.Update(It.IsAny<int>(), updateProductRequest);
 
             // Assert
+            action.Should().NotThrow();
             _productServiceMock.Verify(x => x.Update(It.IsAny<Product>()), Times.Once);
         }
 
@@ -103,9 +102,10 @@ namespace Tests.AppServiceTests
         public void Should_Pass_When_Trying_To_Delete()
         {
             // Act
-            _productAppService.Delete(It.IsAny<int>());
+            var action = () => _productAppService.Delete(It.IsAny<int>());
 
             // Assert
+            action.Should().NotThrow();
             _productServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Once);
         }
     }

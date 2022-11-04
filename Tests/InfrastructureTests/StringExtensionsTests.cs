@@ -1,44 +1,37 @@
 ﻿using FluentAssertions;
 using Infrastructure.Extensions;
-using System;
 using Xunit;
 
-namespace Tests.InfrastructureTests
+namespace API.Tests.InfrastructureTests
 {
     public class StringExtensionsTests
     {
         #region ToIntAt method tests
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(2)]
-        public void Should_Pass_When_Trying_To_Convert_String_To_Int(Index index)
-        {
-            // Arrange
-            var number = "123";
-            var numberConverted = (int)char.GetNumericValue(number, index.Value);
-
-            // Act
-            var actionTest = number.ToIntAt(index);
-
-            // Assert
-            actionTest.Should().Be(numberConverted);
-        }
-
         [Fact]
-        public void Should_Pass_When_Trying_To_Convert_String_To_Int_From_The_End()
+        public void Should_Pass_When_Trying_To_Convert_String_To_Int()
         {
             // Arrange
             var number = "12345678";
-            var index = ^2;
-            var numberConverted = (int)char.GetNumericValue(number, (number.Length - index.Value));
 
             // Act
-            var actionTest = number.ToIntAt(index);
+            var actionTest = number.ToIntAt(1);
 
             // Assert
-            actionTest.Should().Be(numberConverted);
+            actionTest.Should().Be(2);
+        }
+
+        [Fact]
+        public void Should_Pass_When_Trying_To_Convert_String_To_Int_From_The_End_Of_String()
+        {
+            // Arrange
+            var number = "12345678";
+
+            // Act
+            var actionTest = number.ToIntAt(^1);
+
+            // Assert
+            actionTest.Should().Be(8);
         }
 
         #endregion ToIntAt method tests
@@ -58,44 +51,13 @@ namespace Tests.InfrastructureTests
             actionTest.Should().BeTrue();
         }
 
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_Null_Number()
-        {
-            // Arrange
-            string number = null;
-
-            // Act
-            var actionTest = number.IsValidNumber();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_Empty_Number()
-        {
-            // Arrange
-            string number = "";
-
-            // Act
-            var actionTest = number.IsValidNumber();
-
-            // Assert
-            actionTest.Should().BeTrue();
-        }
-
         [Theory]
+        [InlineData(null)]
+        [InlineData("")]
         [InlineData("123@")]
         [InlineData("999!")]
         [InlineData("123.2")]
-        [InlineData("123*")]
-        [InlineData("123()")]
-        [InlineData("123&")]
-        [InlineData("123%")]
-        [InlineData("123-")]
-        [InlineData("123+")]
-        [InlineData("123=")]
-        public void Should_Fail_When_Trying_To_Validate_Number_With_Special_Characters(string number)
+        public void Should_Fail_When_Trying_To_Validate_A_Number(string number)
         {
             // Act
             var actionTest = number.IsValidNumber();
@@ -108,12 +70,13 @@ namespace Tests.InfrastructureTests
 
         #region IsValidPlace method tests
 
-        [Fact]
-        public void Should_Pass_When_Trying_To_Validate_A_Place()
+        [Theory]
+        [InlineData("Argentina")]
+        [InlineData("Cameroon")]
+        [InlineData("Churchill-laan 266")]
+        [InlineData("Netherlands")]
+        public void Should_Pass_When_Trying_To_Validate_A_Place(string place)
         {
-            // Arrange
-            var place = "Argentina";
-
             // Act
             var actionTest = place.IsValidPlace();
 
@@ -121,61 +84,15 @@ namespace Tests.InfrastructureTests
             actionTest.Should().BeTrue();
         }
 
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_A_Null_Place()
-        {
-            // Arrange
-            string place = null;
-
-            // Act
-            var actionTest = place.IsValidPlace();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_An_Empty_Place()
-        {
-            // Arrange
-            string place = "";
-
-            // Act
-            var actionTest = place.IsValidPlace();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_An_Place_With_Two_Spaces_Or_More_Between_Words()
-        {
-            // Arrange
-            string place = "teste  teste";
-
-            // Act
-            var actionTest = place.IsValidPlace();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
         [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("teste  teste")]
         [InlineData(" teste teste")]
         [InlineData("teste teste ")]
-        public void Should_Fail_When_Trying_To_Validate_An_Place_With_Space_First_Or_After_Words(string place)
-        {
-            // Act
-            var actionTest = place.IsValidPlace();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Theory]
         [InlineData("aaaaaaaaaaaaaaaaa")]
         [InlineData("aaaaaaaa aaaaaaaaa")]
-        public void Should_Fail_When_Trying_To_Validate_An_Place_With_All_Characters_Equals_To_The_First_Character(string place)
+        public void Should_Fail_When_Trying_To_Validate_A_Place(string place)
         {
             // Act
             var actionTest = place.IsValidPlace();
@@ -219,88 +136,19 @@ namespace Tests.InfrastructureTests
             actionTest.Should().BeTrue();
         }
 
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_A_Null_FullName()
-        {
-            // Arrange
-            string fullName = null;
-
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_An_Empty_FullName()
-        {
-            // Arrange
-            string fullName = "";
-
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_A_FullName_With_Two_Spaces_Or_More_Between_Words()
-        {
-            // Arrange
-            string fullName = "Teste  Teste";
-
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
         [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("Teste  Teste")]
         [InlineData(" Teste teste")]
         [InlineData("Teste teste ")]
-        public void Should_Fail_When_Trying_To_Validate_An_FullName_With_Space_First_Or_After_Words(string fullName)
-        {
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Theory]
         [InlineData("Aaaaaaaaaaaaaaaaa")]
         [InlineData("Aaaaaaaa aaaaaaaaa")]
-        public void Should_Fail_When_Trying_To_Validate_An_FullName_With_All_Characters_Equals_To_The_First_Character(string fullName)
+        [InlineData("alan Domingues")]
+        [InlineData("Álan")]
+        [InlineData("Álan Domingues 2022")]
+        public void Should_Fail_When_Trying_To_Validate_A_Null_FullName(string fullName)
         {
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_A_FullName_Without_First_Letter_In_UpperCase()
-        {
-            // Arrange
-            string fullName = "alan Domingues";
-
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_A_FullName_Have_Less_Than_Two_Words()
-        {
-            // Arrange
-            string fullName = "Álan";
-
             // Act
             var actionTest = fullName.IsValidFullName();
 
@@ -318,19 +166,6 @@ namespace Tests.InfrastructureTests
                 fullName += "Carlos ";
             }
             fullName += "Augusto";
-
-            // Act
-            var actionTest = fullName.IsValidFullName();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Fact]
-        public void Should_Fail_When_Trying_To_Validate_A_FullName_With_Numbers()
-        {
-            // Arrange
-            string fullName = "Álan Domingues 2022";
 
             // Act
             var actionTest = fullName.IsValidFullName();
@@ -400,31 +235,11 @@ namespace Tests.InfrastructureTests
         [InlineData("22622433019")]
         [InlineData("38205484086")]
         [InlineData("38851575004")]
-        public void Should_Fail_When_Trying_To_Validate_CPF(string cpf)
-        {
-            // Act
-            var actionTest = cpf.IsValidCPF();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Theory]
         [InlineData("11111111111")]
         [InlineData("111.111.111-11")]
-        public void Should_Fail_When_Trying_To_Validate_CPF_With_All_Numbers_Equals_To_The_First_Number(string cpf)
-        {
-            // Act
-            var actionTest = cpf.IsValidCPF();
-
-            // Assert
-            actionTest.Should().BeFalse();
-        }
-
-        [Theory]
         [InlineData("122.956.670-8@")]
         [InlineData("!22.956.670-89")]
-        public void Should_Fail_When_Trying_To_Validate_CPF_With_Special_Characters(string cpf)
+        public void Should_Fail_When_Trying_To_Validate_CPF(string cpf)
         {
             // Act
             var actionTest = cpf.IsValidCPF();

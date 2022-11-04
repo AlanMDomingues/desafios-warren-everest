@@ -1,5 +1,6 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
+using EntityFrameworkCore.Repository.Extensions;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +74,9 @@ namespace Domain.Services.Services
 
         public void Delete(int id)
         {
+            var portfolio = Get(id);
             var repository = UnitOfWork.Repository<Portfolio>();
+            repository.RemoveTracking(portfolio);
 
             repository.Remove(x => x.Id.Equals(id));
         }
@@ -86,6 +89,7 @@ namespace Domain.Services.Services
             portfolio.TotalBalance += amount;
 
             var repository = UnitOfWork.Repository<Portfolio>();
+            repository.RemoveTracking(portfolio);
 
             repository.Update(portfolio, x => x.TotalBalance);
             UnitOfWork.SaveChanges();
@@ -101,8 +105,10 @@ namespace Domain.Services.Services
             portfolio.TotalBalance -= amount;
 
             var repository = UnitOfWork.Repository<Portfolio>();
+            repository.RemoveTracking(portfolio);
 
             repository.Update(portfolio, x => x.TotalBalance);
+
             UnitOfWork.SaveChanges();
         }
     }

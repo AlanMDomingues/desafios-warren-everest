@@ -14,7 +14,7 @@ namespace Domain.Models
         public string Symbol { get; set; }
         public decimal UnitPrice { get; set; }
 
-        public ICollection<PortfolioProduct> PortfoliosProducts { get; set; } = new List<PortfolioProduct>();
+        public ICollection<PortfolioProduct> PortfoliosProducts { get; set; }
 
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }

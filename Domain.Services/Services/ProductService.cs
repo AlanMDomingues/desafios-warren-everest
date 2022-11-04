@@ -1,9 +1,11 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
+using EntityFrameworkCore.Repository.Extensions;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
 using Infrastructure.Data.Context;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Domain.Services.Services
 {
@@ -73,9 +75,11 @@ namespace Domain.Services.Services
 
         public void Delete(int id)
         {
-            if (!AnyProductForId(id)) throw new ArgumentException($"Produto não existente para o ID: {id}");
+            var product = Get(id);
+            if (product is null) throw new ArgumentException($"Produto não existente para o ID: {id}");
 
             var repository = UnitOfWork.Repository<Product>();
+            repository.RemoveTracking(product);
 
             repository.Remove(x => x.Id.Equals(id));
         }

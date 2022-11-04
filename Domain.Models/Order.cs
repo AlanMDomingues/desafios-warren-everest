@@ -25,12 +25,6 @@ public class Order
 
     public void SetNetValue()
     {
-        IsValidUnitPriceAndQuotes();
         NetValue = UnitPrice * Quotes;
-    }
-
-    public void IsValidUnitPriceAndQuotes()
-    {
-        if (UnitPrice <= 0 || Quotes <= 0) throw new ArgumentException("UnitPrice and Quotes must be higher than 0");
     }
 }

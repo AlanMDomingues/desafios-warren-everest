@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using API.Tests.Fixtures;
+using Application.Interfaces;
 using Application.Models.Response;
 using Application.Services;
 using AutoMapper;
@@ -8,10 +9,9 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Collections.Generic;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.AppServiceTests
+namespace API.Tests.ApplicationTests
 {
     public class PortfolioAppServiceTests
     {
@@ -89,7 +89,7 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Add(portfolio);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Customer' not found for ID: {portfolio.CustomerId}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Customer' não encontrado para o ID: {portfolio.CustomerId}");
             _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
         }
 
@@ -101,9 +101,10 @@ namespace Tests.AppServiceTests
             _customerBankInfoAppServiceMock.Setup(x => x.AnyCustomerBankInfoForId(It.IsAny<int>())).Returns(true);
 
             // Act
-            _portfolioAppService.Add(portfolio);
+            var actionResult = () => _portfolioAppService.Add(portfolio);
 
             // Assert
+            actionResult.Should().NotThrow();
             _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.Add(It.IsAny<Portfolio>()), Times.Once);
         }
@@ -121,7 +122,7 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Update(id, updatePortfolio);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' not found for ID: {id}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' não encontrado para o ID: {id}");
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.Update(It.IsAny<Portfolio>()), Times.Never);
         }
@@ -135,9 +136,10 @@ namespace Tests.AppServiceTests
             _portfolioServiceMock.Setup(x => x.AnyPortfolioForId(It.IsAny<int>())).Returns(true);
 
             // Act
-            _portfolioAppService.Update(It.IsAny<int>(), updatePortfolio);
+            var actionResult = () => _portfolioAppService.Update(It.IsAny<int>(), updatePortfolio);
 
             // Assert
+            actionResult.Should().NotThrow();
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.Update(It.IsAny<Portfolio>()), Times.Once);
         }
@@ -153,7 +155,7 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Delete(id);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' not found for ID: {id}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' não encontrado para o ID: {id}");
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Never);
             _portfolioServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
@@ -166,9 +168,10 @@ namespace Tests.AppServiceTests
             _portfolioServiceMock.Setup(x => x.AnyPortfolioForId(It.IsAny<int>())).Returns(true);
 
             // Act
-            _portfolioAppService.Delete(It.IsAny<int>());
+            var actionResult = () => _portfolioAppService.Delete(It.IsAny<int>());
 
             // Assert
+            actionResult.Should().NotThrow();
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Once);
@@ -185,7 +188,7 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Delete(It.IsAny<int>());
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage("You must withdraw money from the portfolio before deleting it");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage("Você precisa sacar o saldo das sua carteira antes de deletá-la");
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
@@ -195,7 +198,6 @@ namespace Tests.AppServiceTests
         public void Should_Fail_And_Return_ArgumentException_When_Trying_To_Invest_For_CustomerBankInfo_Doesnt_Exists()
         {
             // Arrange
-            var customerBankInfoId = 1;
             var order = OrderFactory.FakeCreateOrderRequest();
 
             _customerBankInfoAppServiceMock.Setup(x => x.AnyCustomerBankInfoForId(It.IsAny<int>())).Returns(false);
@@ -204,7 +206,7 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Invest(order);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Customer' not found for ID: {order.CustomerBankInfoId}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Customer' não encontrado para o ID: {order.CustomerBankInfoId}");
             _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Never);
             _productAppServiceMock.Verify(x => x.Get(It.IsAny<int>()), Times.Never);
@@ -223,7 +225,7 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Invest(order);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' not found for ID: {order.PortfolioId}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Portfolio' não encontrado para o ID: {order.PortfolioId}");
             _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _productAppServiceMock.Verify(x => x.Get(It.IsAny<int>()), Times.Never);
@@ -242,10 +244,57 @@ namespace Tests.AppServiceTests
             var actionResult = () => _portfolioAppService.Invest(order);
 
             // Assert
-            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Product' not found for ID: {order.ProductId}");
+            actionResult.Should().ThrowExactly<ArgumentException>().WithMessage($"'Product' não encontrado para o ID: {order.ProductId}");
             _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
             _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
             _productAppServiceMock.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
+        }
+
+        [Fact]
+        public void Should_Pass_And_Return_ArgumentException_When_Trying_To_Invest_For_Product()
+        {
+            // Arrange
+            var createOrderRequest = OrderFactory.FakeCreateOrderRequest();
+            var productResult = ProductFactory.FakeProductResult();
+
+            _customerBankInfoAppServiceMock.Setup(x => x.AnyCustomerBankInfoForId(It.IsAny<int>())).Returns(true);
+            _portfolioServiceMock.Setup(x => x.AnyPortfolioForId(It.IsAny<int>())).Returns(true);
+            _productAppServiceMock.Setup(x => x.Get(It.IsAny<int>())).Returns(productResult);
+
+            // Act
+            var actionResult = () => _portfolioAppService.Invest(createOrderRequest);
+
+            // Assert
+            actionResult.Should().NotThrow();
+            _customerBankInfoAppServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
+            _portfolioServiceMock.Verify(x => x.AnyPortfolioForId(It.IsAny<int>()), Times.Once);
+            _productAppServiceMock.Verify(x => x.Get(It.IsAny<int>()), Times.Once);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Should_Pass_When_Trying_To_Call_AnyPortfolioFromACustomerArentEmpty(bool trueOrFalse)
+        {
+            // Arrange
+            _portfolioServiceMock.Setup(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>())).Returns(trueOrFalse);
+
+            // Act
+            var actionTest = _portfolioAppService.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>());
+
+            // Assert
+            actionTest.Should().Be(trueOrFalse);
+        }
+
+        [Fact]
+        public void Should_Pass_When_Trying_To_Transfer_Money_To_Account_Balance()
+        {
+            // Act
+            _portfolioAppService.TransferMoneyToAccountBalance(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<decimal>());
+
+            // Assert
+            _investmentServiceMock.Verify(x => x.DepositMoneyInCustomerBankInfo(It.IsAny<int>(), It.IsAny<decimal>()), Times.Once);
+            _portfolioServiceMock.Verify(x => x.Withdraw(It.IsAny<int>(), It.IsAny<decimal>()), Times.Once);
         }
     }
 }

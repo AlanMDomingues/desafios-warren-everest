@@ -33,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domínio", "Domínio", "{AD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testes", "Testes", "{DB2E15F8-35E8-4C53-9661-33F6963FFCDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{84B1F6F9-A455-4AF0-B057-14A513532678}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API.Tests", "Tests\API.Tests.csproj", "{84B1F6F9-A455-4AF0-B057-14A513532678}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

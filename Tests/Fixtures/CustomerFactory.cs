@@ -5,7 +5,7 @@ using Domain.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Tests.Factories;
+namespace API.Tests.Fixtures;
 
 public static class CustomerFactory
 {
@@ -17,8 +17,8 @@ public static class CustomerFactory
             .RuleFor(x => x.Cellphone, x => x.Phone.PhoneNumber("##9########"))
             .RuleFor(x => x.Email, x => x.Internet.Email())
             .RuleFor(x => x.Birthdate, x => x.Date.Past(130, DateTime.Now.AddYears(-18)))
-            .RuleFor(x => x.EmailSms, x => x.Random.Bool())
-            .RuleFor(x => x.Whatsapp, x => x.Random.Bool())
+            .RuleFor(x => x.EmailSms, x => true)
+            .RuleFor(x => x.Whatsapp, x => true)
             .RuleFor(x => x.Country, x => x.Address.Country())
             .RuleFor(x => x.City, x => x.Address.City())
             .RuleFor(x => x.PostalCode, x => x.Address.ZipCode("########"))
@@ -26,10 +26,7 @@ public static class CustomerFactory
             .RuleFor(x => x.Number, x => x.Random.Int(1, 100000));
 
         var customer = fakeCustomer.Generate();
-        if (customer.Whatsapp is false && customer.EmailSms is false)
-        {
-            customer.Whatsapp = true;
-        }
+
         customer.EmailConfirmation = customer.Email;
         return customer;
     }
@@ -42,8 +39,8 @@ public static class CustomerFactory
             .RuleFor(x => x.Cellphone, x => x.Phone.PhoneNumber("##9########"))
             .RuleFor(x => x.Email, x => x.Internet.Email())
             .RuleFor(x => x.Birthdate, x => x.Date.Past(130, DateTime.Now.AddYears(-18)))
-            .RuleFor(x => x.EmailSms, x => x.Random.Bool())
-            .RuleFor(x => x.Whatsapp, x => x.Random.Bool())
+            .RuleFor(x => x.EmailSms, x => true)
+            .RuleFor(x => x.Whatsapp, x => true)
             .RuleFor(x => x.Country, x => x.Address.Country())
             .RuleFor(x => x.City, x => x.Address.City())
             .RuleFor(x => x.PostalCode, x => x.Address.ZipCode("########"))
@@ -51,10 +48,6 @@ public static class CustomerFactory
             .RuleFor(x => x.Number, x => x.Random.Int(1, 100000));
 
         var customer = fakeCustomer.Generate();
-        if (customer.Whatsapp is false && customer.EmailSms is false)
-        {
-            customer.Whatsapp = true;
-        }
         return customer;
     }
 
@@ -67,8 +60,8 @@ public static class CustomerFactory
                 cpf: x.Person.Cpf(false),
                 cellphone: x.Phone.PhoneNumber("##9########"),
                 birthdate: x.Date.Past(130, DateTime.Now.AddYears(-18)),
-                emailSms: x.Random.Bool(),
-                whatsapp: x.Random.Bool(),
+                emailSms: true,
+                whatsapp: true,
                 country: x.Address.Country(),
                 city: x.Address.City(),
                 postalCode: x.Address.ZipCode("########"),
@@ -78,10 +71,7 @@ public static class CustomerFactory
             .RuleFor(x => x.Id, x => ++x.IndexVariable);
 
         var customer = fakeCustomer.Generate();
-        if (customer.Whatsapp is false && customer.EmailSms is false)
-        {
-            customer.Whatsapp = true;
-        }
+
         customer.EmailConfirmation = customer.Email;
         return customer;
     }
@@ -95,8 +85,8 @@ public static class CustomerFactory
                 cpf: x.Person.Cpf(false),
                 cellphone: x.Phone.PhoneNumber("##9########"),
                 birthdate: x.Date.Past(130, DateTime.Now.AddYears(-18)),
-                emailSms: x.Random.Bool(),
-                whatsapp: x.Random.Bool(),
+                emailSms: true,
+                whatsapp: true,
                 country: x.Address.Country(),
                 city: x.Address.City(),
                 postalCode: x.Address.ZipCode("########"),
@@ -108,13 +98,9 @@ public static class CustomerFactory
         var customers = fakeCustomer.Generate(5);
         foreach (var customer in customers)
         {
-            if (customer.Whatsapp is false && customer.EmailSms is false)
-            {
-                customer.Whatsapp = true;
-            }
-
             customer.EmailConfirmation = customer.Email;
         }
+
         return customers;
     }
 }

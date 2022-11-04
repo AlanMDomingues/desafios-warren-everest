@@ -1,4 +1,5 @@
-﻿using Application.Models.Response;
+﻿using API.Tests.Fixtures;
+using Application.Models.Response;
 using Application.Services;
 using AutoMapper;
 using Domain.Models;
@@ -6,10 +7,9 @@ using Domain.Services.Interfaces;
 using FluentAssertions;
 using Moq;
 using System;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.AppServiceTests;
+namespace API.Tests.ApplicationTests;
 
 public class CustomerBankInfoAppServiceTests
 {
@@ -51,9 +51,10 @@ public class CustomerBankInfoAppServiceTests
     public void Should_Pass_When_Trying_To_Add_A_CustomerBankInfo()
     {
         // Act
-        _customerBankInfoAppService.Add(It.IsAny<int>());
+        var actionResult = () => _customerBankInfoAppService.Add(It.IsAny<int>());
 
         // Assert
+        actionResult.Should().NotThrow();
         _customerBankInfoServiceMock.Verify(x => x.Add(It.IsAny<CustomerBankInfo>()), Times.Once);
     }
 
@@ -61,21 +62,21 @@ public class CustomerBankInfoAppServiceTests
     public void Should_Pass_When_Trying_To_Call_AnyAccountBalanceThatIsntZeroForCustomerId()
     {
         // Act
-        var actionTest = _customerBankInfoAppService.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>());
+        var actionResult = () => _customerBankInfoAppService.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>());
 
         // Assert
-        actionTest.Should().As<bool>();
-        _customerBankInfoServiceMock.Verify(x => x.AnyAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        actionResult.Should().NotThrow();
+        _customerBankInfoServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
     public void Should_Pass_When_Trying_To_Call_AnyCustomerBankInfoForId()
     {
         // Act
-        var actionTest = _customerBankInfoAppService.AnyCustomerBankInfoForId(It.IsAny<int>());
+        var actionResult = () => _customerBankInfoAppService.AnyCustomerBankInfoForId(It.IsAny<int>());
 
         // Assert
-        actionTest.Should().As<bool>();
+        actionResult.Should().NotThrow();
         _customerBankInfoServiceMock.Verify(x => x.AnyCustomerBankInfoForId(It.IsAny<int>()), Times.Once);
     }
 
@@ -83,9 +84,10 @@ public class CustomerBankInfoAppServiceTests
     public void Should_Pass_When_Trying_To_Call_Deposit()
     {
         // Act
-        _customerBankInfoAppService.Deposit(It.IsAny<int>(), It.IsAny<decimal>());
+        var actionResult = () => _customerBankInfoAppService.Deposit(It.IsAny<int>(), It.IsAny<decimal>());
 
         // Assert
+        actionResult.Should().NotThrow();
         _customerBankInfoServiceMock.Verify(x => x.Deposit(It.IsAny<int>(), It.IsAny<decimal>()), Times.Once);
     }
 
@@ -93,9 +95,10 @@ public class CustomerBankInfoAppServiceTests
     public void Should_Pass_When_Trying_To_Call_Withdraw()
     {
         // Act
-        _customerBankInfoAppService.Withdraw(It.IsAny<int>(), It.IsAny<decimal>());
+        var actionResult = () => _customerBankInfoAppService.Withdraw(It.IsAny<int>(), It.IsAny<decimal>());
 
         // Assert
+        actionResult.Should().NotThrow();
         _customerBankInfoServiceMock.Verify(x => x.Withdraw(It.IsAny<int>(), It.IsAny<decimal>()), Times.Once);
     }
 
@@ -103,9 +106,10 @@ public class CustomerBankInfoAppServiceTests
     public void Should_Pass_When_Trying_To_Transfer_Money_To_Portfolio()
     {
         // Act
-        _customerBankInfoAppService.TransferMoneyToPortfolio(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<decimal>());
+        var actionResult = () => _customerBankInfoAppService.TransferMoneyToPortfolio(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<decimal>());
 
         // Assert
+        actionResult.Should().NotThrow();
         _customerBankInfoServiceMock.Verify(x => x.Withdraw(It.IsAny<int>(), It.IsAny<decimal>()), Times.Once);
         _investmentServiceMock.Verify(x => x.DepositMoneyInPortfolio(It.IsAny<int>(), It.IsAny<decimal>()), Times.Once);
     }

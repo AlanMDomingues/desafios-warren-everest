@@ -1,4 +1,5 @@
-﻿using Application.Models.Response;
+﻿using API.Tests.Fixtures;
+using Application.Models.Response;
 using Application.Services;
 using AutoMapper;
 using Domain.Models;
@@ -7,10 +8,9 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Collections.Generic;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.AppServiceTests;
+namespace API.Tests.ApplicationTests;
 
 public class OrderAppServiceTests
 {
@@ -65,9 +65,10 @@ public class OrderAppServiceTests
     public void Should_Pass_When_Trying_To_Call_Add()
     {
         // Act
-        _orderAppService.Add(It.IsAny<Order>());
+        var actionResult = () => _orderAppService.Add(It.IsAny<Order>());
 
         // Assert
+        actionResult.Should().NotThrow();
         _orderServiceMock.Verify(x => x.Add(It.IsAny<Order>()), Times.Once);
     }
 }

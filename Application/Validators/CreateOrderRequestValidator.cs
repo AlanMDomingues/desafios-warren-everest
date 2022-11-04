@@ -9,8 +9,7 @@ namespace Application.Validators
         {
             RuleFor(x => x.Quotes)
                 .NotEmpty()
-                .GreaterThan(0)
-                .LessThanOrEqualTo(100);
+                .GreaterThan(0);
 
             RuleFor(x => x.PortfolioId)
                 .NotEmpty()

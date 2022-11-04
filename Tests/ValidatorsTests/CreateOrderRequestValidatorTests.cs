@@ -1,10 +1,10 @@
-﻿using Application.Validators;
+﻿using API.Tests.Fixtures;
+using Application.Validators;
 using FluentAssertions;
 using FluentValidation.TestHelper;
-using Tests.Factories;
 using Xunit;
 
-namespace Tests.ValidationTests
+namespace API.Tests.ValidatorsTests
 {
     public class CreateOrderRequestValidatorTests
     {
@@ -56,21 +56,6 @@ namespace Tests.ValidationTests
             // Assert
             actionTest.Errors.Should().HaveCount(1);
             actionTest.ShouldHaveValidationErrorFor(x => x.Quotes).WithErrorMessage("'Quotes' deve ser superior a '0'.");
-        }
-
-        [Fact]
-        public void Should_Fail_And_Return_Error_Message_When_Trying_To_Add_A_CreateOrderRequest_Quotes_Greater_Than_One_Hundred()
-        {
-            // Arrange
-            var createOrderRequest = OrderFactory.FakeCreateOrderRequest();
-            createOrderRequest.Quotes = 101;
-
-            // Act
-            var actionTest = _createOrderRequestValidator.TestValidate(createOrderRequest);
-
-            // Assert
-            actionTest.Errors.Should().HaveCount(1);
-            actionTest.ShouldHaveValidationErrorFor(x => x.Quotes).WithErrorMessage("'Quotes' deve ser inferior ou igual a '100'.");
         }
 
         #endregion Quotes Property Tests
