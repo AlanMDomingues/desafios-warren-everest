@@ -16,6 +16,6 @@ namespace Domain.Models
 
         public ICollection<PortfolioProduct> PortfoliosProducts { get; set; }
 
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order> Orders { get; set; }
     }
 }

@@ -7,9 +7,9 @@ namespace Application.Interfaces
     {
         CustomerBankInfoResult Get(int id);
 
-        bool IsAccountBalanceThatIsntZeroForCustomerId(int customerId);
+        bool AccountBalanceIsNotZero(int customerId);
 
-        bool AnyCustomerBankInfoForId(int id);
+        bool AnyCustomerBankInfoForId(int customerId);
 
         void Add(int customerId);
 

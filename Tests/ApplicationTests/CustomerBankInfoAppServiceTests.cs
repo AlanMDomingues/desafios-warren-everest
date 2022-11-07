@@ -62,11 +62,11 @@ public class CustomerBankInfoAppServiceTests
     public void Should_Pass_When_Trying_To_Call_AnyAccountBalanceThatIsntZeroForCustomerId()
     {
         // Act
-        var actionResult = () => _customerBankInfoAppService.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>());
+        var actionResult = () => _customerBankInfoAppService.AccountBalanceIsNotZero(It.IsAny<int>());
 
         // Assert
         actionResult.Should().NotThrow();
-        _customerBankInfoServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoServiceMock.Verify(x => x.AccountBalanceIsNotZero(It.IsAny<int>()), Times.Once);
     }
 
     [Fact]

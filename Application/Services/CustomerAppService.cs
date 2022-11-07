@@ -75,7 +75,7 @@ namespace Application.Services
         {
             if (!_customerServices.AnyForId(id)) throw new ArgumentException($"'Customer' não encontrado para o ID: {id}");
 
-            if (_customerBankInfoAppService.IsAccountBalanceThatIsntZeroForCustomerId(id)) throw new ArgumentException("Você precisa sacar o saldo da sua conta antes de deletá-la");
+            if (_customerBankInfoAppService.AccountBalanceIsNotZero(id)) throw new ArgumentException("Você precisa sacar o saldo da sua conta antes de deletá-la");
 
             if (_portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id)) throw new ArgumentException("Você precisa sacar o saldo das suas carteiras antes de deletá-las");
 

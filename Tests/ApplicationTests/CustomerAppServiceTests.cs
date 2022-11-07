@@ -204,7 +204,7 @@ public class CustomerAppServiceTests
               .WithMessage($"'Customer' não encontrado para o ID: {id}");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Never);
+        _customerBankInfoAppServiceMock.Verify(x => x.AccountBalanceIsNotZero(It.IsAny<int>()), Times.Never);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Never);
         _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
     }
@@ -214,7 +214,7 @@ public class CustomerAppServiceTests
     {
         // Arrange
         _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
-        _customerBankInfoAppServiceMock.Setup(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(true);
+        _customerBankInfoAppServiceMock.Setup(x => x.AccountBalanceIsNotZero(It.IsAny<int>())).Returns(true);
 
         // Act
         var action = () => _customerAppService.Delete(It.IsAny<int>());
@@ -225,7 +225,7 @@ public class CustomerAppServiceTests
               .WithMessage("Você precisa sacar o saldo da sua conta antes de deletá-la");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoAppServiceMock.Verify(x => x.AccountBalanceIsNotZero(It.IsAny<int>()), Times.Once);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Never);
         _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
     }
@@ -235,7 +235,7 @@ public class CustomerAppServiceTests
     {
         // Arrange
         _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
-        _customerBankInfoAppServiceMock.Setup(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(false);
+        _customerBankInfoAppServiceMock.Setup(x => x.AccountBalanceIsNotZero(It.IsAny<int>())).Returns(false);
         _portfolioAppServiceMock.Setup(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>())).Returns(true);
         _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
 
@@ -248,7 +248,7 @@ public class CustomerAppServiceTests
               .WithMessage("Você precisa sacar o saldo das suas carteiras antes de deletá-las");
 
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoAppServiceMock.Verify(x => x.AccountBalanceIsNotZero(It.IsAny<int>()), Times.Once);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Once);
         _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Never);
     }
@@ -258,7 +258,7 @@ public class CustomerAppServiceTests
     {
         // Arrange
         _customerServiceMock.Setup(x => x.AnyForId(It.IsAny<int>())).Returns(true);
-        _customerBankInfoAppServiceMock.Setup(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>())).Returns(false);
+        _customerBankInfoAppServiceMock.Setup(x => x.AccountBalanceIsNotZero(It.IsAny<int>())).Returns(false);
         _portfolioAppServiceMock.Setup(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>())).Returns(false);
 
         // Act
@@ -267,7 +267,7 @@ public class CustomerAppServiceTests
         // Assert
         action.Should().NotThrow();
         _customerServiceMock.Verify(x => x.AnyForId(It.IsAny<int>()), Times.Once);
-        _customerBankInfoAppServiceMock.Verify(x => x.IsAccountBalanceThatIsntZeroForCustomerId(It.IsAny<int>()), Times.Once);
+        _customerBankInfoAppServiceMock.Verify(x => x.AccountBalanceIsNotZero(It.IsAny<int>()), Times.Once);
         _portfolioAppServiceMock.Verify(x => x.AnyPortfolioFromACustomerArentEmpty(It.IsAny<int>()), Times.Once);
         _customerServiceMock.Verify(x => x.Delete(It.IsAny<int>()), Times.Once);
     }

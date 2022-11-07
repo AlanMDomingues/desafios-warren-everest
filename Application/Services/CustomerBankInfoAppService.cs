@@ -30,9 +30,9 @@ namespace Application.Services
             return result;
         }
 
-        public bool IsAccountBalanceThatIsntZeroForCustomerId(int customerId) => _customerBankInfoService.IsAccountBalanceThatIsntZeroForCustomerId(customerId);
+        public bool AccountBalanceIsNotZero(int customerId) => _customerBankInfoService.AccountBalanceIsNotZero(customerId);
 
-        public bool AnyCustomerBankInfoForId(int id) => _customerBankInfoService.AnyCustomerBankInfoForId(id);
+        public bool AnyCustomerBankInfoForId(int customerId) => _customerBankInfoService.AnyCustomerBankInfoForId(customerId);
 
         public void Add(int customerId)
         {

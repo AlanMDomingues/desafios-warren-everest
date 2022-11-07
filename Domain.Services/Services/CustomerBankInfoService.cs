@@ -26,18 +26,20 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public bool IsAccountBalanceThatIsntZeroForCustomerId(int customerId)
+        public bool AccountBalanceIsNotZero(int customerId)
         {
             var repository = RepositoryFactory.Repository<CustomerBankInfo>();
+
+            if (!AnyCustomerBankInfoForId(customerId)) throw new ArgumentException($"'CustomerBankInfo' não encontrado para o ID: {customerId}");
 
             return repository.Any(x => x.CustomerId.Equals(customerId) && x.AccountBalance > 0);
         }
 
-        public bool AnyCustomerBankInfoForId(int id)
+        public bool AnyCustomerBankInfoForId(int customerId)
         {
             var repository = RepositoryFactory.Repository<CustomerBankInfo>();
 
-            return repository.Any(x => x.CustomerId.Equals(id));
+            return repository.Any(x => x.CustomerId.Equals(customerId));
         }
 
         public void Add(CustomerBankInfo customerBankInfo)

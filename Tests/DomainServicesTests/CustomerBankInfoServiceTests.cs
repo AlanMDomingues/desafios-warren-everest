@@ -75,13 +75,14 @@ namespace API.Tests.DomainServicesTests
             var customerBankInfo = CustomerBankInfoFactory.FakeCustomerBankInfo();
             _customerBankInfoService.Add(customerBankInfo);
             var amount = 100.00m;
+            const int id = 12321;
 
             // Act
-            var actionTest = () => _customerBankInfoService.Withdraw(1321, amount);
+            var actionTest = () => _customerBankInfoService.Withdraw(id, amount);
 
             // Assert
             actionTest.Should().ThrowExactly<ArgumentException>()
-                               .WithMessage($"'CustomerBankInfo' não encontrado para o ID: {1321}");
+                               .WithMessage($"'CustomerBankInfo' não encontrado para o ID: {id}");
         }
 
         [Fact]
@@ -108,14 +109,15 @@ namespace API.Tests.DomainServicesTests
             var customerBankInfo = CustomerBankInfoFactory.FakeCustomerBankInfo();
             customerBankInfo.AccountBalance = 200.00m;
             _customerBankInfoService.Add(customerBankInfo);
-            var amount = 100.00m;
+            const decimal amount = 100.00m;
+            const int id = 123;
 
             // Act
-            _customerBankInfoService.Withdraw(customerBankInfo.Id, amount);
+            var result = () => _customerBankInfoService.Withdraw(id, amount);
 
             // Assert
-            var result = _customerBankInfoService.Get(customerBankInfo.Id);
-            result.AccountBalance.Should().Be(100.00m);
+            result.Should().ThrowExactly<ArgumentException>()
+                           .WithMessage($"'CustomerBankInfo' não encontrado para o ID: {id}");
         }
 
         [Fact]
@@ -153,7 +155,7 @@ namespace API.Tests.DomainServicesTests
         }
 
         [Fact]
-        public void Should_Pass_When_Trying_To_Find_Any_AccountBalance_That_Isnt_Zero_For_CustomerId()
+        public void Should_Pass_When_Trying_To_Find_Any_AccountBalance_Is_Not_Zero()
         {
             // Arrange
             var customerBankInfo = CustomerBankInfoFactory.FakeCustomerBankInfo();
@@ -161,25 +163,27 @@ namespace API.Tests.DomainServicesTests
             _customerBankInfoService.Add(customerBankInfo);
 
             // Act
-            var result = _customerBankInfoService.IsAccountBalanceThatIsntZeroForCustomerId(customerBankInfo.Id);
+            var result = _customerBankInfoService.AccountBalanceIsNotZero(customerBankInfo.Id);
 
             // Assert
             result.Should().BeFalse();
         }
 
         [Fact]
-        public void Should_Fail_When_Trying_To_Find_Any_AccountBalance_That_Isnt_Zero_For_CustomerId_Doesnt_Exists()
+        public void Should_Fail_When_Trying_To_Find_Any_AccountBalance_Is_Not_Zero_For_Customer_That_Doesnt_Exist()
         {
             // Arrange
             var customerBankInfo = CustomerBankInfoFactory.FakeCustomerBankInfo();
             customerBankInfo.AccountBalance = 00.00m;
             _customerBankInfoService.Add(customerBankInfo);
+            const int id = 1000;
 
             // Act
-            var result = _customerBankInfoService.IsAccountBalanceThatIsntZeroForCustomerId(1);
+            var result = () => _customerBankInfoService.AccountBalanceIsNotZero(id);
 
             // Assert
-            result.Should().BeFalse();
+            result.Should().ThrowExactly<ArgumentException>()
+                           .WithMessage($"'CustomerBankInfo' não encontrado para o ID: {id}");
         }
 
         [Fact]

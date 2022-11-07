@@ -16,12 +16,12 @@ namespace Domain.Services.Services
             IUnitOfWork<DataContext> unitOfWork)
             : base(repositoryFactory, unitOfWork) { }
 
-        public IEnumerable<Portfolio> GetAll(int id)
+        public IEnumerable<Portfolio> GetAll(int customerId)
         {
             var repository = RepositoryFactory.Repository<Portfolio>();
 
             var query = repository.MultipleResultQuery()
-                                  .AndFilter(x => x.CustomerId.Equals(id))
+                                  .AndFilter(x => x.CustomerId.Equals(customerId))
                                   .Include(source => source.Include(x => x.PortfoliosProducts));
 
             var result = repository.Search(query);
