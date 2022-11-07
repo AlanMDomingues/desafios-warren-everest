@@ -78,12 +78,8 @@ namespace API.Tests.ValidatorsTests
         {
             // Arrange
             var updateProductRequest = ProductFactory.FakeUpdateProductRequest();
-            updateProductRequest.Symbol = "";
-            while (updateProductRequest.Symbol.Length <= 20)
-            {
-                updateProductRequest.Symbol += "B";
-            }
-
+            updateProductRequest.Symbol = "AAAAAAAAAAAAAAAAAAAAA";
+           
             // Act
             var actionTest = _updateProductRequestValidator.TestValidate(updateProductRequest);
 

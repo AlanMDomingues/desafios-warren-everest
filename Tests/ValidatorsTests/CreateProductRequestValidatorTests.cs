@@ -78,11 +78,7 @@ namespace API.Tests.ValidatorsTests
         {
             // Arrange
             var createProductRequest = ProductFactory.FakeCreateProductRequest();
-            createProductRequest.Symbol = "";
-            while (createProductRequest.Symbol.Length <= 20)
-            {
-                createProductRequest.Symbol += "B";
-            }
+            createProductRequest.Symbol = "AAAAAAAAAAAAAAAAAAAAA";
 
             // Act
             var actionTest = _createProductRequestValidator.TestValidate(createProductRequest);
