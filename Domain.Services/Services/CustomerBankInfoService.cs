@@ -26,7 +26,7 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public bool AccountBalanceIsNotZero(int customerId)
+        public bool AccountBalanceIsBiggerThanZero(int customerId)
         {
             var repository = RepositoryFactory.Repository<CustomerBankInfo>();
 

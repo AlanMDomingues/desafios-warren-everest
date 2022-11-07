@@ -163,7 +163,7 @@ namespace API.Tests.DomainServicesTests
             _customerBankInfoService.Add(customerBankInfo);
 
             // Act
-            var result = _customerBankInfoService.AccountBalanceIsNotZero(customerBankInfo.Id);
+            var result = _customerBankInfoService.AccountBalanceIsBiggerThanZero(customerBankInfo.Id);
 
             // Assert
             result.Should().BeFalse();
@@ -179,7 +179,7 @@ namespace API.Tests.DomainServicesTests
             const int id = 1000;
 
             // Act
-            var result = () => _customerBankInfoService.AccountBalanceIsNotZero(id);
+            var result = () => _customerBankInfoService.AccountBalanceIsBiggerThanZero(id);
 
             // Assert
             result.Should().ThrowExactly<ArgumentException>()

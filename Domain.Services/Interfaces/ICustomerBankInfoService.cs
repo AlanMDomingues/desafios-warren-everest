@@ -6,7 +6,7 @@ namespace Domain.Services.Interfaces
     {
         CustomerBankInfo Get(int id);
 
-        bool AccountBalanceIsNotZero(int customerId);
+        bool AccountBalanceIsBiggerThanZero(int customerId);
 
         bool AnyCustomerBankInfoForId(int customerId);
 
