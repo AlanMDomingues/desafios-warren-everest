@@ -5,7 +5,7 @@ namespace Domain.Services.Interfaces
 {
     public interface IPortfolioService : IServiceBase
     {
-        IEnumerable<Portfolio> GetAll(int id);
+        IEnumerable<Portfolio> GetAll(int customerId);
 
         Portfolio Get(int id);
 

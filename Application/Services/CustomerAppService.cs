@@ -52,8 +52,7 @@ namespace Application.Services
         public int Add(CreateCustomerRequest customerRequest)
         {
             var customer = Mapper.Map<Customer>(customerRequest);
-            var customerExists = _customerServices.ValidateAlreadyExists(customer);
-            if (!customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
+            if (_customerServices.ValidateAlreadyExists(customer)) throw new ArgumentException("'Customer' já existente, por favor insira um novo 'Customer'");
 
             _customerServices.Add(customer);
             _customerBankInfoAppService.Add(customer.Id);
@@ -63,9 +62,10 @@ namespace Application.Services
 
         public void Update(int id, UpdateCustomerRequest customerRequest)
         {
+            if (!_customerServices.AnyForId(id)) throw new ArgumentException($"'Customer' não encontrado para o ID: {id}");
+
             var customer = Mapper.Map<Customer>(customerRequest);
-            var customerExists = _customerServices.ValidateAlreadyExists(customer);
-            if (!customerExists) throw new ArgumentException("Customer already exists, please insert a new customer");
+            if (_customerServices.ValidateAlreadyExists(customer)) throw new ArgumentException("'Customer' já existente, por favor insira um novo 'Customer'");
 
             customer.Id = id;
             _customerServices.Update(customer);
@@ -73,14 +73,11 @@ namespace Application.Services
 
         public void Delete(int id)
         {
-            var customerExists = _customerServices.AnyForId(id);
-            if (!customerExists) throw new ArgumentException($"'Customer' not found for ID: {id}");
+            if (!_customerServices.AnyForId(id)) throw new ArgumentException($"'Customer' não encontrado para o ID: {id}");
 
-            var accountBalanceArentEmpty = _customerBankInfoAppService.AnyAccountBalanceThatIsntZeroForCustomerId(id);
-            if (!accountBalanceArentEmpty) throw new ArgumentException("You must withdraw money from your account balance before deleting it");
+            if (_customerBankInfoAppService.AccountBalanceIsBiggerThanZero(id)) throw new ArgumentException("Você precisa sacar o saldo da sua conta antes de deletá-la");
 
-            var result = _portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id);
-            if (!result) throw new ArgumentException("You must withdraw money from your portfolios before deleting it");
+            if (_portfolioAppService.AnyPortfolioFromACustomerArentEmpty(id)) throw new ArgumentException("Você precisa sacar o saldo das suas carteiras antes de deletá-las");
 
             _customerServices.Delete(id);
         }

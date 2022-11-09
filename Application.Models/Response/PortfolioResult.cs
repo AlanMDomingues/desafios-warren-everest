@@ -6,6 +6,7 @@ namespace Application.Models.Response
     {
         public string Name { get; set; }
         public decimal TotalBalance { get; set; }
+        public int CustomerId { get; set; }
         public IEnumerable<PortfolioProductResult> Products { get; set; }
     }
 }

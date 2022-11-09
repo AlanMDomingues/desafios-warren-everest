@@ -17,13 +17,13 @@ namespace Domain.Models
             string country,
             string city,
             string postalCode,
-            string adress,
+            string address,
             int number
         )
         {
             FullName = fullName;
             Email = email;
-            Cpf = cpf.FormatCpf();
+            Cpf = cpf.CpfFormatter();
             Cellphone = cellphone;
             Birthdate = birthdate;
             EmailSms = emailSms;
@@ -31,7 +31,7 @@ namespace Domain.Models
             Country = country;
             City = city;
             PostalCode = postalCode;
-            Adress = adress;
+            Address = address;
             Number = number;
         }
 
@@ -47,11 +47,11 @@ namespace Domain.Models
         public string Country { get; set; }
         public string City { get; set; }
         public string PostalCode { get; set; }
-        public string Adress { get; set; }
+        public string Address { get; set; }
         public int Number { get; set; }
 
         public CustomerBankInfo CustomerBankInfo { get; set; }
 
-        public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
+        public ICollection<Portfolio> Portfolios { get; set; }
     }
 }

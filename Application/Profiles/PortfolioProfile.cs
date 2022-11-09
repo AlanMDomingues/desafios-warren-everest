@@ -11,7 +11,10 @@ namespace Application.Profiles
         {
             CreateMap<CreatePortfolioRequest, Portfolio>();
 
-            CreateMap<Portfolio, PortfolioResult>();
+            CreateMap<UpdatePortfolioRequest, Portfolio>();
+
+            CreateMap<Portfolio, PortfolioResult>()
+                .ForMember(x => x.Products, y => y.MapFrom(z => z.PortfoliosProducts));
         }
     }
 }

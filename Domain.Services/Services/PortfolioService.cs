@@ -1,6 +1,8 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
+using EntityFrameworkCore.Repository.Extensions;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,16 +12,16 @@ namespace Domain.Services.Services
     public class PortfolioService : ServiceBase, IPortfolioService
     {
         public PortfolioService(
-            IRepositoryFactory repositoryFactory,
-            IUnitOfWork unitOfWork)
+            IRepositoryFactory<DataContext> repositoryFactory,
+            IUnitOfWork<DataContext> unitOfWork)
             : base(repositoryFactory, unitOfWork) { }
 
-        public IEnumerable<Portfolio> GetAll(int id)
+        public IEnumerable<Portfolio> GetAll(int customerId)
         {
             var repository = RepositoryFactory.Repository<Portfolio>();
 
             var query = repository.MultipleResultQuery()
-                                  .AndFilter(x => x.Id.Equals(id))
+                                  .AndFilter(x => x.CustomerId.Equals(customerId))
                                   .Include(source => source.Include(x => x.PortfoliosProducts));
 
             var result = repository.Search(query);
@@ -72,7 +74,9 @@ namespace Domain.Services.Services
 
         public void Delete(int id)
         {
+            var portfolio = Get(id);
             var repository = UnitOfWork.Repository<Portfolio>();
+            repository.RemoveTracking(portfolio);
 
             repository.Remove(x => x.Id.Equals(id));
         }
@@ -80,11 +84,12 @@ namespace Domain.Services.Services
         public void Deposit(int id, decimal amount)
         {
             var portfolio = Get(id)
-                ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+                ?? throw new ArgumentException($"'Portfolio' não encontrado para o ID: {id}");
 
             portfolio.TotalBalance += amount;
 
             var repository = UnitOfWork.Repository<Portfolio>();
+            repository.RemoveTracking(portfolio);
 
             repository.Update(portfolio, x => x.TotalBalance);
             UnitOfWork.SaveChanges();
@@ -93,15 +98,17 @@ namespace Domain.Services.Services
         public void Withdraw(int id, decimal amount)
         {
             var portfolio = Get(id)
-                ?? throw new ArgumentException($"'Portfolio' not found for ID: {id}");
+                ?? throw new ArgumentException($"'Portfolio' não encontrado para o ID: {id}");
 
-            if (!portfolio.ValidateTransaction(amount)) throw new ArgumentException("Insufficient balance");
+            if (!portfolio.ValidateTransaction(amount)) throw new ArgumentException("Saldo insuficiente");
 
             portfolio.TotalBalance -= amount;
 
             var repository = UnitOfWork.Repository<Portfolio>();
+            repository.RemoveTracking(portfolio);
 
             repository.Update(portfolio, x => x.TotalBalance);
+
             UnitOfWork.SaveChanges();
         }
     }

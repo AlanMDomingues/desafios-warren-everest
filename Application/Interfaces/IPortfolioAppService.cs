@@ -11,8 +11,6 @@ namespace Application.Interfaces
 
         PortfolioResult Get(int id);
 
-        Portfolio GetWithoutMap(int id);
-
         bool AnyPortfolioFromACustomerArentEmpty(int customerId);
 
         void Add(CreatePortfolioRequest portfolio);
@@ -23,6 +21,6 @@ namespace Application.Interfaces
 
         void TransferMoneyToAccountBalance(int customerBankInfoId, int portfolioId, decimal amount);
 
-        void Invest(int customerBankInfoId, CreateOrderRequest orderRequest);
+        void Invest(CreateOrderRequest orderRequest);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Domain.Models;
 using Domain.Services.Interfaces;
+using EntityFrameworkCore.Repository.Extensions;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Infrastructure.Data.Context;
 using System;
 
 namespace Domain.Services.Services
@@ -8,8 +10,8 @@ namespace Domain.Services.Services
     public class CustomerBankInfoService : ServiceBase, ICustomerBankInfoService
     {
         public CustomerBankInfoService(
-            IRepositoryFactory repositoryFactory,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork<DataContext> unitOfWork,
+            IRepositoryFactory<DataContext> repositoryFactory)
             : base(repositoryFactory, unitOfWork) { }
 
         public CustomerBankInfo Get(int id)
@@ -24,18 +26,20 @@ namespace Domain.Services.Services
             return result;
         }
 
-        public bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId)
+        public bool AccountBalanceIsBiggerThanZero(int customerId)
         {
             var repository = RepositoryFactory.Repository<CustomerBankInfo>();
 
-            return repository.Any(x => x.CustomerId.Equals(customerId) && x.AccountBalance > 0 && x.AccountBalance < 0);
+            if (!AnyCustomerBankInfoForId(customerId)) throw new ArgumentException($"'CustomerBankInfo' não encontrado para o ID: {customerId}");
+
+            return repository.Any(x => x.CustomerId.Equals(customerId) && x.AccountBalance > 0);
         }
 
-        public bool AnyCustomerBankInfoForId(int id)
+        public bool AnyCustomerBankInfoForId(int customerId)
         {
             var repository = RepositoryFactory.Repository<CustomerBankInfo>();
 
-            return repository.Any(x => x.CustomerId.Equals(id));
+            return repository.Any(x => x.CustomerId.Equals(customerId));
         }
 
         public void Add(CustomerBankInfo customerBankInfo)
@@ -46,25 +50,17 @@ namespace Domain.Services.Services
             UnitOfWork.SaveChanges();
         }
 
-        public void Update(CustomerBankInfo customerBankInfo)
-        {
-            var repository = UnitOfWork.Repository<CustomerBankInfo>();
-
-            repository.Update(customerBankInfo);
-            UnitOfWork.SaveChanges();
-        }
-
         public void Withdraw(int id, decimal amount)
         {
             var customerBankInfo = Get(id)
-                ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
+                ?? throw new ArgumentException($"'CustomerBankInfo' não encontrado para o ID: {id}");
 
-            var isValidTransaction = customerBankInfo.ValidateTransaction(amount);
-            if (isValidTransaction) throw new ArgumentException("Insufficient balance");
+            if (!customerBankInfo.ValidateTransaction(amount)) throw new ArgumentException("Saldo insuficiente");
 
             customerBankInfo.AccountBalance -= amount;
 
             var repository = UnitOfWork.Repository<CustomerBankInfo>();
+            repository.RemoveTracking(customerBankInfo);
 
             repository.Update(customerBankInfo, x => x.AccountBalance);
             UnitOfWork.SaveChanges();
@@ -73,11 +69,12 @@ namespace Domain.Services.Services
         public void Deposit(int id, decimal amount)
         {
             var customerBankInfo = Get(id)
-                ?? throw new ArgumentException($"'CustomerBankInfo' not found for ID: {id}");
+                ?? throw new ArgumentException($"'CustomerBankInfo' não encontrado para o ID: {id}");
 
             customerBankInfo.AccountBalance += amount;
 
             var repository = UnitOfWork.Repository<CustomerBankInfo>();
+            repository.RemoveTracking(customerBankInfo);
 
             repository.Update(customerBankInfo, x => x.AccountBalance);
             UnitOfWork.SaveChanges();

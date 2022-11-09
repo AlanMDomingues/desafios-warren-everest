@@ -1,14 +1,15 @@
 ﻿using Domain.Services.Interfaces;
 using EntityFrameworkCore.UnitOfWork.Interfaces;
+using Infrastructure.Data.Context;
 using System;
 
 namespace Domain.Services.Services
 {
     public class InvestmentService : IInvestmentService
     {
-        private readonly IRepositoryFactory _repository;
+        private readonly IRepositoryFactory<DataContext> _repository;
 
-        public InvestmentService(IRepositoryFactory repository)
+        public InvestmentService(IRepositoryFactory<DataContext> repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }

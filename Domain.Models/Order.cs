@@ -12,7 +12,7 @@ public class Order
     }
 
     public int Id { get; set; }
-    public int Quotes { get; private set; }
+    public int Quotes { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal NetValue { get; private set; }
     public DateTime ConvertedAt { get; set; } = DateTime.UtcNow;
@@ -27,5 +27,4 @@ public class Order
     {
         NetValue = UnitPrice * Quotes;
     }
-
 }

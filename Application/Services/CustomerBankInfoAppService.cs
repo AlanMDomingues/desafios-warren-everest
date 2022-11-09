@@ -30,9 +30,9 @@ namespace Application.Services
             return result;
         }
 
-        public bool AnyAccountBalanceThatIsntZeroForCustomerId(int customerId) => _customerBankInfoService.AnyAccountBalanceThatIsntZeroForCustomerId(customerId);
+        public bool AccountBalanceIsBiggerThanZero(int customerId) => _customerBankInfoService.AccountBalanceIsBiggerThanZero(customerId);
 
-        public bool AnyCustomerBankInfoForId(int id) => _customerBankInfoService.AnyCustomerBankInfoForId(id);
+        public bool AnyCustomerBankInfoForId(int customerId) => _customerBankInfoService.AnyCustomerBankInfoForId(customerId);
 
         public void Add(int customerId)
         {
@@ -41,11 +41,7 @@ namespace Application.Services
             for (int i = 0; i < 20; i++)
                 accountNumber += randomNumber.Next(0, 9).ToString();
 
-            var customerBankInfo = new CustomerBankInfo
-            {
-                Account = accountNumber,
-                CustomerId = customerId
-            };
+            var customerBankInfo = new CustomerBankInfo(accountNumber, customerId);
 
             _customerBankInfoService.Add(customerBankInfo);
         }

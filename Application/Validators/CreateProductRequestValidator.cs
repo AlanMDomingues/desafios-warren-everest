@@ -9,9 +9,11 @@ namespace Application.Validators
         {
             RuleFor(x => x.Symbol)
                 .NotEmpty()
+                .MinimumLength(2)
                 .MaximumLength(20);
 
             RuleFor(x => x.UnitPrice)
+                .NotEmpty()
                 .GreaterThan(0);
         }
     }

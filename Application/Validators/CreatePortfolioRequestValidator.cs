@@ -14,6 +14,10 @@ namespace Application.Validators
 
             RuleFor(x => x.Description)
                 .MaximumLength(100);
+
+            RuleFor(x => x.CustomerId)
+                .NotEmpty()
+                .GreaterThan(0);
         }
     }
 }

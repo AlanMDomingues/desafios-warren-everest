@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using Application.Models.Requests;
 using Application.Models.Response;
 using AutoMapper;
 using Domain.Models;
@@ -16,12 +15,12 @@ namespace Application.Services
         public OrderAppService(
             IMapper mapper,
             IOrderService orderService)
-            : base(mapper) 
+            : base(mapper)
             => _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
 
-        public IEnumerable<OrderResult> GetAll(int id)
+        public IEnumerable<OrderResult> GetAll(int portfolioId)
         {
-            var orders = _orderService.GetAll(id);
+            var orders = _orderService.GetAll(portfolioId);
             var results = Mapper.Map<IEnumerable<OrderResult>>(orders);
 
             return results;
