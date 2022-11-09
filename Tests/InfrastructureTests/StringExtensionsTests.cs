@@ -160,12 +160,8 @@ namespace API.Tests.InfrastructureTests
         public void Should_Fail_When_Trying_To_Validate_A_FullName_Have_Greater_Than_Thirty_Words()
         {
             // Arrange
-            var fullName = "";
-            for (int i = 0; i < 30; i++)
-            {
-                fullName += "Carlos ";
-            }
-            fullName += "Augusto";
+            var fullName =
+                "Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan Álan";
 
             // Act
             var actionTest = fullName.IsValidFullName();

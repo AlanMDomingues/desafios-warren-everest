@@ -7,11 +7,14 @@ namespace API.Tests.InfrastructureTests
 {
     public class DateTimeExtensionsTests
     {
-        [Fact]
-        public void Should_Pass_When_Trying_To_Add_Birthdate_Higher_Than_Eighteen_Years_Old()
+        [Theory]
+        [InlineData(2004, 01, 01)]
+        [InlineData(2004, 11, 08)]
+        [InlineData(2003, 08, 07)]
+        public void Should_Pass_When_Trying_To_Add_Birthdate_Higher_Than_Eighteen_Years_Old(int year, int month, int day)
         {
             // Arrange
-            var birthdate = new DateTime(DateTime.Today.Year - 18, DateTime.Today.Month, DateTime.Today.Day);
+            var birthdate = new DateTime(year, month, day);
 
             // Act
             var actionTest = birthdate.CheckIfCustomerIsHigherThanEighteenYearsOld();
@@ -35,17 +38,14 @@ namespace API.Tests.InfrastructureTests
 
             if (dayToday + addedDays > daysInMonth)
             {
-                monthToday += 1;
-                dayToday = 1;
-                addedDays--;
+                dayToday = 0;
             }
 
             if (monthToday + addedMonths == 13)
             {
-                yearToday += 1;
-                monthToday = 1;
+                yearToday++;
+                monthToday = 0;
                 dayToday = 1;
-                addedMonths--;
             }
 
             try
